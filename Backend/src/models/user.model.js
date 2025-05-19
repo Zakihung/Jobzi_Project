@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete");
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,5 +25,11 @@ const userSchema = new mongoose.Schema(
 
 // Tạo index cho trường role
 userSchema.index({ role: 1 });
+
+// Thêm plugin xóa mềm
+userSchema.plugin(mongooseDelete, {
+  deletedAt: true, // Tự động thêm trường `deletedAt`
+  overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
+});
 
 module.exports = mongoose.model("User", userSchema);
