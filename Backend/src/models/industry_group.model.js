@@ -1,13 +1,8 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 
-const sub_categorySchema = new mongoose.Schema(
+const industry_groupSchema = new mongoose.Schema(
   {
-    general_category_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "GeneralCategory",
-      required: true,
-    },
     name: {
       type: String,
       require: true,
@@ -22,12 +17,12 @@ const sub_categorySchema = new mongoose.Schema(
 );
 
 // Thêm plugin xóa mềm
-sub_categorySchema.plugin(mongooseDelete, {
+industry_groupSchema.plugin(mongooseDelete, {
   deletedAt: true, // Tự động thêm trường `deletedAt`
   overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
   deleted: true,
 });
 
-const SubCategory = mongoose.model("SubCategory", sub_categorySchema);
+const IndustryGroup = mongoose.model("IndustryGroup", industry_groupSchema);
 
-module.exports = SubCategory;
+module.exports = IndustryGroup;

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 
-const general_categorySchema = new mongoose.Schema(
+const job_roleSchema = new mongoose.Schema(
   {
     industry_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,15 +22,12 @@ const general_categorySchema = new mongoose.Schema(
 );
 
 // Thêm plugin xóa mềm
-general_categorySchema.plugin(mongooseDelete, {
+job_roleSchema.plugin(mongooseDelete, {
   deletedAt: true, // Tự động thêm trường `deletedAt`
   overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
   deleted: true,
 });
 
-const GeneralCategory = mongoose.model(
-  "GeneralCategory",
-  general_categorySchema
-);
+const JobRole = mongoose.model("JobRole", job_roleSchema);
 
-module.exports = GeneralCategory;
+module.exports = JobRole;

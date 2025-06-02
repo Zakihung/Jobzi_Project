@@ -8,9 +8,9 @@ const job_postSchema = new mongoose.Schema(
       ref: "Employer",
       required: true,
     },
-    sub_category_id: {
+    job_role_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "SubCategory",
+      ref: "JobRole",
       required: true,
     },
     salary_range_id: {

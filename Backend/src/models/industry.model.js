@@ -3,9 +3,9 @@ const mongooseDelete = require("mongoose-delete");
 
 const industrySchema = new mongoose.Schema(
   {
-    general_category_id: {
+    industry_group_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "GeneralCategory",
+      ref: "IndustryGroup",
       required: true,
     },
     name: {

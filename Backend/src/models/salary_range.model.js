@@ -6,6 +6,7 @@ const salary_rangeSchema = new mongoose.Schema(
     type: {
       type: String,
       require: true,
+      default: "negotiable",
       enum: ["negotiable", "range"],
     },
     min: {

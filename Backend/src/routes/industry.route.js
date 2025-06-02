@@ -1,0 +1,20 @@
+const express = require("express");
+const {
+  createIndustry,
+  getListIndustry,
+  getIndustryById,
+  updateIndustryStatus,
+  deleteIndustry,
+  deleteAllIndustries,
+} = require("../controllers/industry.controller");
+const router = express.Router();
+
+// Public routes
+router.post("/create", createIndustry);
+router.get("/", getListIndustry);
+router.get("/:id", getIndustryById);
+router.put("/status/:id", updateIndustryStatus);
+router.delete("/:id", deleteIndustry);
+router.delete("/all", deleteAllIndustries);
+
+module.exports = router;
