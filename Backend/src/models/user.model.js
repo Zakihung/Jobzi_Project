@@ -32,4 +32,6 @@ userSchema.plugin(mongooseDelete, {
   overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
 });
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
