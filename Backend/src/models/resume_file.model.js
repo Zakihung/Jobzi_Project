@@ -8,13 +8,13 @@ const resume_fileSchema = new mongoose.Schema(
       ref: "Candidate",
       required: true,
     },
-    file_name: {
+    name: {
       type: String,
       require: true,
     },
-    file_path: {
+    path: {
       type: String,
-      require: true,
+      default: "",
     },
   },
   { timestamps: true }

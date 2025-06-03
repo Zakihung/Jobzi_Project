@@ -14,11 +14,11 @@ const companySchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      require: true,
+      default: "",
     },
     size: {
       type: String,
-      require: true,
+      default: "",
     },
     logo: {
       type: String,
@@ -30,7 +30,7 @@ const companySchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      require: true,
+      default: "",
     },
   },
   { timestamps: true }

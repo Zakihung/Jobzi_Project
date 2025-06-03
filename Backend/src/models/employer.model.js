@@ -17,9 +17,6 @@ const employerSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    date_of_birth: {
-      type: Date,
-    },
     gender: {
       type: String,
       enum: ["male", "female"],
@@ -28,8 +25,12 @@ const employerSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    date_of_birth: {
+      type: Date,
+    },
     position: {
       type: String,
+      default: "",
     },
     phone_number: {
       type: String,

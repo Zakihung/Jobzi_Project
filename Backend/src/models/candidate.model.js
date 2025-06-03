@@ -12,17 +12,20 @@ const candidateSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
     date_of_birth: {
       type: Date,
-      require: true,
-    },
-    address: {
-      type: String,
-      require: true,
     },
     phone_number: {
       type: String,
-      require: true,
+      default: "",
     },
   },
   { timestamps: true }
