@@ -6,7 +6,6 @@ const {
   deleteCandidateService,
   uploadAvatarCandidateService,
 } = require("../services/candidate.service");
-const uploadAvatarCandidate = require("../middleware/uploadAvaCandidate");
 
 const createCandidate = async (req, res, next) => {
   try {

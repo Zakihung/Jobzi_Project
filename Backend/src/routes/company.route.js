@@ -8,7 +8,7 @@ const {
   deleteCompany,
   uploadLogoCompany,
 } = require("../controllers/company.controller");
-const upload = require("../middleware/uploadAvatarCompany");
+const upload = require("../middleware/uploadAvaCompany");
 
 const router = express.Router();
 

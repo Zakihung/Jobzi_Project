@@ -6,7 +6,6 @@ const {
   deleteEmployerService,
   uploadAvatarEmployerService,
 } = require("../services/employer.service");
-const uploadAvatarEmployer = require("../middleware/uploadAvaEmployer");
 
 const createEmployer = async (req, res, next) => {
   try {
