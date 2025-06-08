@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const connection = require("./configs/database");
 const errorHandler = require("./middleware/errorHandler");
+const configViewEngine = require("./configs/viewEngine");
 
 const userRoutes = require("./routes/user.route");
 const applicationRoutes = require("./routes/application.route");
@@ -28,6 +29,7 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+configViewEngine(app);
 
 // Routes
 app.use("/api/user", userRoutes);

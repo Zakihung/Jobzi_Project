@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 // Public routes
-router.post("/create", createSalaryRange);
+router.post("/", createSalaryRange);
 router.get("/", getListSalaryRange);
 router.get("/:id", getSalaryRangeById);
 router.put("/:id", updateSalaryRange);

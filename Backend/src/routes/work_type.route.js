@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 // Public routes
-router.post("/create", createWorkType);
+router.post("/", createWorkType);
 router.get("/", getListWorkType);
 router.get("/:id", getWorkTypeById);
 router.put("/:id", updateWorkType);
