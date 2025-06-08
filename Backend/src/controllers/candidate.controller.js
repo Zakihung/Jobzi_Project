@@ -1,26 +1,10 @@
 const {
-  createCandidateService,
   getListCandidateService,
   getCandidateByIdService,
   updateCandidateService,
   deleteCandidateService,
   uploadAvatarCandidateService,
 } = require("../services/candidate.service");
-
-const createCandidate = async (req, res, next) => {
-  try {
-    const { user_id, full_name, gender, date_of_birth, phone_number } =
-      req.body;
-    const file = req.file;
-    const data = await createCandidateService(
-      { user_id, full_name, gender, date_of_birth, phone_number },
-      file
-    );
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
 
 const getListCandidate = async (req, res, next) => {
   try {
@@ -79,7 +63,6 @@ const uploadAvatarCandidate = async (req, res, next) => {
 };
 
 module.exports = {
-  createCandidate,
   getListCandidate,
   getCandidateById,
   updateCandidate,

@@ -3,13 +3,20 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const Candidate = require("../models/candidate.model");
+const Employer = require("../models/employer.model");
 const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
 
-const signupService = async ({ email, password, role }) => {
-  // Kiểm tra tồn tại
-  if (!email || !password || !role) {
+const signupCandidateService = async ({
+  email,
+  password,
+  full_name,
+  phone_number,
+}) => {
+  // Kiểm tra dữ liệu đầu vào
+  if (!email || !password || !full_name || !phone_number) {
     throw new AppError("Dữ liệu trống", 400);
   }
   // Kiểm tra định dạng email
@@ -27,22 +34,179 @@ const signupService = async ({ email, password, role }) => {
       400
     );
   }
+  // Kiểm tra định dạng họ tên
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+    throw new AppError(
+      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+  // Kiểm tra định dạng số điện thoại
+  if (
+    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
+      phone_number
+    )
+  ) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
+      400
+    );
+  }
   // Kiểm tra tồn tại email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new AppError("Email đã tồn tại", 400);
   }
+  // Kiểm tra tồn tại số điện thoại trong collection Candidate
+  const existingCandidatePhone = await Candidate.findOne({ phone_number });
+  if (existingCandidatePhone) {
+    throw new AppError(
+      "Số điện thoại đã được sử dụng bởi một ứng viên khác",
+      400
+    );
+  }
   // Băm mật khẩu
   const hashedPassword = await bcrypt.hash(password, 10);
+  // Tạo user mới với role là candidate
   const user = new User({
     email,
     password: hashedPassword,
-    role,
+    role: "candidate",
   });
-
   await user.save();
-  return user;
+
+  // Tạo bản ghi candidate
+  const candidate = new Candidate({
+    user_id: user._id,
+    full_name,
+    phone_number,
+    gender: null,
+    avatar: null,
+    date_of_birth: null,
+  });
+  await candidate.save();
+
+  return { user, candidate };
 };
+
+const signupEmployerService = async ({
+  email,
+  password,
+  full_name,
+  phone_number,
+}) => {
+  // Kiểm tra dữ liệu đầu vào
+  if (!email || !password || !full_name || !phone_number) {
+    throw new AppError("Dữ liệu trống", 400);
+  }
+  // Kiểm tra định dạng email
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    throw new AppError("Email không hợp lệ", 400);
+  }
+  // Kiểm tra định dạng mật khẩu
+  if (
+    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
+      password
+    )
+  ) {
+    throw new AppError(
+      "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
+      400
+    );
+  }
+  // Kiểm tra định dạng họ tên
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+    throw new AppError(
+      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+  // Kiểm tra định dạng số điện thoại
+  if (
+    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
+      phone_number
+    )
+  ) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
+      400
+    );
+  }
+  // Kiểm tra tồn tại email
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new AppError("Email đã tồn tại", 400);
+  }
+  // Kiểm tra tồn tại số điện thoại trong collection Employer
+  const existingEmployerPhone = await Employer.findOne({ phone_number });
+  if (existingEmployerPhone) {
+    throw new AppError(
+      "Số điện thoại đã được sử dụng bởi một nhà tuyển dụng khác",
+      400
+    );
+  }
+  // Băm mật khẩu
+  const hashedPassword = await bcrypt.hash(password, 10);
+  // Tạo user mới với role là employer
+  const user = new User({
+    email,
+    password: hashedPassword,
+    role: "employer",
+  });
+  await user.save();
+
+  // Tạo bản ghi employer
+  const employer = new Employer({
+    user_id: user._id,
+    full_name,
+    phone_number,
+    company_id: null,
+    gender: null,
+    avatar: null,
+    date_of_birth: null,
+    position: null,
+  });
+  await employer.save();
+
+  return { user, employer };
+};
+
+// const signupService = async ({ email, password, role }) => {
+//   // Kiểm tra tồn tại
+//   if (!email || !password || !role) {
+//     throw new AppError("Dữ liệu trống", 400);
+//   }
+//   // Kiểm tra định dạng email
+//   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+//     throw new AppError("Email không hợp lệ", 400);
+//   }
+//   // Kiểm tra định dạng mật khẩu
+//   if (
+//     !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
+//       password
+//     )
+//   ) {
+//     throw new AppError(
+//       "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
+//       400
+//     );
+//   }
+//   // Kiểm tra tồn tại email
+//   const existingUser = await User.findOne({ email });
+//   if (existingUser) {
+//     throw new AppError("Email đã tồn tại", 400);
+//   }
+//   // Băm mật khẩu
+//   const hashedPassword = await bcrypt.hash(password, 10);
+//   const user = new User({
+//     email,
+//     password: hashedPassword,
+//     role,
+//   });
+
+//   await user.save();
+//   return user;
+// };
 
 const signinService = async ({ email, password }) => {
   // Kiểm tra tồn tại
@@ -152,7 +316,9 @@ const getEmailFromTokenService = async (token) => {
 };
 
 module.exports = {
-  signupService,
+  signupCandidateService,
+  signupEmployerService,
+  // signupService,
   signinService,
   refreshAccessTokenService,
   requestPasswordResetService,

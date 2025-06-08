@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const {
-  signup,
+  signupCandidate,
+  signupEmployer,
   signin,
   requestPasswordReset,
   resetPassword,
@@ -10,8 +11,10 @@ const {
   refreshToken,
 } = require("../controllers/user.controller");
 
-//Đăng ký
-router.post("/signup", signup);
+// Đăng ký ứng viên
+router.post("/signup-candidate", signupCandidate);
+// Đăng ký nhà tuyển dụng
+router.post("/signup-employer", signupEmployer);
 //Đăng nhập
 router.post("/signin", signin);
 // Làm mới access token

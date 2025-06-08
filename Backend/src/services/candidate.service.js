@@ -3,39 +3,6 @@ const AppError = require("../utils/AppError");
 const Candidate = require("../models/candidate.model");
 const cloudinary = require("../configs/cloudinary");
 
-const createCandidateService = async (candidateData, file) => {
-  const { user_id, full_name, gender, date_of_birth, phone_number } =
-    candidateData;
-  if (!user_id || !full_name) {
-    throw new AppError(
-      "Thiếu các trường bắt buộc: user_id và full_name là bắt buộc",
-      400
-    );
-  }
-  if (gender && !["male", "female"].includes(gender)) {
-    throw new AppError(
-      "Giới tính không hợp lệ: chỉ chấp nhận 'male' hoặc 'female'",
-      400
-    );
-  }
-
-  let avatarUrl = "";
-  if (file) {
-    avatarUrl = file.path; // Lấy URL từ Cloudinary sau khi upload
-  }
-
-  let result = await Candidate.create({
-    user_id,
-    full_name,
-    gender: gender || "",
-    date_of_birth: date_of_birth || null,
-    phone_number: phone_number || "",
-    avatar: avatarUrl,
-  });
-
-  return result;
-};
-
 const getListCandidateService = async () => {
   let result = await Candidate.find().populate("user_id");
   return result;
@@ -123,7 +90,6 @@ const uploadAvatarCandidateService = async (candidate_id, file) => {
 };
 
 module.exports = {
-  createCandidateService,
   getListCandidateService,
   getCandidateByIdService,
   updateCandidateService,

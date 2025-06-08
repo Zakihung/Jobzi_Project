@@ -1,6 +1,5 @@
 const express = require("express");
 const {
-  createEmployer,
   getListEmployer,
   getEmployerById,
   updateEmployer,
@@ -12,7 +11,6 @@ const upload = require("../middleware/uploadAvaEmployer");
 const router = express.Router();
 
 // Public routes
-router.post("/create", upload.single("avatar"), createEmployer);
 router.get("/", getListEmployer);
 router.get("/:id", getEmployerById);
 router.put("/:id", upload.single("avatar"), updateEmployer);

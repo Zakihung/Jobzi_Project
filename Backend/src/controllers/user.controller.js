@@ -1,5 +1,7 @@
 const {
-  signupService,
+  signupCandidateService,
+  signupEmployerService,
+  // signupService,
   signinService,
   refreshAccessTokenService,
   requestPasswordResetService,
@@ -7,15 +9,53 @@ const {
   getEmailFromTokenService,
 } = require("../services/user.service");
 
-const signup = async (req, res) => {
+const signupCandidate = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
-    const user = await signupService({ email, password, role });
-    res.status(201).json({ message: "Đăng ký thành công", user });
+    const { email, password, full_name, phone_number } = req.body;
+    const { user, candidate } = await signupCandidateService({
+      email,
+      password,
+      full_name,
+      phone_number,
+    });
+    res.status(201).json({
+      message: "Đăng ký ứng viên thành công",
+      user,
+      candidate,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
+const signupEmployer = async (req, res) => {
+  try {
+    const { email, password, full_name, phone_number } = req.body;
+    const { user, employer } = await signupEmployerService({
+      email,
+      password,
+      full_name,
+      phone_number,
+    });
+    res.status(201).json({
+      message: "Đăng ký nhà tuyển dụng thành công",
+      user,
+      employer,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// const signup = async (req, res) => {
+//   try {
+//     const { email, password, role } = req.body;
+//     const user = await signupService({ email, password, role });
+//     res.status(201).json({ message: "Đăng ký thành công", user });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
 
 const signin = async (req, res) => {
   try {
@@ -85,7 +125,9 @@ const getEmail = async (req, res) => {
 };
 
 module.exports = {
-  signup,
+  signupCandidate,
+  signupEmployer,
+  // signup,
   signin,
   refreshToken,
   requestPasswordReset,

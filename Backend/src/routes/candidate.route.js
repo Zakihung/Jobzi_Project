@@ -1,6 +1,5 @@
 const express = require("express");
 const {
-  createCandidate,
   getListCandidate,
   getCandidateById,
   updateCandidate,
@@ -12,7 +11,6 @@ const upload = require("../middleware/uploadAvaCandidate");
 const router = express.Router();
 
 // Public routes
-router.post("/create", upload.single("avatar"), createCandidate);
 router.get("/", getListCandidate);
 router.get("/:id", getCandidateById);
 router.put("/:id", upload.single("avatar"), updateCandidate);

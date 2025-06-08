@@ -1,41 +1,10 @@
 const {
-  createEmployerService,
   getListEmployerService,
   getEmployerByIdService,
   updateEmployerService,
   deleteEmployerService,
   uploadAvatarEmployerService,
 } = require("../services/employer.service");
-
-const createEmployer = async (req, res, next) => {
-  try {
-    const {
-      user_id,
-      company_id,
-      full_name,
-      gender,
-      date_of_birth,
-      position,
-      phone_number,
-    } = req.body;
-    const file = req.file;
-    const data = await createEmployerService(
-      {
-        user_id,
-        company_id,
-        full_name,
-        gender,
-        date_of_birth,
-        position,
-        phone_number,
-      },
-      file
-    );
-    res.status(201).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
 
 const getListEmployer = async (req, res, next) => {
   try {
@@ -110,7 +79,6 @@ const uploadAvatarEmployer = async (req, res, next) => {
 };
 
 module.exports = {
-  createEmployer,
   getListEmployer,
   getEmployerById,
   updateEmployer,

@@ -3,48 +3,6 @@ const AppError = require("../utils/AppError");
 const Employer = require("../models/employer.model");
 const cloudinary = require("../configs/cloudinary");
 
-const createEmployerService = async (employerData, file) => {
-  const {
-    user_id,
-    company_id,
-    full_name,
-    gender,
-    date_of_birth,
-    position,
-    phone_number,
-  } = employerData;
-  if (!user_id || !full_name) {
-    throw new AppError(
-      "Thiếu các trường bắt buộc: user_id và full_name là bắt buộc",
-      400
-    );
-  }
-  if (gender && !["male", "female"].includes(gender)) {
-    throw new AppError(
-      "Giới tính không hợp lệ: chỉ chấp nhận 'male' hoặc 'female'",
-      400
-    );
-  }
-
-  let avatarUrl = "";
-  if (file) {
-    avatarUrl = file.path; // Lấy URL từ Cloudinary sau khi upload
-  }
-
-  let result = await Employer.create({
-    user_id,
-    company_id: company_id || null,
-    full_name,
-    gender: gender || "",
-    date_of_birth: date_of_birth || null,
-    position: position || "",
-    phone_number: phone_number || "",
-    avatar: avatarUrl,
-  });
-
-  return result;
-};
-
 const getListEmployerService = async () => {
   let result = await Employer.find().populate("user_id").populate("company_id");
   return result;
@@ -143,7 +101,6 @@ const uploadAvatarEmployerService = async (employer_id, file) => {
 };
 
 module.exports = {
-  createEmployerService,
   getListEmployerService,
   getEmployerByIdService,
   updateEmployerService,
