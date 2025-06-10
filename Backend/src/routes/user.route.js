@@ -2,26 +2,29 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const {
-  signupCandidate,
-  signupEmployer,
+  signup,
   signin,
+  refreshToken,
   requestPasswordReset,
   resetPassword,
   getEmail,
-  refreshToken,
+  getListUser,
+  getUserById,
+  updateUser,
+  deleteUserById,
+  uploadAvatarUser,
 } = require("../controllers/user.controller");
+const upload = require("../middleware/uploadAvaUser");
 
-// Đăng ký ứng viên
-router.post("/signup-candidate", signupCandidate);
-// Đăng ký nhà tuyển dụng
-router.post("/signup-employer", signupEmployer);
-//Đăng nhập
+// Đăng ký người dùng (ứng viên hoặc nhà tuyển dụng)
+router.post("/signup", signup);
+// Đăng nhập
 router.post("/signin", signin);
 // Làm mới access token
 router.post("/refresh-token", refreshToken);
 // Gửi yêu cầu đặt lại mật khẩu
 router.post("/request-password-reset", requestPasswordReset);
-
+// Trang đặt lại mật khẩu
 router.get("/reset-password/:token", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/reset-password.html"));
 });
@@ -29,5 +32,15 @@ router.get("/reset-password/:token", (req, res) => {
 router.post("/reset-password/:token", resetPassword);
 // Lấy email người dùng từ token
 router.get("/get-email/:token", getEmail);
+// Lấy danh sách người dùng
+router.get("/", getListUser);
+// Lấy thông tin người dùng theo ID
+router.get("/:id", getUserById);
+// Cập nhật thông tin người dùng
+router.put("/:id", updateUser);
+// Xóa người dùng theo ID
+router.delete("/:id", deleteUserById);
+// Upload avatar người dùng
+router.post("/:id/upload-avatar", upload.single("avatar"), uploadAvatarUser);
 
 module.exports = router;

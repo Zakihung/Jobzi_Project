@@ -1,61 +1,42 @@
 const {
-  signupCandidateService,
-  signupEmployerService,
-  // signupService,
+  signupService,
   signinService,
+  uploadAvatarUserService,
   refreshAccessTokenService,
   requestPasswordResetService,
   resetPasswordService,
   getEmailFromTokenService,
+  getListUserService,
+  getUserByIdService,
+  updateUserService,
+  deleteUserByIdService,
 } = require("../services/user.service");
 
-const signupCandidate = async (req, res) => {
+const signup = async (req, res) => {
   try {
-    const { email, password, full_name, phone_number } = req.body;
-    const { user, candidate } = await signupCandidateService({
+    const { email, password, full_name, role } = req.body;
+    const result = await signupService({
       email,
       password,
       full_name,
-      phone_number,
+      role,
     });
+    let message;
+    if (role === "candidate") {
+      message = "Đăng ký ứng viên thành công";
+    } else if (role === "employer") {
+      message = "Đăng ký nhà tuyển dụng thành công";
+    } else if (role === "admin") {
+      message = "Đăng ký quản trị viên thành công";
+    }
     res.status(201).json({
-      message: "Đăng ký ứng viên thành công",
-      user,
-      candidate,
+      message,
+      ...result,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
-
-const signupEmployer = async (req, res) => {
-  try {
-    const { email, password, full_name, phone_number } = req.body;
-    const { user, employer } = await signupEmployerService({
-      email,
-      password,
-      full_name,
-      phone_number,
-    });
-    res.status(201).json({
-      message: "Đăng ký nhà tuyển dụng thành công",
-      user,
-      employer,
-    });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// const signup = async (req, res) => {
-//   try {
-//     const { email, password, role } = req.body;
-//     const user = await signupService({ email, password, role });
-//     res.status(201).json({ message: "Đăng ký thành công", user });
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
 
 const signin = async (req, res) => {
   try {
@@ -124,13 +105,81 @@ const getEmail = async (req, res) => {
   }
 };
 
+const getListUser = async (req, res) => {
+  try {
+    const data = await getListUserService();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await getUserByIdService(id);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { full_name, gender, date_of_birth, phone_number } = req.body;
+    const data = await updateUserService(id, {
+      full_name,
+      gender,
+      date_of_birth,
+      phone_number,
+    });
+    res.status(200).json({
+      message: "Cập nhật thông tin người dùng thành công",
+      data,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+const deleteUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await deleteUserByIdService(id);
+    res.status(200).json({
+      message: "Xóa người dùng thành công",
+      data,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+const uploadAvatarUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const file = req.file;
+    const data = await uploadAvatarUserService(id, file);
+    res.status(200).json({
+      message: "Tải lên avatar người dùng thành công",
+      data,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
 module.exports = {
-  signupCandidate,
-  signupEmployer,
-  // signup,
+  signup,
   signin,
   refreshToken,
   requestPasswordReset,
   resetPassword,
   getEmail,
+  getListUser,
+  getUserById,
+  updateUser,
+  deleteUserById,
+  uploadAvatarUser,
 };

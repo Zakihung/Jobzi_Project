@@ -19,6 +19,27 @@ const userSchema = new mongoose.Schema(
       enum: ["candidate", "employer", "admin"],
       required: true,
     },
+    full_name: {
+      type: String,
+      require: true,
+    },
+    gender: {
+      type: String,
+      default: null,
+      enum: ["male", "female"],
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    date_of_birth: {
+      type: Date,
+      default: null,
+    },
+    phone_number: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

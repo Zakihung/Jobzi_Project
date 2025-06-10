@@ -9,15 +9,17 @@ const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
 
-const signupCandidateService = async ({
-  email,
-  password,
-  full_name,
-  phone_number,
-}) => {
+const signupService = async ({ email, password, full_name, role }) => {
   // Kiểm tra dữ liệu đầu vào
-  if (!email || !password || !full_name || !phone_number) {
+  if (!email || !password || !full_name || !role) {
     throw new AppError("Dữ liệu trống", 400);
+  }
+  // Kiểm tra role hợp lệ
+  if (!["candidate", "employer", "admin"].includes(role)) {
+    throw new AppError(
+      "Vai trò không hợp lệ: chỉ chấp nhận 'candidate' hoặc 'employer' hoặc 'admin'",
+      400
+    );
   }
   // Kiểm tra định dạng email
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
@@ -41,172 +43,42 @@ const signupCandidateService = async ({
       400
     );
   }
-  // Kiểm tra định dạng số điện thoại
-  if (
-    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
-      phone_number
-    )
-  ) {
-    throw new AppError(
-      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
-      400
-    );
-  }
   // Kiểm tra tồn tại email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new AppError("Email đã tồn tại", 400);
   }
-  // Kiểm tra tồn tại số điện thoại trong collection Candidate
-  const existingCandidatePhone = await Candidate.findOne({ phone_number });
-  if (existingCandidatePhone) {
-    throw new AppError(
-      "Số điện thoại đã được sử dụng bởi một ứng viên khác",
-      400
-    );
-  }
   // Băm mật khẩu
   const hashedPassword = await bcrypt.hash(password, 10);
-  // Tạo user mới với role là candidate
+  // Tạo user mới
   const user = new User({
     email,
     password: hashedPassword,
-    role: "candidate",
+    role,
+    full_name,
   });
   await user.save();
 
-  // Tạo bản ghi candidate
-  const candidate = new Candidate({
-    user_id: user._id,
-    full_name,
-    phone_number,
-    gender: null,
-    avatar: null,
-    date_of_birth: null,
-  });
-  await candidate.save();
-
-  return { user, candidate };
+  // Tạo bản ghi tương ứng dựa trên role
+  if (role === "candidate") {
+    const candidate = new Candidate({
+      user_id: user._id,
+      status: "ready",
+    });
+    await candidate.save();
+    return { user, candidate };
+  } else if (role === "employer") {
+    const employer = new Employer({
+      user_id: user._id,
+      position: "",
+    });
+    await employer.save();
+    return { user, employer };
+  } else {
+    // Nếu là admin, không cần tạo bản ghi khác
+    return { user };
+  }
 };
-
-const signupEmployerService = async ({
-  email,
-  password,
-  full_name,
-  phone_number,
-}) => {
-  // Kiểm tra dữ liệu đầu vào
-  if (!email || !password || !full_name || !phone_number) {
-    throw new AppError("Dữ liệu trống", 400);
-  }
-  // Kiểm tra định dạng email
-  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-    throw new AppError("Email không hợp lệ", 400);
-  }
-  // Kiểm tra định dạng mật khẩu
-  if (
-    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
-      password
-    )
-  ) {
-    throw new AppError(
-      "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
-      400
-    );
-  }
-  // Kiểm tra định dạng họ tên
-  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
-    throw new AppError(
-      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
-      400
-    );
-  }
-  // Kiểm tra định dạng số điện thoại
-  if (
-    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
-      phone_number
-    )
-  ) {
-    throw new AppError(
-      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
-      400
-    );
-  }
-  // Kiểm tra tồn tại email
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new AppError("Email đã tồn tại", 400);
-  }
-  // Kiểm tra tồn tại số điện thoại trong collection Employer
-  const existingEmployerPhone = await Employer.findOne({ phone_number });
-  if (existingEmployerPhone) {
-    throw new AppError(
-      "Số điện thoại đã được sử dụng bởi một nhà tuyển dụng khác",
-      400
-    );
-  }
-  // Băm mật khẩu
-  const hashedPassword = await bcrypt.hash(password, 10);
-  // Tạo user mới với role là employer
-  const user = new User({
-    email,
-    password: hashedPassword,
-    role: "employer",
-  });
-  await user.save();
-
-  // Tạo bản ghi employer
-  const employer = new Employer({
-    user_id: user._id,
-    full_name,
-    phone_number,
-    company_id: null,
-    gender: null,
-    avatar: null,
-    date_of_birth: null,
-    position: null,
-  });
-  await employer.save();
-
-  return { user, employer };
-};
-
-// const signupService = async ({ email, password, role }) => {
-//   // Kiểm tra tồn tại
-//   if (!email || !password || !role) {
-//     throw new AppError("Dữ liệu trống", 400);
-//   }
-//   // Kiểm tra định dạng email
-//   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-//     throw new AppError("Email không hợp lệ", 400);
-//   }
-//   // Kiểm tra định dạng mật khẩu
-//   if (
-//     !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
-//       password
-//     )
-//   ) {
-//     throw new AppError(
-//       "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
-//       400
-//     );
-//   }
-//   // Kiểm tra tồn tại email
-//   const existingUser = await User.findOne({ email });
-//   if (existingUser) {
-//     throw new AppError("Email đã tồn tại", 400);
-//   }
-//   // Băm mật khẩu
-//   const hashedPassword = await bcrypt.hash(password, 10);
-//   const user = new User({
-//     email,
-//     password: hashedPassword,
-//     role,
-//   });
-
-//   await user.save();
-//   return user;
-// };
 
 const signinService = async ({ email, password }) => {
   // Kiểm tra tồn tại
@@ -264,6 +136,28 @@ const refreshAccessTokenService = async (refreshToken) => {
   return accessToken;
 };
 
+const uploadAvatarUserService = async (user_id, file) => {
+  if (!file) {
+    throw new AppError("Không có file ảnh được cung cấp", 400);
+  }
+
+  let user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+
+  // Xóa avatar cũ trên Cloudinary nếu tồn tại
+  if (user.avatar) {
+    const publicId = user.avatar.split("/").pop().split(".")[0];
+    await cloudinary.uploader.destroy(`user_avatars/${publicId}`);
+  }
+
+  // Lưu URL của ảnh mới từ Cloudinary
+  user.avatar = file.path; // file.path chứa URL từ Cloudinary sau khi upload
+  let result = await user.save();
+  return result;
+};
+
 const requestPasswordResetService = async (email) => {
   if (!email) throw new AppError("Email không được để trống!", 400);
 
@@ -315,13 +209,98 @@ const getEmailFromTokenService = async (token) => {
   return user.email;
 };
 
+const getListUserService = async () => {
+  const result = await User.find();
+  return result;
+};
+
+const getUserByIdService = async (user_id) => {
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+  return user;
+};
+
+const updateUserService = async (user_id, updateData) => {
+  const { full_name, gender, date_of_birth, phone_number } = updateData;
+  let user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+
+  if (full_name !== undefined && !full_name) {
+    throw new AppError("Tên đầy đủ không được để trống", 400);
+  }
+  if (full_name !== undefined && !/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+    throw new AppError(
+      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+  if (gender !== undefined && gender && !["male", "female"].includes(gender)) {
+    throw new AppError(
+      "Giới tính không hợp lệ: chỉ chấp nhận 'male' hoặc 'female'",
+      400
+    );
+  }
+  if (
+    phone_number !== undefined &&
+    phone_number &&
+    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
+      phone_number
+    )
+  ) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
+      400
+    );
+  }
+
+  user.full_name = full_name !== undefined ? full_name : user.full_name;
+  user.gender = gender !== undefined ? gender : user.gender;
+  user.date_of_birth =
+    date_of_birth !== undefined ? date_of_birth : user.date_of_birth;
+  user.phone_number =
+    phone_number !== undefined ? phone_number : user.phone_number;
+
+  const result = await user.save();
+  return result;
+};
+
+const deleteUserByIdService = async (user_id) => {
+  let user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+
+  // Xóa mềm document trong Candidate nếu tồn tại
+  const candidate = await Candidate.findOne({ user_id });
+  if (candidate) {
+    await candidate.delete();
+  }
+
+  // Xóa mềm document trong Employer nếu tồn tại
+  const employer = await Employer.findOne({ user_id });
+  if (employer) {
+    await employer.delete();
+  }
+
+  // Xóa mềm document User
+  const result = await user.delete(); // Xóa mềm sử dụng mongoose-delete
+  return result;
+};
+
 module.exports = {
-  signupCandidateService,
-  signupEmployerService,
-  // signupService,
+  signupService,
   signinService,
+  uploadAvatarUserService,
   refreshAccessTokenService,
   requestPasswordResetService,
   resetPasswordService,
   getEmailFromTokenService,
+  getListUserService,
+  getUserByIdService,
+  updateUserService,
+  deleteUserByIdService,
 };

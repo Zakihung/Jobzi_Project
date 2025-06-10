@@ -5,7 +5,7 @@ const cloudinary = require("../configs/cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "employer_avatars", // Thư mục lưu trữ avatar của nhà tuyển dụng trên Cloudinary
+    folder: "user_avatars", // Thư mục lưu trữ avatar của ứng viên trên Cloudinary
     allowed_formats: ["jpg", "png", "jpeg"], // Định dạng ảnh cho phép
     transformation: [
       { width: 500, height: 500, crop: "limit" }, // Giới hạn kích thước
