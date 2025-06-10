@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 
-const job_roleSchema = new mongoose.Schema(
+const job_positionSchema = new mongoose.Schema(
   {
     industry_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -22,12 +22,12 @@ const job_roleSchema = new mongoose.Schema(
 );
 
 // Thêm plugin xóa mềm
-job_roleSchema.plugin(mongooseDelete, {
+job_positionSchema.plugin(mongooseDelete, {
   deletedAt: true, // Tự động thêm trường `deletedAt`
   overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
   deleted: true,
 });
 
-const JobRole = mongoose.model("JobRole", job_roleSchema);
+const JobPosition = mongoose.model("JobPosition", job_positionSchema);
 
-module.exports = JobRole;
+module.exports = JobPosition;

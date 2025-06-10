@@ -3,7 +3,7 @@ const {
   getListJobPostService,
   getJobPostByIdService,
   getJobPostByEmployerIdService,
-  getJobPostByJobRoleIdService,
+  getJobPostByJobPositionIdService,
   getJobPostBySalaryRangeIdService,
   getJobPostByWorkTypeIdService,
   updateJobPostService,
@@ -15,7 +15,7 @@ const createJobPost = async (req, res, next) => {
   try {
     const {
       employer_id,
-      job_role_id,
+      job_position_id,
       salary_range_id,
       work_type_id,
       title,
@@ -30,7 +30,7 @@ const createJobPost = async (req, res, next) => {
     } = req.body;
     const data = await createJobPostService({
       employer_id,
-      job_role_id,
+      job_position_id,
       salary_range_id,
       work_type_id,
       title,
@@ -78,10 +78,10 @@ const getJobPostByEmployerId = async (req, res, next) => {
   }
 };
 
-const getJobPostByJobRoleId = async (req, res, next) => {
+const getJobPostByJobPositionId = async (req, res, next) => {
   try {
-    const { job_role_id } = req.params;
-    const data = await getJobPostByJobRoleIdService(job_role_id);
+    const { job_position_id } = req.params;
+    const data = await getJobPostByJobPositionIdService(job_position_id);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -113,7 +113,7 @@ const updateJobPost = async (req, res, next) => {
     const { id } = req.params;
     const {
       employer_id,
-      job_role_id,
+      job_position_id,
       salary_range_id,
       work_type_id,
       title,
@@ -128,7 +128,7 @@ const updateJobPost = async (req, res, next) => {
     } = req.body;
     const data = await updateJobPostService(id, {
       employer_id,
-      job_role_id,
+      job_position_id,
       salary_range_id,
       work_type_id,
       title,
@@ -173,7 +173,7 @@ module.exports = {
   getListJobPost,
   getJobPostById,
   getJobPostByEmployerId,
-  getJobPostByJobRoleId,
+  getJobPostByJobPositionId,
   getJobPostBySalaryRangeId,
   getJobPostByWorkTypeId,
   updateJobPost,

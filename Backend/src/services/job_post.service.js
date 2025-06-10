@@ -5,7 +5,7 @@ const JobPost = require("../models/job_post.model");
 const createJobPostService = async (jobPostData) => {
   const {
     employer_id,
-    job_role_id,
+    job_position_id,
     salary_range_id,
     work_type_id,
     title,
@@ -20,13 +20,13 @@ const createJobPostService = async (jobPostData) => {
   } = jobPostData;
   if (
     !employer_id ||
-    !job_role_id ||
+    !job_position_id ||
     !salary_range_id ||
     !work_type_id ||
     !title
   ) {
     throw new AppError(
-      "Thiếu các trường bắt buộc: employer_id, job_role_id, salary_range_id, work_type_id, title là bắt buộc",
+      "Thiếu các trường bắt buộc: employer_id, job_position_id, salary_range_id, work_type_id, title là bắt buộc",
       400
     );
   }
@@ -48,7 +48,7 @@ const createJobPostService = async (jobPostData) => {
 
   let result = await JobPost.create({
     employer_id,
-    job_role_id,
+    job_position_id,
     salary_range_id,
     work_type_id,
     title,
@@ -69,7 +69,7 @@ const createJobPostService = async (jobPostData) => {
 const getListJobPostService = async () => {
   let result = await JobPost.find()
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   return result;
@@ -78,7 +78,7 @@ const getListJobPostService = async () => {
 const getJobPostByIdService = async (job_post_id) => {
   let jobPost = await JobPost.findById(job_post_id)
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   if (!jobPost) {
@@ -93,19 +93,19 @@ const getJobPostByEmployerIdService = async (employer_id) => {
   }
   let result = await JobPost.find({ employer_id })
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   return result;
 };
 
-const getJobPostByJobRoleIdService = async (job_role_id) => {
-  if (!mongoose.Types.ObjectId.isValid(job_role_id)) {
-    throw new AppError("ID vai trò công việc không hợp lệ", 400);
+const getJobPostByJobPositionIdService = async (job_position_id) => {
+  if (!mongoose.Types.ObjectId.isValid(job_position_id)) {
+    throw new AppError("ID vị trí công việc không hợp lệ", 400);
   }
-  let result = await JobPost.find({ job_role_id })
+  let result = await JobPost.find({ job_position_id })
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   return result;
@@ -117,7 +117,7 @@ const getJobPostBySalaryRangeIdService = async (salary_range_id) => {
   }
   let result = await JobPost.find({ salary_range_id })
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   return result;
@@ -129,7 +129,7 @@ const getJobPostByWorkTypeIdService = async (work_type_id) => {
   }
   let result = await JobPost.find({ work_type_id })
     .populate("employer_id")
-    .populate("job_role_id")
+    .populate("job_position_id")
     .populate("salary_range_id")
     .populate("work_type_id");
   return result;
@@ -138,7 +138,7 @@ const getJobPostByWorkTypeIdService = async (work_type_id) => {
 const updateJobPostService = async (job_post_id, updateData) => {
   const {
     employer_id,
-    job_role_id,
+    job_position_id,
     salary_range_id,
     work_type_id,
     title,
@@ -180,8 +180,8 @@ const updateJobPostService = async (job_post_id, updateData) => {
 
   jobPost.employer_id =
     employer_id !== undefined ? employer_id : jobPost.employer_id;
-  jobPost.job_role_id =
-    job_role_id !== undefined ? job_role_id : jobPost.job_role_id;
+  jobPost.job_position_id =
+    job_position_id !== undefined ? job_position_id : jobPost.job_position_id;
   jobPost.salary_range_id =
     salary_range_id !== undefined ? salary_range_id : jobPost.salary_range_id;
   jobPost.work_type_id =
@@ -238,7 +238,7 @@ module.exports = {
   getListJobPostService,
   getJobPostByIdService,
   getJobPostByEmployerIdService,
-  getJobPostByJobRoleIdService,
+  getJobPostByJobPositionIdService,
   getJobPostBySalaryRangeIdService,
   getJobPostByWorkTypeIdService,
   updateJobPostService,
