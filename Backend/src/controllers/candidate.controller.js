@@ -1,9 +1,8 @@
 const {
   getListCandidateService,
   getCandidateByIdService,
-  updateCandidateService,
+  updateStatusService,
   deleteCandidateService,
-  uploadAvatarCandidateService,
 } = require("../services/candidate.service");
 
 const getListCandidate = async (req, res, next) => {
@@ -25,16 +24,11 @@ const getCandidateById = async (req, res, next) => {
   }
 };
 
-const updateCandidate = async (req, res, next) => {
+const updateStatusCandidate = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { full_name, gender, date_of_birth, phone_number } = req.body;
-    const file = req.file;
-    const data = await updateCandidateService(
-      id,
-      { full_name, gender, date_of_birth, phone_number },
-      file
-    );
+    const { status } = req.body;
+    const data = await updateStatusService(id, status);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -51,21 +45,9 @@ const deleteCandidate = async (req, res, next) => {
   }
 };
 
-const uploadAvatarCandidate = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const file = req.file;
-    const data = await uploadAvatarCandidateService(id, file);
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   getListCandidate,
   getCandidateById,
-  updateCandidate,
+  updateStatusCandidate,
   deleteCandidate,
-  uploadAvatarCandidate,
 };

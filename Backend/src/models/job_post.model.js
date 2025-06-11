@@ -39,10 +39,6 @@ const job_postSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    income: {
-      type: String,
-      default: "",
-    },
     working_time: {
       type: String,
       default: "",

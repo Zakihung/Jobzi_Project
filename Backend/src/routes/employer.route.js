@@ -2,23 +2,16 @@ const express = require("express");
 const {
   getListEmployer,
   getEmployerById,
-  updateEmployer,
+  updatePositionEmployer,
   deleteEmployer,
-  uploadAvatarEmployer,
 } = require("../controllers/employer.controller");
-const upload = require("../middleware/uploadAvaEmployer");
 
 const router = express.Router();
 
 // Public routes
 router.get("/", getListEmployer);
 router.get("/:id", getEmployerById);
-router.put("/:id", upload.single("avatar"), updateEmployer);
+router.put("/:id", updatePositionEmployer);
 router.delete("/:id", deleteEmployer);
-router.post(
-  "/:id/upload-avatar",
-  upload.single("avatar"),
-  uploadAvatarEmployer
-);
 
 module.exports = router;

@@ -12,7 +12,6 @@ const createJobPostService = async (jobPostData) => {
     description,
     requirement,
     work_address,
-    income,
     working_time,
     benefit,
     expire_time,
@@ -55,7 +54,6 @@ const createJobPostService = async (jobPostData) => {
     description: description || "",
     requirement: requirement || "",
     work_address: work_address || "",
-    income: income || "",
     working_time: working_time || "",
     benefit: benefit || "",
     expire_time: finalExpireTime,
@@ -145,7 +143,6 @@ const updateJobPostService = async (job_post_id, updateData) => {
     description,
     requirement,
     work_address,
-    income,
     working_time,
     benefit,
     expire_time,
@@ -193,7 +190,6 @@ const updateJobPostService = async (job_post_id, updateData) => {
     requirement !== undefined ? requirement : jobPost.requirement;
   jobPost.work_address =
     work_address !== undefined ? work_address : jobPost.work_address;
-  jobPost.income = income !== undefined ? income : jobPost.income;
   jobPost.working_time =
     working_time !== undefined ? working_time : jobPost.working_time;
   jobPost.benefit = benefit !== undefined ? benefit : jobPost.benefit;

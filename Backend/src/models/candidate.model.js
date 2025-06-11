@@ -8,24 +8,10 @@ const candidateSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    full_name: {
+    status: {
       type: String,
-      require: true,
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-    },
-    avatar: {
-      type: String,
-      default: "",
-    },
-    date_of_birth: {
-      type: Date,
-    },
-    phone_number: {
-      type: String,
-      default: "",
+      default: "ready",
+      enum: ["ready", "not_available", "available_this_month"],
     },
   },
   { timestamps: true }

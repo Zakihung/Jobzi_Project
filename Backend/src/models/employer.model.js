@@ -13,27 +13,9 @@ const employerSchema = new mongoose.Schema(
       ref: "Company",
       default: null,
     },
-    full_name: {
-      type: String,
-      require: true,
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-    },
-    avatar: {
-      type: String,
-      default: "",
-    },
-    date_of_birth: {
-      type: Date,
-    },
     position: {
       type: String,
       default: "",
-    },
-    phone_number: {
-      type: String,
     },
   },
   { timestamps: true }
