@@ -17,6 +17,7 @@ import {
   Tag,
   Badge,
   Rate,
+  Dropdown,
 } from "antd";
 import {
   SearchOutlined,
@@ -28,6 +29,7 @@ import {
   HeartOutlined,
   ShareAltOutlined,
   FireOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
 import "../../styles/SearchPage.css";
 
@@ -106,6 +108,84 @@ const SearchPage = () => {
   // Calculate jobs to display based on current page
   const startIndex = (currentPage - 1) * pageSize;
   const currentJobs = allJobs.slice(startIndex, startIndex + pageSize);
+
+  // Filter options data
+  const filterOptions = {
+    jobType: [
+      { label: "Full-time", value: "full-time" },
+      { label: "Part-time", value: "part-time" },
+      { label: "Remote", value: "remote" },
+      { label: "Freelance", value: "freelance" },
+    ],
+    experience: [
+      { label: "Không yêu cầu", value: "none" },
+      { label: "Dưới 1 năm", value: "under-1-year" },
+      { label: "1-3 năm", value: "1-3-years" },
+      { label: "3-5 năm", value: "3-5-years" },
+      { label: "Trên 5 năm", value: "over-5-years" },
+    ],
+    education: [
+      { label: "Không yêu cầu", value: "none" },
+      { label: "Trung cấp", value: "intermediate" },
+      { label: "Cao đẳng", value: "college" },
+      { label: "Đại học", value: "university" },
+      { label: "Sau đại học", value: "postgraduate" },
+    ],
+    industry: [
+      { label: "Công nghệ thông tin", value: "it" },
+      { label: "Tài chính", value: "finance" },
+      { label: "Marketing", value: "marketing" },
+      { label: "Sản xuất", value: "manufacturing" },
+      { label: "Y tế", value: "healthcare" },
+    ],
+    companySize: [
+      { label: "Dưới 50 nhân viên", value: "under-50" },
+      { label: "50-100 nhân viên", value: "50-100" },
+      { label: "100-500 nhân viên", value: "100-500" },
+      { label: "Trên 500 nhân viên", value: "over-500" },
+    ],
+  };
+
+  // Create dropdown menu for each filter
+  const createDropdownMenu = (filterKey, title) => {
+    const selectedValues = filters[filterKey];
+    const options = filterOptions[filterKey];
+
+    const menu = (
+      <div className="filter-dropdown-menu">
+        <div className="filter-dropdown-header">
+          <Text strong>{title}</Text>
+        </div>
+        <div className="filter-dropdown-content">
+          <Checkbox.Group
+            options={options}
+            value={selectedValues}
+            onChange={(values) => handleFilterChange(filterKey, values)}
+          />
+        </div>
+      </div>
+    );
+
+    const buttonText =
+      selectedValues.length > 0 ? `${title} (${selectedValues.length})` : title;
+
+    return (
+      <Dropdown
+        overlay={menu}
+        trigger={["click"]}
+        placement="bottomLeft"
+        overlayClassName="filter-dropdown-overlay"
+      >
+        <Button
+          className={`filter-dropdown-btn ${
+            selectedValues.length > 0 ? "active" : ""
+          }`}
+        >
+          {buttonText} <DownOutlined />
+        </Button>
+      </Dropdown>
+    );
+  };
 
   return (
     <Layout className="searchpage-layout">
@@ -195,137 +275,57 @@ const SearchPage = () => {
                 </div>
 
                 <Card className="filter-card">
-                  <Row gutter={[24, 24]}>
+                  <Row gutter={[16, 16]} align="middle">
                     {/* Job Type Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Hình thức làm việc
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Full-time", value: "full-time" },
-                            { label: "Part-time", value: "part-time" },
-                            { label: "Remote", value: "remote" },
-                            { label: "Freelance", value: "freelance" },
-                          ]}
-                          value={filters.jobType}
-                          onChange={(values) =>
-                            handleFilterChange("jobType", values)
-                          }
-                        />
-                      </div>
-                    </Col>
-
-                    {/* Salary Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Mức lương (triệu VNĐ)
-                        </Title>
-                        <Slider
-                          range
-                          min={0}
-                          max={100}
-                          value={filters.salary}
-                          onChange={(value) =>
-                            handleFilterChange("salary", value)
-                          }
-                          marks={{
-                            0: "0",
-                            25: "25",
-                            50: "50",
-                            75: "75",
-                            100: "100+",
-                          }}
-                        />
-                      </div>
+                    <Col xs={24} sm={12} md={8} lg={4}>
+                      {createDropdownMenu("jobType", "Hình thức")}
                     </Col>
 
                     {/* Experience Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Kinh nghiệm
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Không yêu cầu", value: "none" },
-                            { label: "Dưới 1 năm", value: "under-1-year" },
-                            { label: "1-3 năm", value: "1-3-years" },
-                            { label: "3-5 năm", value: "3-5-years" },
-                            { label: "Trên 5 năm", value: "over-5-years" },
-                          ]}
-                          value={filters.experience}
-                          onChange={(values) =>
-                            handleFilterChange("experience", values)
-                          }
-                        />
-                      </div>
+                    <Col xs={24} sm={12} md={8} lg={4}>
+                      {createDropdownMenu("experience", "Kinh nghiệm")}
                     </Col>
 
                     {/* Education Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Học vấn
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Không yêu cầu", value: "none" },
-                            { label: "Trung cấp", value: "intermediate" },
-                            { label: "Cao đẳng", value: "college" },
-                            { label: "Đại học", value: "university" },
-                            { label: "Sau đại học", value: "postgraduate" },
-                          ]}
-                          value={filters.education}
-                          onChange={(values) =>
-                            handleFilterChange("education", values)
-                          }
-                        />
-                      </div>
+                    <Col xs={24} sm={12} md={8} lg={4}>
+                      {createDropdownMenu("education", "Học vấn")}
                     </Col>
 
                     {/* Industry Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Lĩnh vực kinh doanh
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Công nghệ thông tin", value: "it" },
-                            { label: "Tài chính", value: "finance" },
-                            { label: "Marketing", value: "marketing" },
-                            { label: "Sản xuất", value: "manufacturing" },
-                            { label: "Y tế", value: "healthcare" },
-                          ]}
-                          value={filters.industry}
-                          onChange={(values) =>
-                            handleFilterChange("industry", values)
-                          }
-                        />
-                      </div>
+                    <Col xs={24} sm={12} md={8} lg={4}>
+                      {createDropdownMenu("industry", "Lĩnh vực")}
                     </Col>
 
                     {/* Company Size Filter */}
-                    <Col xs={24} md={12} lg={8}>
-                      <div className="filter-group">
-                        <Title level={5} className="filter-title">
-                          Quy mô công ty
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Dưới 50 nhân viên", value: "under-50" },
-                            { label: "50-100 nhân viên", value: "50-100" },
-                            { label: "100-500 nhân viên", value: "100-500" },
-                            { label: "Trên 500 nhân viên", value: "over-500" },
-                          ]}
-                          value={filters.companySize}
-                          onChange={(values) =>
-                            handleFilterChange("companySize", values)
-                          }
-                        />
+                    <Col xs={24} sm={12} md={8} lg={4}>
+                      {createDropdownMenu("companySize", "Quy mô")}
+                    </Col>
+
+                    {/* Salary Filter */}
+                    <Col xs={24} sm={24} md={16} lg={4}>
+                      <div className="salary-filter-group">
+                        <Text className="salary-filter-label" strong>
+                          Mức lương (triệu VNĐ)
+                        </Text>
+                        <div className="salary-slider-container">
+                          <Slider
+                            range
+                            min={0}
+                            max={100}
+                            value={filters.salary}
+                            onChange={(value) =>
+                              handleFilterChange("salary", value)
+                            }
+                            marks={{
+                              0: "0",
+                              25: "25",
+                              50: "50",
+                              75: "75",
+                              100: "100+",
+                            }}
+                            className="salary-slider"
+                          />
+                        </div>
                       </div>
                     </Col>
                   </Row>

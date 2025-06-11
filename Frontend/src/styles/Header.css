@@ -115,6 +115,7 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  z-index: 1005;
 }
 
 .post-job-btn {

@@ -33,6 +33,8 @@ const Header = () => {
     { key: "search", label: "Tìm kiếm", path: "/search" },
     { key: "companies", label: "Công ty", path: "/companies" },
     { key: "about", label: "Về chúng tôi", path: "/about" },
+    { key: "jobpostdetail", label: "Chi tiết tin", path: "/jobpostdetail" },
+    { key: "companydetail", label: "Chi tiết cty", path: "/companydetail" },
   ];
 
   const userMenuItems = [
@@ -73,7 +75,14 @@ const Header = () => {
   };
 
   return (
-    <Row style={{ position: "sticky", top: 0, zIndex: 10000 }}>
+    <Row
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1001,
+        backgroundColor: "white",
+      }}
+    >
       <Col span={2} />
       <Col span={20}>
         <AntHeader className="jobzi-header">
@@ -121,7 +130,7 @@ const Header = () => {
                       icon={<UserOutlined />}
                       className="user-avatar"
                     />
-                    <span className="username">Nguyễn Văn A</span>
+                    <span className="username">Nguyễn Phước Hưng</span>
                     <DownOutlined className="dropdown-icon" />
                   </Button>
                 </Dropdown>
