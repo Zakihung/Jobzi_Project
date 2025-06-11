@@ -16,6 +16,8 @@ import HomePage from "./pages/candidate/HomePage.jsx";
 // import JobPostDetailPage from "./pages/candidate/JobPostDetailPage";
 import SignupCandidatePage from "./pages/candidate/SignupCandidatePage";
 import LoginCandidatePage from "./pages/candidate/LoginCandidatePage";
+import SearchPage from "./pages/candidate/SearchPage.jsx";
+import CompanyPage from "./pages/candidate/CompanyPage.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
 // import EmployerDashboardPage from "./pages/employer/EmployerDashboardPage";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
@@ -43,10 +45,10 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      // {
-      //   path: "search",
-      //   element: <JobSearchPage />,
-      // },
+      {
+        path: "search",
+        element: <SearchPage />,
+      },
       // {
       //   path: "profile",
       //   element: <ProfilePage />,
@@ -55,10 +57,10 @@ const router = createBrowserRouter([
       //   path: "account",
       //   element: <AccountPage />,
       // },
-      // {
-      //   path: "companies",
-      //   element: <CompanyListPage />,
-      // },
+      {
+        path: "companies",
+        element: <CompanyPage />,
+      },
       // {
       //   path: "companies/:id",
       //   element: <CompanyDetailPage />,

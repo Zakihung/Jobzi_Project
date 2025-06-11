@@ -1,0 +1,286 @@
+/* Header.css */
+
+.jobzi-header {
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  height: 60px;
+  line-height: 60px;
+}
+
+.header-container {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.ant-space-gap-col-middle {
+  column-gap: 0;
+}
+
+/* Logo Section */
+.logo-section {
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 26px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logo-image {
+  height: 40px;
+}
+
+/* Navigation Section */
+.nav-section {
+  flex: 1;
+  margin-left: 15px;
+}
+
+:where(.css-dev-only-do-not-override-i71fkw).ant-space-gap-col-small {
+  column-gap: 0;
+}
+
+.nav-button {
+  color: #333333;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin-right: 4px;
+  font-size: 1rem;
+  border: none;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background-color: #f5f9ff;
+  color: #577cf6;
+  border: none;
+  opacity: 2;
+}
+
+.nav-button-active {
+  background-color: #f5f9ff;
+  color: #577cf6;
+  border: none;
+  opacity: 2;
+}
+
+/* Search Section */
+.search-section {
+  flex: 1;
+  max-width: 350px;
+  margin: 0 24px;
+}
+
+.header-search {
+  width: 100%;
+}
+
+.header-search .ant-input {
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.header-search .ant-input-search-button {
+  border-radius: 0 20px 20px 0;
+  background: #577cf6;
+  border-color: #577cf6;
+  color: #ffffff;
+}
+
+.header-search .ant-input-search-button:hover {
+  background: #4667ca;
+  border-color: #4667ca;
+}
+
+/* Actions Section */
+.actions-section {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.post-job-btn {
+  background: #577cf6;
+  border-color: #577cf6;
+  border-radius: 6px;
+  height: 36px;
+  padding: 0 16px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-right: 12px;
+}
+
+.post-job-btn:hover {
+  background: #4667ca;
+  border-color: #4667ca;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  color: #4a5568;
+}
+
+.notification-btn svg {
+  font-size: 25px;
+}
+
+.notification-btn svg:hover {
+  color: #577cf6;
+}
+
+.action-btn:hover {
+  background-color: rgba(87, 124, 246, 0.1);
+  color: #577cf6;
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.user-menu-btn:hover {
+  background-color: rgba(87, 124, 246, 0.1);
+}
+
+.user-avatar {
+  margin-right: 6px;
+  background-color: #577cf6;
+  color: #ffffff;
+}
+
+.username {
+  font-weight: 500;
+  color: #2d3748;
+  margin-right: 4px;
+}
+
+.dropdown-icon {
+  font-size: 10px;
+  color: #718096;
+}
+
+.mobile-menu-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  color: #4a5568;
+}
+
+.mobile-menu-btn:hover {
+  background-color: rgba(87, 124, 246, 0.1);
+  color: #577cf6;
+}
+
+/* Badge Styles */
+.ant-badge {
+  line-height: 1;
+}
+
+.ant-badge-count {
+  background: #f56565;
+  border-color: #f56565;
+  font-size: 10px;
+  height: 16px;
+  min-width: 16px;
+  line-height: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 0 16px;
+  }
+
+  .nav-section {
+    margin-left: 16px;
+  }
+
+  .search-section {
+    max-width: 300px;
+    margin: 0 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .jobzi-header {
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .header-container {
+    padding: 0 12px;
+  }
+
+  .nav-section {
+    display: none;
+  }
+
+  .search-section {
+    flex: 1;
+    margin: 0 12px;
+    max-width: none;
+  }
+
+  .post-job-btn {
+    display: none;
+  }
+
+  .username {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-image {
+    height: 32px;
+  }
+
+  .header-search .ant-input {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .actions-section .ant-space-item:not(:last-child) {
+    margin-right: 6px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-menu-btn {
+    padding: 4px 8px;
+  }
+}
