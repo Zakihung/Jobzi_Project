@@ -2,14 +2,14 @@ import { Layout } from "antd";
 const { Content } = Layout;
 import Header from "../src/components/templates/Header.jsx";
 import { Outlet } from "react-router-dom";
+import ScrollToTop from "./components/atoms/ScrollToTop.jsx";
+import ScrollToTopButton from "./components/atoms/ScrollToTopButton.jsx";
 
 function App() {
   return (
     <div className="App">
-      {/* Here you can add your header, footer, and other components */}
-      {/* For example: */}
       <Header />
-      {/* <Footer /> */}
+
       <Layout
         style={{ marginLeft: 0, minHeight: "100vh", overflowX: "hidden" }}
       >
@@ -20,11 +20,12 @@ function App() {
             boxSizing: "border-box",
           }}
         >
-          {/* <ScrollToTop />
-          <ScrollToTopButton /> */}
+          <ScrollToTop />
+          <ScrollToTopButton />
           <Outlet />
         </Content>
       </Layout>
+      {/* <Footer /> */}
     </div>
   );
 }

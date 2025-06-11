@@ -8,16 +8,15 @@ import App from "./App.jsx";
 import { ConfigProvider, App as AntdApp } from "antd";
 
 import HomePage from "./pages/candidate/HomePage.jsx";
-// import JobSearchPage from "./pages/candidate/JobSearchPage";
 // import ProfilePage from "./pages/candidate/ProfilePage";
 // import AccountPage from "./pages/candidate/AccountPage";
-// import CompanyListPage from "./pages/candidate/CompanyListPage";
-// import CompanyDetailPage from "./pages/candidate/CompanyDetailPage";
-// import JobPostDetailPage from "./pages/candidate/JobPostDetailPage";
 import SignupCandidatePage from "./pages/candidate/SignupCandidatePage";
 import LoginCandidatePage from "./pages/candidate/LoginCandidatePage";
 import SearchPage from "./pages/candidate/SearchPage.jsx";
 import CompanyPage from "./pages/candidate/CompanyPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
+import JobPostDetailPage from "./pages/candidate/JobPostDetailPage.jsx";
+import CompanyDetailPage from "./pages/candidate/CompanyDetailPage.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
 // import EmployerDashboardPage from "./pages/employer/EmployerDashboardPage";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
@@ -61,15 +60,19 @@ const router = createBrowserRouter([
         path: "companies",
         element: <CompanyPage />,
       },
-      // {
-      //   path: "companies/:id",
-      //   element: <CompanyDetailPage />,
-      // },
-      // {
-      //   path: "jobposts/:id",
-      //   element: <JobPostDetailPage />,
-      // },
+      {
+        path: "companydetail",
+        element: <CompanyDetailPage />,
+      },
+      {
+        path: "jobpostdetail",
+        element: <JobPostDetailPage />,
+      },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
   {
     path: "signup",
