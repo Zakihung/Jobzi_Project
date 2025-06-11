@@ -149,7 +149,8 @@ createRoot(document.getElementById("root")).render(
       theme={{
         token: {
           colorPrimary: "#577cf6", // Màu chính
-          fontFamily: "Bitter, serif", // Font chữ
+          fontFamily:
+            "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif", // Màu nền
         },
       }}
     >

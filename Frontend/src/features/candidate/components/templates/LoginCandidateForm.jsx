@@ -41,15 +41,18 @@ const LoginCandidateForm = () => {
       <div className="login-form-section">
         <div className="form-wrapper">
           {/* Logo */}
-          <div className="logo-section">
-            <img src="/src/assets/logo/logo.png" alt="Logo" className="logo" />
+          <div className="logoLogin-section">
+            <img
+              src="/src/assets/logo/logo.png"
+              alt="Logo"
+              className="logoLogin"
+            />
           </div>
 
           {/* Welcome Header */}
           <div className="welcome-header">
             <Title level={1} className="welcome-title">
               Chào mừng bạn quay trở lại
-              <span className="wave-emoji">👋</span>
             </Title>
             <Text className="welcome-subtitle">
               Đăng nhập để tiếp tục hành trình tìm việc của bạn

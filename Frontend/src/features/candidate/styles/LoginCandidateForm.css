@@ -30,17 +30,6 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  min-height: 100vh;
-  margin: 0;
-}
-
 /* Main Container */
 .login-container {
   display: flex;
@@ -147,18 +136,18 @@ body {
 }
 
 /* Logo Section */
-.logo-section {
+.logoLogin-section {
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
-.logo {
+.logoLogin {
   height: 3.5rem;
   width: auto;
   transition: transform 0.3s ease;
 }
 
-.logo:hover {
+.logoLogin:hover {
   transform: scale(1.05);
 }
 

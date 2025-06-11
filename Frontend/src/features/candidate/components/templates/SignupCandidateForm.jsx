@@ -40,15 +40,18 @@ const SignupCandidateForm = () => {
       <div className="signup-form-section">
         <div className="form-wrapper">
           {/* Logo */}
-          <div className="logo-section">
-            <img src="/src/assets/logo/logo.png" alt="Logo" className="logo" />
+          <div className="logoSignup-section">
+            <img
+              src="/src/assets/logo/logo.png"
+              alt="Logo"
+              className="logoSignup"
+            />
           </div>
 
           {/* Welcome Header */}
           <div className="welcome-header">
             <Title level={1} className="welcome-title">
               Tạo tài khoản mới
-              <span className="rocket-emoji">🚀</span>
             </Title>
             <Text className="welcome-subtitle">
               Chỉ vài bước đơn giản để bắt đầu tìm kiếm công việc mơ ước
