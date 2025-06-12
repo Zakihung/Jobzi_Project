@@ -1,28 +1,10 @@
 import React, { useState } from "react";
-import {
-  Layout,
-  Button,
-  Avatar,
-  Dropdown,
-  Badge,
-  Input,
-  Space,
-  Col,
-  Row,
-} from "antd";
-import {
-  SearchOutlined,
-  BellOutlined,
-  MessageOutlined,
-  UserOutlined,
-  MenuOutlined,
-  DownOutlined,
-} from "@ant-design/icons";
-import "../../styles/Header.css";
+import { Layout, Button, Avatar, Dropdown, Space, Col, Row } from "antd";
+import { UserOutlined, MenuOutlined, DownOutlined } from "@ant-design/icons";
+import styles from "../../styles/Header.module.css";
 import { useNavigate } from "react-router-dom";
 
 const { Header: AntHeader } = Layout;
-const { Search } = Input;
 
 const Header = () => {
   const [current, setCurrent] = useState("home");
@@ -71,41 +53,34 @@ const Header = () => {
 
   const handleLogoClick = () => {
     setCurrent("home");
-    navigate("/"); // 👈 Điều hướng về Trang chủ
+    navigate("/");
   };
 
   return (
-    <Row
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 1001,
-        backgroundColor: "white",
-      }}
-    >
+    <Row className={styles.headerRow}>
       <Col span={2} />
       <Col span={20}>
-        <AntHeader className="jobzi-header">
-          <div className="header-container">
+        <AntHeader className={styles.jobziHeader}>
+          <div className={styles.headerContainer}>
             {/* Logo */}
-            <div className="logo-section">
-              <div className="logo" onClick={handleLogoClick}>
+            <div className={styles.logoSection}>
+              <div className={styles.logo} onClick={handleLogoClick}>
                 <img
                   src="/src/assets/logo/logo_ngang.png"
                   alt="Jobzi Logo"
-                  className="logo-image"
+                  className={styles.logoImage}
                 />
               </div>
             </div>
 
             {/* Navigation Buttons */}
-            <div className="nav-section">
+            <div className={styles.navSection}>
               <Space size="small">
                 {menuItems.map((item) => (
                   <Button
                     key={item.key}
-                    className={`nav-button ${
-                      current === item.key ? "nav-button-active" : ""
+                    className={`${styles.navButton} ${
+                      current === item.key ? styles.navButtonActive : ""
                     }`}
                     onClick={() => handleClick(item.key, item.path)}
                   >
@@ -116,7 +91,7 @@ const Header = () => {
             </div>
 
             {/* Right Actions */}
-            <div className="actions-section">
+            <div className={styles.actionsSection}>
               <Space size="middle">
                 {/* User Menu */}
                 <Dropdown
@@ -124,14 +99,14 @@ const Header = () => {
                   placement="bottomRight"
                   trigger={["click"]}
                 >
-                  <Button type="text" className="user-menu-btn">
+                  <Button type="text" className={styles.userMenuBtn}>
                     <Avatar
                       size="small"
                       icon={<UserOutlined />}
-                      className="user-avatar"
+                      className={styles.userAvatar}
                     />
-                    <span className="username">Nguyễn Phước Hưng</span>
-                    <DownOutlined className="dropdown-icon" />
+                    <span className={styles.username}>Nguyễn Phước Hưng</span>
+                    <DownOutlined className={styles.dropdownIcon} />
                   </Button>
                 </Dropdown>
 
@@ -139,7 +114,7 @@ const Header = () => {
                 <Button
                   type="text"
                   icon={<MenuOutlined />}
-                  className="mobile-menu-btn"
+                  className={styles.mobileMenuBtn}
                 />
               </Space>
             </div>
