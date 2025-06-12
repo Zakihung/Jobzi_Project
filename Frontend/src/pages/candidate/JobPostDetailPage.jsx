@@ -11,6 +11,7 @@ import {
   Avatar,
   Divider,
   Rate,
+  Spin,
 } from "antd";
 import {
   HeartOutlined,
@@ -22,7 +23,7 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import "../../styles/JobPostDetailPage.css";
+import styles from "../../styles/JobPostDetailPage.module.css";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -30,6 +31,7 @@ const { Title, Text, Paragraph } = Typography;
 const JobPostDetailPage = () => {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
+  const [loading, setLoading] = useState(false); // Giả lập loading state
 
   // Sample job post data
   const job = {
@@ -71,32 +73,58 @@ const JobPostDetailPage = () => {
     reviews: 150,
   };
 
+  // Xử lý lưu công việc
   const handleSaveJob = () => {
     setIsSaved(!isSaved);
   };
 
+  // Xử lý ứng tuyển
   const handleApply = () => {
-    // Điều hướng đến trang đăng nhập nếu chưa đăng nhập
     navigate("/login");
   };
 
+  // Xử lý xem công ty
   const handleViewCompany = () => {
     navigate("/companies/abc");
   };
 
+  if (loading) {
+    return (
+      <Layout className={styles.jobDetailLayout}>
+        <Content className={styles.jobDetailContent}>
+          <div className={styles.loadingContainer}>
+            <Spin size="large" />
+          </div>
+        </Content>
+      </Layout>
+    );
+  }
+
+  if (!job) {
+    return (
+      <Layout className={styles.jobDetailLayout}>
+        <Content className={styles.jobDetailContent}>
+          <Text className={styles.noResults}>
+            Không tìm thấy thông tin công việc
+          </Text>
+        </Content>
+      </Layout>
+    );
+  }
+
   return (
-    <Layout className="job-detail-layout">
-      <Content className="job-detail-content">
-        <Row gutter={[24, 24]} className="job-detail-row">
-          {/* Left Section: Job Details */}
+    <Layout className={styles.jobDetailLayout}>
+      <Content className={styles.jobDetailContent}>
+        <Row gutter={[24, 24]} className={styles.jobDetailRow}>
           <Col span={2} />
+          {/* Left Section: Job Details */}
           <Col span={14}>
-            <Card className="job-detail-card">
-              <div className="job-header">
-                <Title level={2} className="job-title">
+            <Card className={styles.jobDetailCard}>
+              <div className={styles.jobHeader}>
+                <Title level={2} className={styles.jobTitle}>
                   {job.title}
                 </Title>
-                <Space className="job-actions">
+                <Space className={styles.jobActions}>
                   <Button
                     type="text"
                     icon={
@@ -107,14 +135,14 @@ const JobPostDetailPage = () => {
                       )
                     }
                     onClick={handleSaveJob}
-                    className="save-button"
+                    className={styles.saveButton}
                   >
                     {isSaved ? "Đã lưu" : "Lưu việc làm"}
                   </Button>
                   <Button
                     type="primary"
                     size="large"
-                    className="apply-button"
+                    className={styles.applyButton}
                     onClick={handleApply}
                   >
                     Ứng tuyển ngay
@@ -122,75 +150,75 @@ const JobPostDetailPage = () => {
                 </Space>
               </div>
 
-              <Space className="job-tags" wrap>
-                <Tag icon={<DollarOutlined />} className="job-tag">
+              <Space className={styles.jobTags} wrap>
+                <Tag icon={<DollarOutlined />} className={styles.jobTag}>
                   {job.salary}
                 </Tag>
-                <Tag icon={<EnvironmentOutlined />} className="job-tag">
+                <Tag icon={<EnvironmentOutlined />} className={styles.jobTag}>
                   {job.location}
                 </Tag>
-                <Tag icon={<ClockCircleOutlined />} className="job-tag">
+                <Tag icon={<ClockCircleOutlined />} className={styles.jobTag}>
                   {job.type}
                 </Tag>
-                <Tag icon={<UserOutlined />} className="job-tag">
+                <Tag icon={<UserOutlined />} className={styles.jobTag}>
                   {job.experience}
                 </Tag>
-                <Text className="posted-time">Đăng {job.posted}</Text>
+                <Text className={styles.postedTime}>Đăng {job.posted}</Text>
               </Space>
 
               <Divider />
 
-              <div className="job-section">
-                <Title level={4} className="section-title">
+              <div className={styles.jobSection}>
+                <Title level={4} className={styles.sectionTitle}>
                   Mô tả công việc
                 </Title>
-                <Paragraph className="section-content">
+                <Paragraph className={styles.sectionContent}>
                   {job.description}
                 </Paragraph>
               </div>
 
-              <div className="job-section">
-                <Title level={4} className="section-title">
+              <div className={styles.jobSection}>
+                <Title level={4} className={styles.sectionTitle}>
                   Yêu cầu ứng viên
                 </Title>
-                <ul className="section-list">
+                <ul className={styles.sectionList}>
                   {job.requirements.map((req, index) => (
                     <li key={index}>{req}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="job-section">
-                <Title level={4} className="section-title">
+              <div className={styles.jobSection}>
+                <Title level={4} className={styles.sectionTitle}>
                   Phúc lợi
                 </Title>
-                <ul className="section-list">
+                <ul className={styles.sectionList}>
                   {job.benefits.map((benefit, index) => (
                     <li key={index}>{benefit}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="job-section">
-                <Title level={4} className="section-title">
+              <div className={styles.jobSection}>
+                <Title level={4} className={styles.sectionTitle}>
                   Thông tin thêm
                 </Title>
-                <Space direction="vertical" className="additional-info">
-                  <div className="info-item">
-                    <EnvironmentOutlined className="info-icon" />
+                <Space direction="vertical" className={styles.additionalInfo}>
+                  <div className={styles.infoItem}>
+                    <EnvironmentOutlined className={styles.infoIcon} />
                     <Text>Địa điểm: {job.detailedLocation}</Text>
                   </div>
-                  <div className="info-item">
-                    <ClockCircleOutlined className="info-icon" />
+                  <div className={styles.infoItem}>
+                    <ClockCircleOutlined className={styles.infoIcon} />
                     <Text>Thời gian làm việc: {job.workingHours}</Text>
                   </div>
                 </Space>
               </div>
 
-              <div className="job-footer">
-                <Space className="skill-tags" wrap>
+              <div className={styles.jobFooter}>
+                <Space className={styles.skillTags} wrap>
                   {job.tags.map((tag) => (
-                    <Tag key={tag} className="skill-tag">
+                    <Tag key={tag} className={styles.skillTag}>
                       {tag}
                     </Tag>
                   ))}
@@ -201,36 +229,40 @@ const JobPostDetailPage = () => {
 
           {/* Right Section: Company Info */}
           <Col span={6}>
-            <Card className="company-info-card">
-              <div className="company-header">
-                <Avatar src={job.logo} size={80} className="company-logo" />
-                <Title level={4} className="company-name">
+            <Card className={styles.companyInfoCard}>
+              <div className={styles.companyHeader}>
+                <Avatar
+                  src={job.logo}
+                  size={80}
+                  className={styles.companyLogo}
+                />
+                <Title level={4} className={styles.companyName}>
                   {company.name}
                 </Title>
                 <Rate
                   disabled
                   allowHalf
                   value={company.rating}
-                  className="company-rating"
+                  className={styles.companyRating}
                 />
-                <Text className="company-reviews">
+                <Text className={styles.companyReviews}>
                   {company.rating} ({company.reviews} đánh giá)
                 </Text>
               </div>
 
               <Divider />
 
-              <Space direction="vertical" className="company-details">
-                <div className="detail-item">
-                  <StarOutlined className="detail-icon" />
+              <Space direction="vertical" className={styles.companyDetails}>
+                <div className={styles.detailItem}>
+                  <StarOutlined className={styles.detailIcon} />
                   <Text>Lĩnh vực: {company.industry}</Text>
                 </div>
-                <div className="detail-item">
-                  <UserOutlined className="detail-icon" />
+                <div className={styles.detailItem}>
+                  <UserOutlined className={styles.detailIcon} />
                   <Text>Quy mô: {company.size}</Text>
                 </div>
-                <div className="detail-item">
-                  <EnvironmentOutlined className="detail-icon" />
+                <div className={styles.detailItem}>
+                  <EnvironmentOutlined className={styles.detailIcon} />
                   <Text>Địa điểm: {company.location}</Text>
                 </div>
               </Space>
@@ -238,7 +270,7 @@ const JobPostDetailPage = () => {
               <Button
                 type="primary"
                 block
-                className="view-company-button"
+                className={styles.viewCompanyButton}
                 onClick={handleViewCompany}
               >
                 Xem thêm về công ty

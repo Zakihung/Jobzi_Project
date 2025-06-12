@@ -1,0 +1,251 @@
+/* CSS Variables */
+:root {
+  --primary: #577cf6;
+  --primary-dark: #4c6ef5;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --success: #52c41a;
+  --error: #ff4d4f;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 24px;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Company Detail Page Layout */
+.companyDetailLayout {
+  min-height: 100vh;
+  background: var(--white);
+  padding: 0;
+}
+
+.companyDetailContent {
+  padding: 2rem 0;
+  background: var(--white);
+}
+
+.companyInfoRow,
+.companyContentRow {
+  margin: 0 auto;
+}
+
+.companyInfoCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  margin-bottom: 24px;
+}
+
+.companyHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.companyLogo {
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.companyInfo {
+  flex: 1;
+}
+
+.companyName {
+  color: var(--text-primary) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  margin-bottom: 12px !important;
+}
+
+.companyTags {
+  margin-bottom: 12px;
+}
+
+.companyTag {
+  background: #f0f5ff;
+  color: var(--primary);
+  border: 1px solid #b3d4ff;
+  border-radius: var(--border-radius-lg);
+  font-size: 13px;
+  padding: 4px 12px;
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.companyRating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ratingText {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.contentCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  padding: 24px;
+}
+
+.contentSection {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  color: var(--text-primary) !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  margin-bottom: 16px !important;
+}
+
+.sectionContent {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.sectionList {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.sectionList li {
+  margin-bottom: 8px;
+}
+
+.recruiterItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.recruiterInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.recruiterPosition {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.jobItem {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.jobItem:last-child {
+  border-bottom: none;
+}
+
+.viewJobButton {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  height: 36px;
+  transition: all 0.3s ease;
+}
+
+.viewJobButton:hover {
+  background: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+}
+
+/* No Results */
+.noResults {
+  color: var(--text-secondary);
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  margin: 40px 0;
+}
+
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .companyHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .companyLogo {
+    margin-bottom: 16px;
+  }
+
+  .contentCard {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .companyDetailContent {
+    padding: 1rem 0;
+  }
+
+  .companyName {
+    font-size: 24px !important;
+  }
+
+  .sectionTitle {
+    font-size: 18px !important;
+  }
+
+  .contentCard {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .companyInfoCard {
+    padding: 16px;
+  }
+
+  .companyName {
+    font-size: 20px !important;
+  }
+
+  .companyTag {
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+
+  .sectionContent,
+  .sectionList {
+    font-size: 14px;
+  }
+
+  .viewJobButton {
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .recruiterItem {
+    gap: 8px;
+  }
+}

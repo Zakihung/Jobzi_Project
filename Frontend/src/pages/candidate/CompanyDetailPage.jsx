@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Layout,
   Row,
@@ -12,6 +12,7 @@ import {
   Space,
   Button,
   Rate,
+  Spin,
 } from "antd";
 import {
   EnvironmentOutlined,
@@ -21,7 +22,7 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import "../../styles/CompanyDetailPage.css";
+import styles from "../../styles/CompanyDetailPage.module.css";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -29,6 +30,7 @@ const { TabPane } = Tabs;
 
 const CompanyDetailPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // Giả lập loading state
 
   // Sample company data
   const company = {
@@ -103,47 +105,51 @@ const CompanyDetailPage = () => {
     },
   ];
 
+  // Xử lý xem chi tiết công việc
   const handleViewJob = (jobId) => {
     navigate(`/jobs/${jobId}`);
   };
 
   return (
-    <Layout className="company-detail-layout">
-      <Content className="company-detail-content">
+    <Layout className={styles.companyDetailLayout}>
+      <Content className={styles.companyDetailContent}>
         {/* Row 1: Basic Company Info */}
-        <Row className="company-info-row">
+        <Row className={styles.companyInfoRow}>
           <Col span={2} />
           <Col span={20}>
-            <Card className="company-info-card">
-              <div className="company-header">
+            <Card className={styles.companyInfoCard}>
+              <div className={styles.companyHeader}>
                 <Avatar
                   src={company.logo}
                   size={120}
-                  className="company-logo"
+                  className={styles.companyLogo}
                 />
-                <div className="company-info">
-                  <Title level={2} className="company-name">
+                <div className={styles.companyInfo}>
+                  <Title level={2} className={styles.companyName}>
                     {company.name}
                   </Title>
-                  <Space className="company-tags" wrap>
-                    <Tag icon={<StarOutlined />} className="company-tag">
+                  <Space className={styles.companyTags} wrap>
+                    <Tag icon={<StarOutlined />} className={styles.companyTag}>
                       {company.industry}
                     </Tag>
-                    <Tag icon={<UserOutlined />} className="company-tag">
+                    <Tag icon={<UserOutlined />} className={styles.companyTag}>
                       {company.size}
                     </Tag>
-                    <Tag icon={<EnvironmentOutlined />} className="company-tag">
+                    <Tag
+                      icon={<EnvironmentOutlined />}
+                      className={styles.companyTag}
+                    >
                       {company.location}
                     </Tag>
                   </Space>
-                  <Space className="company-rating">
+                  <Space className={styles.companyRating}>
                     <Rate
                       disabled
                       allowHalf
                       value={company.rating}
-                      className="rating-stars"
+                      className={styles.ratingStars}
                     />
-                    <Text className="rating-text">
+                    <Text className={styles.ratingText}>
                       {company.rating} ({company.reviews} đánh giá)
                     </Text>
                   </Space>
@@ -155,28 +161,31 @@ const CompanyDetailPage = () => {
         </Row>
 
         {/* Row 2: Tabs and Content */}
-        <Row gutter={[24, 24]} className="company-content-row">
+        <Row gutter={[24, 24]} className={styles.companyContentRow}>
           <Col span={2} />
           <Col span={20}>
-            <Tabs defaultActiveKey="introduction" className="company-tabs">
+            <Tabs
+              defaultActiveKey="introduction"
+              className={styles.companyTabs}
+            >
               <TabPane tab="Giới thiệu công ty" key="introduction">
                 <Row gutter={[24, 24]}>
                   {/* Column 1: Introduction and Business Operations */}
                   <Col xs={24} lg={16}>
-                    <Card className="content-card">
-                      <div className="content-section">
-                        <Title level={4} className="section-title">
+                    <Card className={styles.contentCard}>
+                      <div className={styles.contentSection}>
+                        <Title level={4} className={styles.sectionTitle}>
                           Giới thiệu công ty
                         </Title>
-                        <Paragraph className="section-content">
+                        <Paragraph className={styles.sectionContent}>
                           {company.introduction}
                         </Paragraph>
                       </div>
-                      <div className="content-section">
-                        <Title level={4} className="section-title">
+                      <div className={styles.contentSection}>
+                        <Title level={4} className={styles.sectionTitle}>
                           Nghiệp vụ kinh doanh
                         </Title>
-                        <ul className="section-list">
+                        <ul className={styles.sectionList}>
                           {company.businessOperations.map((op, index) => (
                             <li key={index}>{op}</li>
                           ))}
@@ -187,39 +196,39 @@ const CompanyDetailPage = () => {
 
                   {/* Column 2: Regulations, Benefits, Recruiters */}
                   <Col xs={24} lg={8}>
-                    <Card className="content-card">
-                      <div className="content-section">
-                        <Title level={4} className="section-title">
+                    <Card className={styles.contentCard}>
+                      <div className={styles.contentSection}>
+                        <Title level={4} className={styles.sectionTitle}>
                           Quy định công ty
                         </Title>
-                        <ul className="section-list">
+                        <ul className={styles.sectionList}>
                           {company.regulations.map((reg, index) => (
                             <li key={index}>{reg}</li>
                           ))}
                         </ul>
                       </div>
-                      <div className="content-section">
-                        <Title level={4} className="section-title">
+                      <div className={styles.contentSection}>
+                        <Title level={4} className={styles.sectionTitle}>
                           Phúc lợi
                         </Title>
-                        <ul className="section-list">
+                        <ul className={styles.sectionList}>
                           {company.benefits.map((benefit, index) => (
                             <li key={index}>{benefit}</li>
                           ))}
                         </ul>
                       </div>
-                      <div className="content-section">
-                        <Title level={4} className="section-title">
+                      <div className={styles.contentSection}>
+                        <Title level={4} className={styles.sectionTitle}>
                           Nhà tuyển dụng
                         </Title>
                         <List
                           dataSource={company.recruiters}
                           renderItem={(item) => (
-                            <List.Item className="recruiter-item">
+                            <List.Item className={styles.recruiterItem}>
                               <Avatar src={item.avatar} size={40} />
-                              <div className="recruiter-info">
+                              <div className={styles.recruiterInfo}>
                                 <Text strong>{item.name}</Text>
-                                <Text className="recruiter-position">
+                                <Text className={styles.recruiterPosition}>
                                   {item.position}
                                 </Text>
                               </div>
@@ -229,51 +238,63 @@ const CompanyDetailPage = () => {
                       </div>
                     </Card>
                   </Col>
-                  <Col span={2} />
                 </Row>
               </TabPane>
               <TabPane tab="Vị trí tuyển dụng" key="jobs">
                 <Row gutter={[24, 24]}>
                   <Col span={24}>
-                    <Card className="content-card">
-                      <List
-                        dataSource={jobs}
-                        renderItem={(job) => (
-                          <List.Item
-                            actions={[
-                              <Button
-                                type="primary"
-                                className="view-job-button"
-                                onClick={() => handleViewJob(job.id)}
-                              >
-                                Xem chi tiết
-                              </Button>,
-                            ]}
-                            className="job-item"
-                          >
-                            <List.Item.Meta
-                              avatar={<Avatar icon={<CheckCircleOutlined />} />}
-                              title={<Text strong>{job.title}</Text>}
-                              description={
-                                <Space direction="vertical" size={4}>
-                                  <Text>{job.location}</Text>
-                                  <Text>{job.salary}</Text>
-                                  <Text>{job.type}</Text>
-                                  <Text type="secondary">
-                                    Đăng {job.posted}
-                                  </Text>
-                                </Space>
-                              }
-                            />
-                          </List.Item>
-                        )}
-                      />
+                    <Card className={styles.contentCard}>
+                      {loading ? (
+                        <div className={styles.loadingContainer}>
+                          <Spin size="large" />
+                        </div>
+                      ) : jobs.length > 0 ? (
+                        <List
+                          dataSource={jobs}
+                          renderItem={(job) => (
+                            <List.Item
+                              actions={[
+                                <Button
+                                  type="primary"
+                                  className={styles.viewJobButton}
+                                  onClick={() => handleViewJob(job.id)}
+                                >
+                                  Xem chi tiết
+                                </Button>,
+                              ]}
+                              className={styles.jobItem}
+                            >
+                              <List.Item.Meta
+                                avatar={
+                                  <Avatar icon={<CheckCircleOutlined />} />
+                                }
+                                title={<Text strong>{job.title}</Text>}
+                                description={
+                                  <Space direction="vertical" size={4}>
+                                    <Text>{job.location}</Text>
+                                    <Text>{job.salary}</Text>
+                                    <Text>{job.type}</Text>
+                                    <Text type="secondary">
+                                      Đăng {job.posted}
+                                    </Text>
+                                  </Space>
+                                }
+                              />
+                            </List.Item>
+                          )}
+                        />
+                      ) : (
+                        <Text className={styles.noResults}>
+                          Không có vị trí tuyển dụng nào
+                        </Text>
+                      )}
                     </Card>
                   </Col>
                 </Row>
               </TabPane>
             </Tabs>
           </Col>
+          <Col span={2} />
         </Row>
       </Content>
     </Layout>

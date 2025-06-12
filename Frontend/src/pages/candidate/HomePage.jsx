@@ -31,7 +31,7 @@ import {
   UserOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
-import "../../styles/HomePage.css";
+import styles from "../../styles/HomePage.module.css";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -172,20 +172,20 @@ const HomePage = () => {
     {
       title: "Tìm việc làm IT tốt nhất",
       subtitle: "Hơn 10,000 cơ hội việc làm đang chờ bạn",
-      background: "linear-gradient(135deg, #577cf6 0%, #667eea 100%)",
       icon: "💻",
+      className: styles.carouselItemIt,
     },
     {
       title: "Khởi nghiệp cùng Startup",
       subtitle: "Gia nhập các công ty startup đầy tiềm năng",
-      background: "linear-gradient(135deg, #36CFC9 0%, #4ECDC4 100%)",
       icon: "🚀",
+      className: styles.carouselItemStartup,
     },
     {
       title: "Remote Work - Tương lai của công việc",
       subtitle: "Làm việc từ xa với mức lương hấp dẫn",
-      background: "linear-gradient(135deg, #95E1D3 0%, #36CFC9 100%)",
       icon: "🏠",
+      className: styles.carouselItemRemote,
     },
   ];
 
@@ -194,26 +194,26 @@ const HomePage = () => {
   };
 
   return (
-    <Layout className="homepage-layout">
-      <Content className="homepage-content">
+    <Layout className={styles.homepageLayout}>
+      <Content className={styles.homepageContent}>
         {/* Hero Section */}
         <Row>
           <Col span={2} />
           <Col span={20}>
-            <section className="hero-section">
-              <div className="hero-background"></div>
-              <div className="hero-container">
+            <section className={styles.heroSection}>
+              <div className={styles.heroBackground}></div>
+              <div className={styles.heroContainer}>
                 <Row gutter={[40, 40]} align="middle">
                   <Col xs={24} lg={14}>
-                    <div className="hero-content">
-                      <div className="hero-badge">
+                    <div className={styles.heroContent}>
+                      <div className={styles.heroBadge}>
                         <TrophyOutlined /> #1 Nền tảng tuyển dụng Việt Nam
                       </div>
-                      <Title level={1} className="hero-title">
+                      <Title level={1} className={styles.heroTitle}>
                         Tìm kiếm cơ hội nghề nghiệp
-                        <span className="highlight"> tuyệt vời</span>
+                        <span className={styles.highlight}> tuyệt vời</span>
                       </Title>
-                      <Paragraph className="hero-description">
+                      <Paragraph className={styles.heroDescription}>
                         Khám phá hàng nghìn việc làm từ các công ty hàng đầu.
                         Bắt đầu hành trình sự nghiệp của bạn ngay hôm nay với
                         mức lương cạnh tranh và môi trường làm việc chuyên
@@ -221,23 +221,23 @@ const HomePage = () => {
                       </Paragraph>
 
                       {/* Search Bar */}
-                      <div className="hero-search">
-                        <div className="search-container">
-                          <div className="search-input-group">
+                      <div className={styles.heroSearch}>
+                        <div className={styles.searchContainer}>
+                          <div className={styles.searchInputGroup}>
                             <Input
                               size="large"
                               placeholder="Nhập vị trí công việc, kỹ năng..."
                               prefix={<SearchOutlined />}
                               value={searchKeyword}
                               onChange={(e) => setSearchKeyword(e.target.value)}
-                              className="search-input"
+                              className={styles.searchInput}
                             />
                           </div>
-                          <div className="location-input-group">
+                          <div className={styles.locationoselectGroup}>
                             <Select
                               size="large"
                               placeholder="Chọn địa điểm"
-                              className="location-select"
+                              className={styles.locationSelect}
                               value={selectedLocation}
                               onChange={setSelectedLocation}
                               allowClear
@@ -253,7 +253,7 @@ const HomePage = () => {
                           <Button
                             type="primary"
                             size="large"
-                            className="search-button"
+                            className={styles.searchButton}
                             onClick={handleSearch}
                           >
                             <SearchOutlined /> Tìm kiếm
@@ -262,8 +262,10 @@ const HomePage = () => {
                       </div>
 
                       {/* Quick Tags */}
-                      <div className="quick-tags">
-                        <Text className="tags-label">Từ khóa phổ biến:</Text>
+                      <div className={styles.quickTags}>
+                        <Text className={styles.tagsLabel}>
+                          Từ khóa phổ biến:
+                        </Text>
                         <Space wrap>
                           {[
                             "React",
@@ -275,7 +277,7 @@ const HomePage = () => {
                             "AI/ML",
                             "Remote",
                           ].map((tag) => (
-                            <Tag key={tag} className="quick-tag">
+                            <Tag key={tag} className={styles.quickTag}>
                               {tag}
                             </Tag>
                           ))}
@@ -283,43 +285,47 @@ const HomePage = () => {
                       </div>
 
                       {/* Statistics */}
-                      <div className="hero-stats">
-                        <div className="stat-item">
-                          <Title level={4} className="stat-number">
+                      <div className={styles.heroStats}>
+                        <div className={styles.statItem}>
+                          <Title level={4} className={styles.statNumber}>
                             10K+
                           </Title>
-                          <Text className="stat-label">Việc làm</Text>
+                          <Text className={styles.statLabel}>Việc làm</Text>
                         </div>
-                        <div className="stat-item">
-                          <Title level={4} className="stat-number">
+                        <div className={styles.statItem}>
+                          <Title level={4} className={styles.statNumber}>
                             5K+
                           </Title>
-                          <Text className="stat-label">Công ty</Text>
+                          <Text className={styles.statLabel}>Công ty</Text>
                         </div>
-                        <div className="stat-item">
-                          <Title level={4} className="stat-number">
+                        <div className={styles.statItem}>
+                          <Title level={4} className={styles.statNumber}>
                             100K+
                           </Title>
-                          <Text className="stat-label">Ứng viên</Text>
+                          <Text className={styles.statLabel}>Ứng viên</Text>
                         </div>
                       </div>
                     </div>
                   </Col>
                   <Col xs={24} lg={10}>
-                    <div className="hero-carousel">
+                    <div className={styles.heroCarousel}>
                       <Carousel autoplay autoplaySpeed={4000} effect="fade">
                         {carouselItems.map((item, index) => (
                           <div key={index}>
                             <div
-                              className="carousel-item"
-                              style={{ background: item.background }}
+                              className={`${styles.carouselItem} ${item.className}`}
                             >
-                              <div className="carousel-content">
-                                <div className="carousel-icon">{item.icon}</div>
-                                <Title level={3} className="carousel-title">
+                              <div className={styles.carouselContent}>
+                                <div className={styles.carouselIcon}>
+                                  {item.icon}
+                                </div>
+                                <Title
+                                  level={3}
+                                  className={styles.carouselTitle}
+                                >
                                   {item.title}
                                 </Title>
-                                <Text className="carousel-subtitle">
+                                <Text className={styles.carouselSubtitle}>
                                   {item.subtitle}
                                 </Text>
                               </div>
@@ -339,19 +345,19 @@ const HomePage = () => {
         <Row>
           <Col span={2} />
           <Col span={20}>
-            <section className="featured-jobs-section">
-              <div className="section-container">
-                <div className="section-header">
-                  <div className="section-title-group">
-                    <Title level={2} className="section-title">
-                      <FireOutlined className="section-icon" />
+            <section className={styles.featuredJobsSection}>
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeader}>
+                  <div className={styles.sectionTitleGroup}>
+                    <Title level={2} className={styles.sectionTitle}>
+                      <FireOutlined className={styles.sectionIcon} />
                       Việc làm nổi bật
                     </Title>
-                    <Text className="section-subtitle">
+                    <Text className={styles.sectionSubtitle}>
                       Những cơ hội việc làm tốt nhất được cập nhật hàng ngày
                     </Text>
                   </div>
-                  <Button type="primary" ghost className="view-all-btn">
+                  <Button type="primary" ghost className={styles.viewAllBtn}>
                     Xem tất cả <RightOutlined />
                   </Button>
                 </div>
@@ -359,66 +365,84 @@ const HomePage = () => {
                 <Row gutter={[24, 24]}>
                   {featuredJobs.map((job) => (
                     <Col xs={24} md={12} xl={8} key={job.id}>
-                      <Card className="job-card" hoverable>
-                        <div className="job-header">
+                      <Card className={styles.jobCard} hoverable>
+                        <div className={styles.jobHeader}>
                           <Avatar
                             src={job.logo}
                             size={56}
-                            className="company-logo"
+                            className={styles.companyLogo}
                           />
-                          <div className="job-actions">
+                          <div className={styles.jobActions}>
                             <Button
                               type="text"
                               icon={<HeartOutlined />}
-                              className={`save-btn ${job.saved ? "saved" : ""}`}
+                              className={`${styles.saveBtn} ${
+                                job.saved ? styles.saved : ""
+                              }`}
                             />
                             <Button
                               type="text"
                               icon={<ShareAltOutlined />}
-                              className="share-btn"
+                              className={styles.shareBtn}
                             />
                           </div>
                         </div>
 
-                        <div className="job-info">
-                          <div className="job-title-group">
-                            <Title level={4} className="job-title">
+                        <div className={styles.jobInfo}>
+                          <div className={styles.jobTitleGroup}>
+                            <Title level={4} className={styles.jobTitle}>
                               {job.title}
                             </Title>
                             {job.urgent && (
-                              <Badge count="Urgent" className="urgent-badge" />
+                              <Badge
+                                count="Urgent"
+                                className={styles.urgentBadge}
+                              />
                             )}
                           </div>
-                          <Text className="company-name">{job.company}</Text>
+                          <Text className={styles.companyName}>
+                            {job.company}
+                          </Text>
 
-                          <div className="job-details">
-                            <div className="detail-item">
-                              <EnvironmentOutlined className="detail-icon" />
+                          <div className={styles.jobDetails}>
+                            <div className={styles.detailItem}>
+                              <EnvironmentOutlined
+                                className={styles.detailIcon}
+                              />
                               <Text>{job.location}</Text>
                             </div>
-                            <div className="detail-item">
-                              <DollarOutlined className="detail-icon" />
-                              <Text className="salary-text">{job.salary}</Text>
+                            <div className={styles.detailItem}>
+                              <DollarOutlined className={styles.detailIcon} />
+                              <Text className={styles.salaryText}>
+                                {job.salary}
+                              </Text>
                             </div>
-                            <div className="detail-item">
-                              <ClockCircleOutlined className="detail-icon" />
-                              <Tag className="job-type-tag">{job.type}</Tag>
+                            <div className={styles.detailItem}>
+                              <ClockCircleOutlined
+                                className={styles.detailIcon}
+                              />
+                              <Tag className={styles.jobTypeTag}>
+                                {job.type}
+                              </Tag>
                             </div>
                           </div>
 
-                          <div className="job-tags">
+                          <div className={styles.jobTags}>
                             {job.tags.map((tag) => (
-                              <Tag key={tag} className="skill-tag">
+                              <Tag key={tag} className={styles.skillTag}>
                                 {tag}
                               </Tag>
                             ))}
                           </div>
 
-                          <div className="job-footer">
-                            <Text className="posted-time" type="secondary">
+                          <div className={styles.jobFooter}>
+                            <Text
+                              className={styles.postedTime}
+                              type="secondary"
+                            >
                               <ClockCircleOutlined /> {job.posted}
                             </Text>
-                            <Button type="primary" className="apply-btn">
+                            <Button type="primary" className={styles.applyBtn}>
                               Ứng tuyển ngay
                             </Button>
                           </div>
@@ -437,19 +461,19 @@ const HomePage = () => {
         <Row>
           <Col span={2} />
           <Col span={20}>
-            <section className="top-companies-section">
-              <div className="section-container">
-                <div className="section-header">
-                  <div className="section-title-group">
-                    <Title level={2} className="section-title">
-                      <StarOutlined className="section-icon" />
+            <section className={styles.topCompaniesSection}>
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeader}>
+                  <div className={styles.sectionTitleGroup}>
+                    <Title level={2} className={styles.sectionTitle}>
+                      <StarOutlined className={styles.sectionIcon} />
                       Top công ty hàng đầu
                     </Title>
-                    <Text className="section-subtitle">
+                    <Text className={styles.sectionSubtitle}>
                       Những công ty uy tín với môi trường làm việc tốt nhất
                     </Text>
                   </div>
-                  <Button type="primary" ghost className="view-all-btn">
+                  <Button type="primary" ghost className={styles.viewAllBtn}>
                     Xem tất cả <RightOutlined />
                   </Button>
                 </div>
@@ -457,50 +481,50 @@ const HomePage = () => {
                 <Row gutter={[24, 24]}>
                   {topCompanies.map((company) => (
                     <Col xs={24} md={12} lg={6} key={company.id}>
-                      <Card className="company-card" hoverable>
-                        <div className="company-header">
+                      <Card className={styles.companyCard} hoverable>
+                        <div className={styles.companyHeader}>
                           <Avatar
                             src={company.logo}
                             size={72}
-                            className="company-avatar"
+                            className={styles.companyAvatar}
                           />
-                          <div className="company-rating">
+                          <div className={styles.companyRating}>
                             <Rate
                               disabled
                               defaultValue={company.rating}
                               allowHalf
-                              className="rating-stars"
+                              className={styles.ratingStars}
                             />
-                            <Text className="rating-text">
+                            <Text className={styles.ratingText}>
                               {company.rating} ({company.reviews})
                             </Text>
                           </div>
                         </div>
 
-                        <div className="company-info">
-                          <Title level={4} className="company-name">
+                        <div className={styles.companyInfo}>
+                          <Title level={4} className={styles.companyName}>
                             {company.name}
                           </Title>
-                          <Paragraph className="company-description">
+                          <Paragraph className={styles.companyDescription}>
                             {company.description}
                           </Paragraph>
                         </div>
 
-                        <div className="company-stats">
-                          <div className="company-stat">
-                            <TeamOutlined className="stat-icon" />
+                        <div className={styles.companyStats}>
+                          <div className={styles.companyStat}>
+                            <TeamOutlined className={styles.statIcon} />
                             <Text>{company.employees} nhân viên</Text>
                           </div>
-                          <div className="company-stat">
-                            <CheckCircleOutlined className="stat-icon" />
+                          <div className={styles.companyStat}>
+                            <CheckCircleOutlined className={styles.statIcon} />
                             <Text>{company.jobs} việc làm</Text>
                           </div>
                         </div>
 
-                        <div className="company-footer">
+                        <div className={styles.companyFooter}>
                           <Button
                             type="primary"
-                            className="view-company-btn"
+                            className={styles.viewCompanyBtn}
                             block
                           >
                             Xem công ty
@@ -517,55 +541,55 @@ const HomePage = () => {
         </Row>
 
         {/* Features Section */}
-        <section className="features-section">
-          <div className="section-container">
-            <div className="section-header centered">
-              <Title level={2} className="section-title">
+        <section className={styles.featuresSection}>
+          <div className={styles.sectionContainer}>
+            <div className={`${styles.sectionHeader} ${styles.centered}`}>
+              <Title level={2} className={styles.sectionTitle}>
                 Tại sao chọn chúng tôi?
               </Title>
-              <Text className="section-subtitle">
+              <Text className={styles.sectionSubtitle}>
                 Những lý do khiến Jobzi trở thành lựa chọn hàng đầu
               </Text>
             </div>
 
             <Row gutter={[32, 32]} justify="center">
               <Col xs={24} md={8}>
-                <div className="feature-item">
-                  <div className="feature-icon">
+                <div className={styles.featureItem}>
+                  <div className={styles.featureIcon}>
                     <SearchOutlined />
                   </div>
-                  <Title level={4} className="feature-title">
+                  <Title level={4} className={styles.featureTitle}>
                     Tìm kiếm thông minh
                   </Title>
-                  <Text className="feature-description">
+                  <Text className={styles.featureDescription}>
                     Công nghệ AI giúp tìm kiếm và gợi ý việc làm phù hợp với kỹ
                     năng và kinh nghiệm của bạn
                   </Text>
                 </div>
               </Col>
               <Col xs={24} md={8}>
-                <div className="feature-item">
-                  <div className="feature-icon">
+                <div className={styles.featureItem}>
+                  <div className={styles.featureIcon}>
                     <UserOutlined />
                   </div>
-                  <Title level={4} className="feature-title">
+                  <Title level={4} className={styles.featureTitle}>
                     Hồ sơ chuyên nghiệp
                   </Title>
-                  <Text className="feature-description">
+                  <Text className={styles.featureDescription}>
                     Tạo hồ sơ ấn tượng với các template được thiết kế bởi chuyên
                     gia HR
                   </Text>
                 </div>
               </Col>
               <Col xs={24} md={8}>
-                <div className="feature-item">
-                  <div className="feature-icon">
+                <div className={styles.featureItem}>
+                  <div className={styles.featureIcon}>
                     <CheckCircleOutlined />
                   </div>
-                  <Title level={4} className="feature-title">
+                  <Title level={4} className={styles.featureTitle}>
                     Ứng tuyển nhanh chóng
                   </Title>
-                  <Text className="feature-description">
+                  <Text className={styles.featureDescription}>
                     Ứng tuyển chỉ với một cú click và theo dõi trạng thái đơn
                     ứng tuyển real-time
                   </Text>

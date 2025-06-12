@@ -1,0 +1,424 @@
+/* CSS Variables */
+:root {
+  --primary: #577cf6;
+  --primary-dark: #4c6ef5;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --success: #52c41a;
+  --error: #ff4d4f;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 24px;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Company Page Layout */
+.companypageLayout {
+  min-height: 100vh;
+  background: var(--white);
+  padding: 0;
+}
+
+.companypageContent {
+  background: var(--white);
+}
+
+/* Banner Section */
+.bannerSection {
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    #667eea 50%,
+    #764ba2 100%
+  );
+  padding: 60px 0;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius-xl);
+  margin-top: 2rem;
+}
+
+.bannerBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    );
+  z-index: 1;
+}
+
+.bannerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.bannerTitle {
+  color: var(--white) !important;
+  font-size: 48px !important;
+  font-weight: 800 !important;
+  margin-bottom: 16px !important;
+  line-height: 1.2 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.highlight {
+  background: linear-gradient(45deg, #ffd700, #ffa500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bannerDescription {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  margin-bottom: 32px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Filters Section */
+.filtersSection {
+  padding: 2rem 0;
+  background: var(--gray-100);
+  border-radius: var(--border-radius-xl);
+  margin-top: 2rem;
+}
+
+.sectionContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.sectionTitleGroup {
+  flex: 1;
+}
+
+.sectionTitle {
+  color: var(--text-primary) !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionIcon {
+  color: var(--primary);
+  font-size: 32px;
+}
+
+.sectionSubtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-top: 8px;
+  display: block;
+}
+
+.resetFilterBtn {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  font-weight: 600;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.resetFilterBtn:hover {
+  background: var(--primary) !important;
+  color: var(--white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(87, 124, 246, 0.3);
+}
+
+.filterCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  padding: 24px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterTitle {
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkboxGroup .ant-checkbox-wrapper {
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.checkboxGroup .ant-checkbox-wrapper:hover {
+  color: var(--primary);
+  background: #f6f8ff;
+  padding-left: 8px;
+  border-radius: 6px;
+}
+
+/* All Companies Section */
+.allCompaniesSection {
+  padding: 2rem 0;
+  background: var(--gray-100);
+  border-radius: var(--border-radius-xl);
+  margin-top: 2rem;
+}
+
+.companyCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: var(--white);
+  height: 100%;
+}
+
+.companyCard:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-md);
+}
+
+.companyHeader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.companyLogo {
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.companyRating {
+  margin-bottom: 12px;
+}
+
+.ratingStars {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.ratingText {
+  color: var(--text-secondary);
+  font-size: 12px;
+  display: block;
+}
+
+.companyInfo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.companyName {
+  color: var(--text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+}
+
+.companyDescription {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.companyStats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--gray-100);
+  border-radius: var(--border-radius-lg);
+}
+
+.companyStat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.statIcon {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.companyFooter {
+  margin-top: auto;
+}
+
+.viewCompanyBtn {
+  background: var(--primary);
+  border-color: var(--primary);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+.viewCompanyBtn:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+}
+
+/* No Results */
+.noResults {
+  color: var(--text-secondary);
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  margin: 40px 0;
+}
+
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Pagination */
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.companiesPagination .ant-pagination-item {
+  border-radius: var(--border-radius);
+}
+
+.companiesPagination .ant-pagination-item:hover,
+.companiesPagination .ant-pagination-item-active {
+  border-color: var(--primary);
+}
+
+.companiesPagination .ant-pagination-item:hover a,
+.companiesPagination .ant-pagination-item-active a {
+  color: var(--primary);
+}
+
+.companiesPagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.companiesPagination .ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .sectionTitle {
+    font-size: 32px !important;
+  }
+
+  .filterCard {
+    padding: 16px;
+  }
+
+  .companyCard {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bannerTitle {
+    font-size: 36px !important;
+  }
+
+  .bannerDescription {
+    font-size: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 28px !important;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .companyStats {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .bannerSection {
+    padding: 40px 0;
+  }
+
+  .bannerTitle {
+    font-size: 28px !important;
+  }
+
+  .filtersSection,
+  .allCompaniesSection {
+    padding: 1rem 0;
+  }
+
+  .companyLogo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .checkboxGroup .ant-checkbox-wrapper {
+    font-size: 13px;
+  }
+}

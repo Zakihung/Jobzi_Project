@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Input, Button, Typography, Space } from "antd";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
-import "../../styles/LoginCandidateForm.css";
+import styles from "../../styles/LoginCandidateForm.module.css";
 
 const { Title, Text } = Typography;
 
@@ -13,22 +13,22 @@ const LoginCandidateForm = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className={styles.loginContainer}>
       {/* Left side - Image/Illustration */}
-      <div className="login-image-section">
-        <div className="image-content">
-          <div className="illustration-wrapper">
+      <div className={styles.loginImageSection}>
+        <div className={styles.imageContent}>
+          <div className={styles.illustrationWrapper}>
             <img
               src="/src/assets/logo/logo_ngang.png"
               alt="Login Illustration"
-              className="login-illustration"
+              className={styles.loginIllustration}
             />
           </div>
-          <div className="image-text">
-            <Title level={2} className="image-title">
+          <div className={styles.imageText}>
+            <Title level={2} className={styles.imageTitle}>
               Chào mừng đến với tương lai nghề nghiệp của bạn
             </Title>
-            <Text className="image-description">
+            <Text className={styles.imageDescription}>
               Khám phá hàng ngàn cơ hội việc làm phù hợp với kỹ năng và đam mê
               của bạn. Hãy bắt đầu hành trình tìm kiếm công việc mơ ước ngay hôm
               nay!
@@ -38,23 +38,23 @@ const LoginCandidateForm = () => {
       </div>
 
       {/* Right side - Login Form */}
-      <div className="login-form-section">
-        <div className="form-wrapper">
+      <div className={styles.loginFormSection}>
+        <div className={styles.formWrapper}>
           {/* Logo */}
-          <div className="logoLogin-section">
+          <div className={styles.logoLoginSection}>
             <img
               src="/src/assets/logo/logo.png"
               alt="Logo"
-              className="logoLogin"
+              className={styles.logoLogin}
             />
           </div>
 
           {/* Welcome Header */}
-          <div className="welcome-header">
-            <Title level={1} className="welcome-title">
+          <div className={styles.welcomeHeader}>
+            <Title level={1} className={styles.welcomeTitle}>
               Chào mừng bạn quay trở lại
             </Title>
-            <Text className="welcome-subtitle">
+            <Text className={styles.welcomeSubtitle}>
               Đăng nhập để tiếp tục hành trình tìm việc của bạn
             </Text>
           </div>
@@ -66,7 +66,7 @@ const LoginCandidateForm = () => {
             onFinish={onFinish}
             layout="vertical"
             size="large"
-            className="login-form"
+            className={styles.loginForm}
           >
             <Form.Item
               name="email"
@@ -77,9 +77,9 @@ const LoginCandidateForm = () => {
               ]}
             >
               <Input
-                prefix={<MailOutlined className="input-icon" />}
+                prefix={<MailOutlined className={styles.inputIcon} />}
                 placeholder="Nhập email của bạn"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -92,9 +92,9 @@ const LoginCandidateForm = () => {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="input-icon" />}
+                prefix={<LockOutlined className={styles.inputIcon} />}
                 placeholder="Nhập mật khẩu của bạn"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -102,38 +102,18 @@ const LoginCandidateForm = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                className="login-button"
+                className={styles.loginButton}
                 block
               >
                 Đăng nhập
               </Button>
             </Form.Item>
 
-            {/* Divider */}
-            {/* <div className="divider">
-              <span className="divider-text">hoặc</span>
-            </div> */}
-
-            {/* Google Login */}
-            {/* <Button
-              className="google-login-button"
-              block
-              icon={
-                <img
-                  src="/src/assets/icons/google.png"
-                  alt="Google"
-                  className="google-icon"
-                />
-              }
-            >
-              Đăng nhập bằng Google
-            </Button> */}
-
             {/* Sign up link */}
-            <div className="signup-section">
-              <Text className="signup-text">
+            <div className={styles.signupSection}>
+              <Text className={styles.signupText}>
                 Chưa có tài khoản?
-                <a href="/signup" className="signup-link">
+                <a href="/signup" className={styles.signupLink}>
                   Đăng ký ngay
                 </a>
               </Text>

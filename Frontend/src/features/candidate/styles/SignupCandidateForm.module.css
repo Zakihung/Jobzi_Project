@@ -3,8 +3,8 @@
   --primary: #6366f1;
   --primary-dark: #4f46e5;
   --primary-light: #818cf8;
-  --secondary: #f8fafc;
-  --accent: #ec4899;
+  --secondary: #f0fdf4;
+  --accent: #f59e0b;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-light: #94a3b8;
@@ -15,6 +15,7 @@
   --gray-300: #cbd5e1;
   --success: #10b981;
   --error: #ef4444;
+  --warning: #f59e0b;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -23,15 +24,8 @@
   --border-radius-lg: 16px;
 }
 
-/* Reset và base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 /* Main Container */
-.login-container {
+.signupContainer {
   display: flex;
   min-height: 100vh;
   background: var(--white);
@@ -39,7 +33,7 @@
 }
 
 /* Left Side - Image Section */
-.login-image-section {
+.signupImageSection {
   flex: 1;
   background: linear-gradient(
     135deg,
@@ -55,7 +49,7 @@
   overflow: hidden;
 }
 
-.login-image-section::before {
+.signupImageSection::before {
   content: "";
   position: absolute;
   top: 0;
@@ -63,56 +57,62 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(
-      circle at 20% 80%,
-      rgba(255, 255, 255, 0.1) 0%,
+      circle at 25% 75%,
+      rgba(255, 255, 255, 0.15) 0%,
       transparent 50%
     ),
     radial-gradient(
-      circle at 80% 20%,
-      rgba(255, 255, 255, 0.1) 0%,
+      circle at 75% 25%,
+      rgba(255, 255, 255, 0.15) 0%,
       transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(245, 158, 11, 0.1) 0%,
+      transparent 70%
     );
   pointer-events: none;
 }
 
-.image-content {
+.imageContent {
   text-align: center;
   color: var(--white);
   z-index: 2;
   position: relative;
 }
 
-.illustration-wrapper {
+.illustrationWrapper {
   margin-bottom: 2rem;
-  animation: float 6s ease-in-out infinite;
+  animation: bounce 3s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes bounce {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0px) scale(1);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-15px) scale(1.02);
   }
 }
 
-.login-illustration {
+.signupIllustration {
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   height: auto;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
 }
 
-.image-title {
+.imageTitle {
   color: var(--white) !important;
-  font-size: 2.5rem !important;
+  font-size: 2.25rem !important;
   font-weight: 700 !important;
   margin-bottom: 1.5rem !important;
   line-height: 1.2 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.image-description {
+.imageDescription {
   color: rgba(255, 255, 255, 0.9) !important;
   font-size: 1.125rem !important;
   line-height: 1.6 !important;
@@ -120,125 +120,114 @@
 }
 
 /* Right Side - Form Section */
-.login-form-section {
+.signupFormSection {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   background: var(--white);
+  overflow-y: auto;
 }
 
-.form-wrapper {
+.formWrapper {
   width: 100%;
   max-width: 500px;
   padding: 2rem 0;
 }
 
 /* Logo Section */
-.logoLogin-section {
+.logoSignupSection {
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
-.logoLogin {
-  height: 3.5rem;
-  width: auto;
+.logoSignup {
+  height: 3rem;
   transition: transform 0.3s ease;
 }
 
-.logoLogin:hover {
+.logoSignup:hover {
   transform: scale(1.05);
 }
 
 /* Welcome Header */
-.welcome-header {
+.welcomeHeader {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
-.welcome-title {
+.welcomeTitle {
   color: var(--text-primary) !important;
-  font-size: 2rem !important;
+  font-size: 1.875rem !important;
   font-weight: 700 !important;
   margin-bottom: 0.5rem !important;
   line-height: 1.3 !important;
 }
 
-.wave-emoji {
-  display: inline-block;
-  margin-left: 0.5rem;
-  animation: wave 2s ease-in-out infinite;
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(20deg);
-  }
-  75% {
-    transform: rotate(-10deg);
-  }
-}
-
-.welcome-subtitle {
+.welcomeSubtitle {
   color: var(--text-secondary) !important;
-  font-size: 1rem !important;
+  font-size: 0.95rem !important;
   line-height: 1.5 !important;
 }
 
 /* Form Styles */
-.login-form {
+.signupForm {
   margin-top: 1rem;
 }
 
-.login-form .ant-form-item-label > label {
-  color: var(--text-primary);
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.custom-input {
-  height: 48px;
+.customInput {
+  height: 46px;
   border-radius: var(--border-radius);
   border: 2px solid var(--gray-200);
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
 }
 
-.custom-input:hover {
+.customInput:hover {
   border-color: var(--primary-light);
 }
 
-.custom-input:focus,
-.custom-input.ant-input-focused {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.input-icon {
+.inputIcon {
   color: var(--text-secondary);
   font-size: 1rem;
+  margin-right: 5px;
 }
 
-/* Login Button */
-.login-button {
-  height: 48px;
+/* Agreement Checkbox */
+.agreementCheckbox {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.termsLink {
+  color: var(--primary) !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.termsLink:hover {
+  color: var(--primary-dark) !important;
+  text-decoration: underline;
+}
+
+/* Signup Button */
+.signupButton {
+  height: 46px;
   border-radius: var(--border-radius);
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border: none;
   font-size: 1rem;
   font-weight: 600;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.login-button::before {
+.signupButton::before {
   content: "";
   position: absolute;
   top: 0;
@@ -254,82 +243,31 @@
   transition: left 0.5s;
 }
 
-.login-button:hover::before {
+.signupButton:hover::before {
   left: 100%;
 }
 
-.login-button:hover {
+.signupButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
 }
 
-.login-button:active {
+.signupButton:active {
   transform: translateY(0);
 }
 
-/* Divider */
-.divider {
+/* Login Section */
+.loginSection {
   text-align: center;
-  margin: 1.5rem 0;
-  position: relative;
+  margin-top: 1.5rem;
 }
 
-.divider::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--gray-200);
-}
-
-.divider-text {
-  background: var(--white);
-  color: var(--text-light);
-  padding: 0 1rem;
-  font-size: 0.875rem;
-  position: relative;
-}
-
-/* Google Login Button */
-.google-login-button {
-  height: 48px;
-  border-radius: var(--border-radius);
-  border: 2px solid var(--gray-200);
-  color: var(--text-primary);
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.google-login-button:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.google-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Signup Section */
-.signup-section {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.signup-text {
+.loginText {
   color: var(--text-secondary) !important;
   font-size: 0.9rem;
 }
 
-.signup-link {
+.loginLink {
   color: var(--primary) !important;
   font-weight: 600;
   text-decoration: none;
@@ -337,97 +275,89 @@
   transition: all 0.3s ease;
 }
 
-.signup-link:hover {
+.loginLink:hover {
   color: var(--primary-dark) !important;
   text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .login-container {
+  .signupContainer {
     flex-direction: column;
   }
 
-  .login-image-section {
+  .signupImageSection {
     flex: none;
-    min-height: 300px;
+    min-height: 280px;
     padding: 2rem;
   }
 
-  .image-title {
+  .imageTitle {
     font-size: 2rem !important;
   }
 
-  .image-description {
+  .imageDescription {
     font-size: 1rem !important;
+  }
+
+  .signupFormSection {
+    overflow-y: visible;
   }
 }
 
 @media (max-width: 768px) {
-  .login-form-section {
+  .signupFormSection {
     padding: 1rem;
   }
 
-  .form-wrapper {
+  .formWrapper {
     padding: 1rem;
+    max-width: 100%;
   }
 
-  .welcome-title {
-    font-size: 1.75rem !important;
+  .welcomeTitle {
+    font-size: 1.625rem !important;
   }
 
-  .login-image-section {
-    min-height: 250px;
+  .signupImageSection {
+    min-height: 240px;
     padding: 1.5rem;
   }
 
-  .image-title {
+  .imageTitle {
     font-size: 1.75rem !important;
   }
 }
 
 @media (max-width: 480px) {
-  .login-container {
+  .signupContainer {
     min-height: 100vh;
   }
 
-  .login-image-section {
+  .signupImageSection {
     min-height: 200px;
     padding: 1rem;
   }
 
-  .form-wrapper {
+  .formWrapper {
     padding: 0.5rem;
   }
 
-  .welcome-title {
+  .welcomeTitle {
     font-size: 1.5rem !important;
   }
 
-  .image-title {
+  .imageTitle {
     font-size: 1.5rem !important;
   }
-}
 
-/* Ant Design Customizations */
-.ant-form-item {
-  margin-bottom: 1.5rem;
-}
+  .customInput {
+    height: 44px;
+    font-size: 0.9rem;
+  }
 
-.ant-form-item-explain-error {
-  color: var(--error);
-  font-size: 0.875rem;
-}
-
-.ant-input-password-icon {
-  color: var(--text-secondary);
-}
-
-.ant-input-password-icon:hover {
-  color: var(--primary);
-}
-
-/* Loading state */
-.ant-btn-loading-icon {
-  margin-right: 0.5rem;
+  .signupButton {
+    height: 44px;
+    font-size: 0.95rem;
+  }
 }

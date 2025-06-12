@@ -1,6 +1,6 @@
 import { Form, Input, Button, Typography, Space, Checkbox } from "antd";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
-import "../../styles/SignupCandidateForm.css";
+import styles from "../../styles/SignupCandidateForm.module.css";
 
 const { Title, Text } = Typography;
 
@@ -12,22 +12,22 @@ const SignupCandidateForm = () => {
   };
 
   return (
-    <div className="signup-container">
+    <div className={styles.signupContainer}>
       {/* Left side - Image/Illustration */}
-      <div className="signup-image-section">
-        <div className="image-content">
-          <div className="illustration-wrapper">
+      <div className={styles.signupImageSection}>
+        <div className={styles.imageContent}>
+          <div className={styles.illustrationWrapper}>
             <img
               src="/src/assets/logo/logo_ngang.png"
               alt="Signup Illustration"
-              className="signup-illustration"
+              className={styles.signupIllustration}
             />
           </div>
-          <div className="image-text">
-            <Title level={2} className="image-title">
+          <div className={styles.imageText}>
+            <Title level={2} className={styles.imageTitle}>
               Bắt đầu hành trình mới cùng chúng tôi
             </Title>
-            <Text className="image-description">
+            <Text className={styles.imageDescription}>
               Tham gia cộng đồng hàng triệu ứng viên và nhà tuyển dụng. Tạo hồ
               sơ của bạn và khám phá những cơ hội việc làm tuyệt vời đang chờ
               đón!
@@ -37,23 +37,23 @@ const SignupCandidateForm = () => {
       </div>
 
       {/* Right side - Signup Form */}
-      <div className="signup-form-section">
-        <div className="form-wrapper">
+      <div className={styles.signupFormSection}>
+        <div className={styles.formWrapper}>
           {/* Logo */}
-          <div className="logoSignup-section">
+          <div className={styles.logoSignupSection}>
             <img
               src="/src/assets/logo/logo.png"
               alt="Logo"
-              className="logoSignup"
+              className={styles.logoSignup}
             />
           </div>
 
           {/* Welcome Header */}
-          <div className="welcome-header">
-            <Title level={1} className="welcome-title">
+          <div className={styles.welcomeHeader}>
+            <Title level={1} className={styles.welcomeTitle}>
               Tạo tài khoản mới
             </Title>
-            <Text className="welcome-subtitle">
+            <Text className={styles.welcomeSubtitle}>
               Chỉ vài bước đơn giản để bắt đầu tìm kiếm công việc mơ ước
             </Text>
           </div>
@@ -65,7 +65,7 @@ const SignupCandidateForm = () => {
             onFinish={onFinish}
             layout="vertical"
             size="large"
-            className="signup-form"
+            className={styles.signupForm}
             scrollToFirstError
           >
             {/* Full Name Field */}
@@ -83,9 +83,9 @@ const SignupCandidateForm = () => {
               ]}
             >
               <Input
-                prefix={<UserOutlined className="input-icon" />}
+                prefix={<UserOutlined className={styles.inputIcon} />}
                 placeholder="Nhập họ và tên đầy đủ"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -103,9 +103,9 @@ const SignupCandidateForm = () => {
               ]}
             >
               <Input
-                prefix={<MailOutlined className="input-icon" />}
+                prefix={<MailOutlined className={styles.inputIcon} />}
                 placeholder="Nhập địa chỉ email"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -126,9 +126,9 @@ const SignupCandidateForm = () => {
               hasFeedback
             >
               <Input.Password
-                prefix={<LockOutlined className="input-icon" />}
+                prefix={<LockOutlined className={styles.inputIcon} />}
                 placeholder="Tạo mật khẩu mạnh"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -153,9 +153,9 @@ const SignupCandidateForm = () => {
               hasFeedback
             >
               <Input.Password
-                prefix={<LockOutlined className="input-icon" />}
+                prefix={<LockOutlined className={styles.inputIcon} />}
                 placeholder="Nhập lại mật khẩu"
-                className="custom-input"
+                className={styles.customInput}
               />
             </Form.Item>
 
@@ -174,13 +174,13 @@ const SignupCandidateForm = () => {
                 },
               ]}
             >
-              <Checkbox className="agreement-checkbox">
+              <Checkbox className={styles.agreementCheckbox}>
                 Tôi đồng ý với{" "}
-                <a href="/terms" className="terms-link">
+                <a href="/terms" className={styles.termsLink}>
                   Điều khoản sử dụng
                 </a>{" "}
                 và{" "}
-                <a href="/privacy" className="terms-link">
+                <a href="/privacy" className={styles.termsLink}>
                   Chính sách bảo mật
                 </a>
               </Checkbox>
@@ -191,38 +191,18 @@ const SignupCandidateForm = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                className="signup-button"
+                className={styles.signupButton}
                 block
               >
                 Tạo tài khoản
               </Button>
             </Form.Item>
 
-            {/* Divider */}
-            {/* <div className="divider">
-              <span className="divider-text">hoặc</span>
-            </div> */}
-
-            {/* Google Signup */}
-            {/* <Button
-              className="google-signup-button"
-              block
-              icon={
-                <img
-                  src="/src/assets/icons/google.png"
-                  alt="Google"
-                  className="google-icon"
-                />
-              }
-            >
-              Đăng ký bằng Google
-            </Button> */}
-
             {/* Login link */}
-            <div className="login-section">
-              <Text className="login-text">
+            <div className={styles.loginSection}>
+              <Text className={styles.loginText}>
                 Đã có tài khoản?
-                <a href="/login" className="login-link">
+                <a href="/login" className={styles.loginLink}>
                   Đăng nhập ngay
                 </a>
               </Text>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Layout,
   Row,
@@ -11,12 +11,10 @@ import {
   Card,
   Checkbox,
   Slider,
-  Divider,
   Pagination,
   Avatar,
   Tag,
   Badge,
-  Rate,
   Dropdown,
 } from "antd";
 import {
@@ -24,21 +22,20 @@ import {
   EnvironmentOutlined,
   DollarOutlined,
   ClockCircleOutlined,
-  FilterOutlined,
   ReloadOutlined,
   HeartOutlined,
   ShareAltOutlined,
-  FireOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-import "../../styles/SearchPage.css";
+import styles from "../../styles/SearchPage.module.css";
+import classNames from "classnames";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
-const { Search } = Input;
 const { Option } = Select;
 
 const SearchPage = () => {
+  // State cho search và filters
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [filters, setFilters] = useState({
@@ -52,36 +49,77 @@ const SearchPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 16;
 
-  // Sample job data (expanded to ensure enough data for pagination)
-  const allJobs = Array.from({ length: 50 }, (_, index) => ({
-    id: index + 1,
-    title: `Vị trí công việc ${index + 1}`,
-    company: `Công ty ${String.fromCharCode(65 + (index % 26))}`,
-    logo: `https://via.placeholder.com/60/${Math.floor(
-      Math.random() * 16777215
-    ).toString(16)}/ffffff?text=C${index % 10}`,
-    location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Remote", "Cần Thơ"][
-      index % 5
-    ],
-    salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`,
-    type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
-    tags: [
-      ["React", "Node.js", "JavaScript"],
-      ["Python", "Django", "Flask"],
-      ["Java", "Spring", "Hibernate"],
-      ["Marketing", "SEO", "Analytics"],
-      ["Design", "Figma", "Sketch"],
-    ][index % 5],
-    urgent: index % 3 === 0,
-    saved: index % 4 === 0,
-    posted: `${index % 24} giờ trước`,
-  }));
+  // Dữ liệu mẫu cho jobs
+  const allJobs = useMemo(
+    () =>
+      Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        title: `Vị trí công việc ${index + 1}`,
+        company: `Công ty ${String.fromCharCode(65 + (index % 26))}`,
+        logo: `https://via.placeholder.com/60/${Math.floor(
+          Math.random() * 16777215
+        ).toString(16)}/ffffff?text=C${index % 10}`,
+        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Remote", "Cần Thơ"][
+          index % 5
+        ],
+        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`,
+        type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
+        tags: [
+          ["React", "Node.js", "JavaScript"],
+          ["Python", "Django", "Flask"],
+          ["Java", "Spring", "Hibernate"],
+          ["Marketing", "SEO", "Analytics"],
+          ["Design", "Figma", "Sketch"],
+        ][index % 5],
+        urgent: index % 3 === 0,
+        saved: index % 4 === 0,
+        posted: `${index % 24} giờ trước`,
+      })),
+    []
+  );
 
+  // Logic lọc jobs dựa trên search và filters
+  const filteredJobs = useMemo(() => {
+    return allJobs.filter((job) => {
+      const matchesKeyword = searchKeyword
+        ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          job.tags.some((tag) =>
+            tag.toLowerCase().includes(searchKeyword.toLowerCase())
+          )
+        : true;
+
+      const matchesLocation = selectedLocation
+        ? job.location.toLowerCase() ===
+          selectedLocation
+            .replace("ho-chi-minh", "Hồ Chí Minh")
+            .replace("ha-noi", "Hà Nội")
+            .replace("da-nang", "Đà Nẵng")
+            .replace("can-tho", "Cần Thơ")
+            .toLowerCase()
+        : true;
+
+      const matchesJobType =
+        filters.jobType.length > 0
+          ? filters.jobType.includes(job.type.toLowerCase())
+          : true;
+
+      const [minSalary] = job.salary.split("-").map((s) => parseInt(s));
+      const matchesSalary =
+        minSalary >= filters.salary[0] &&
+        (filters.salary[1] === 100 || minSalary <= filters.salary[1]);
+
+      return (
+        matchesKeyword && matchesLocation && matchesJobType && matchesSalary
+      );
+    });
+  }, [allJobs, searchKeyword, selectedLocation, filters]);
+
+  // Xử lý tìm kiếm
   const handleSearch = () => {
-    console.log("Search:", searchKeyword, selectedLocation, filters);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
   };
 
+  // Reset filters
   const handleResetFilters = () => {
     setFilters({
       jobType: [],
@@ -96,20 +134,22 @@ const SearchPage = () => {
     setCurrentPage(1);
   };
 
+  // Xử lý thay đổi filter
   const handleFilterChange = (key, value) => {
-    setFilters({ ...filters, [key]: value });
-    setCurrentPage(1); // Reset to first page on filter change
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1); // Reset về trang đầu khi thay đổi filter
   };
 
+  // Xử lý thay đổi trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Calculate jobs to display based on current page
+  // Tính toán jobs hiển thị dựa trên trang hiện tại
   const startIndex = (currentPage - 1) * pageSize;
-  const currentJobs = allJobs.slice(startIndex, startIndex + pageSize);
+  const currentJobs = filteredJobs.slice(startIndex, startIndex + pageSize);
 
-  // Filter options data
+  // Dữ liệu cho filter options
   const filterOptions = {
     jobType: [
       { label: "Full-time", value: "full-time" },
@@ -146,17 +186,14 @@ const SearchPage = () => {
     ],
   };
 
-  // Create dropdown menu for each filter
+  // Tạo dropdown menu cho mỗi filter
   const createDropdownMenu = (filterKey, title) => {
     const selectedValues = filters[filterKey];
     const options = filterOptions[filterKey];
 
     const menu = (
-      <div className="filter-dropdown-menu">
-        <div className="filter-dropdown-header">
-          <Text strong>{title}</Text>
-        </div>
-        <div className="filter-dropdown-content">
+      <div className={styles.filterDropdownMenu}>
+        <div className={styles.filterDropdownContent}>
           <Checkbox.Group
             options={options}
             value={selectedValues}
@@ -170,16 +207,11 @@ const SearchPage = () => {
       selectedValues.length > 0 ? `${title} (${selectedValues.length})` : title;
 
     return (
-      <Dropdown
-        overlay={menu}
-        trigger={["click"]}
-        placement="bottomLeft"
-        overlayClassName="filter-dropdown-overlay"
-      >
+      <Dropdown overlay={menu} trigger={["click"]} placement="bottomLeft">
         <Button
-          className={`filter-dropdown-btn ${
-            selectedValues.length > 0 ? "active" : ""
-          }`}
+          className={classNames(styles.filterDropdownBtn, {
+            [styles.active]: selectedValues.length > 0,
+          })}
         >
           {buttonText} <DownOutlined />
         </Button>
@@ -188,39 +220,40 @@ const SearchPage = () => {
   };
 
   return (
-    <Layout className="searchpage-layout">
-      <Content className="searchpage-content">
+    <Layout className={styles.searchpageLayout}>
+      <Content className={styles.searchpageContent}>
         {/* Banner Section */}
         <Row>
           <Col span={2} />
           <Col span={20}>
-            <section className="banner-section">
-              <div className="banner-background"></div>
-              <div className="banner-container">
-                <Title level={1} className="banner-title">
-                  Tìm kiếm việc làm <span className="highlight">phù hợp</span>
+            <section className={styles.bannerSection}>
+              <div className={styles.bannerBackground} />
+              <div className={styles.bannerContainer}>
+                <Title level={1} className={styles.bannerTitle}>
+                  Tìm kiếm việc làm{" "}
+                  <span className={styles.highlight}>phù hợp</span>
                 </Title>
-                <Text className="banner-description">
+                <Text className={styles.bannerDescription}>
                   Khám phá hàng nghìn cơ hội việc làm với bộ lọc thông minh
                 </Text>
 
                 {/* Search Bar */}
-                <div className="search-container">
-                  <div className="search-input-group">
+                <div className={styles.searchContainer}>
+                  <div className={styles.searchInputGroup}>
                     <Input
                       size="large"
                       placeholder="Nhập vị trí công việc, kỹ năng..."
                       prefix={<SearchOutlined />}
                       value={searchKeyword}
                       onChange={(e) => setSearchKeyword(e.target.value)}
-                      className="search-input"
+                      className={styles.searchInput}
                     />
                   </div>
-                  <div className="location-input-group">
+                  <div className={styles.locationInputGroup}>
                     <Select
                       size="large"
                       placeholder="Chọn địa điểm"
-                      className="location-select"
+                      className={styles.locationSelect}
                       value={selectedLocation}
                       onChange={setSelectedLocation}
                       allowClear
@@ -236,7 +269,7 @@ const SearchPage = () => {
                   <Button
                     type="primary"
                     size="large"
-                    className="search-button"
+                    className={styles.searchButton}
                     onClick={handleSearch}
                   >
                     <SearchOutlined /> Tìm kiếm
@@ -248,192 +281,184 @@ const SearchPage = () => {
           <Col span={2} />
         </Row>
 
-        {/* Filters Section */}
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
-            <section className="filters-section">
-              <div className="section-container">
-                <div className="section-header">
-                  <div className="section-title-group">
-                    <Title level={2} className="section-title">
-                      <FilterOutlined className="section-icon" />
-                      Bộ lọc tìm kiếm
-                    </Title>
-                    <Text className="section-subtitle">
-                      Tinh chỉnh kết quả tìm kiếm theo nhu cầu của bạn
-                    </Text>
-                  </div>
-                  <Button
-                    type="primary"
-                    ghost
-                    className="reset-filter-btn"
-                    onClick={handleResetFilters}
-                  >
-                    <ReloadOutlined /> Đặt lại bộ lọc
-                  </Button>
-                </div>
-
-                <Card className="filter-card">
-                  <Row gutter={[16, 16]} align="middle">
-                    {/* Job Type Filter */}
-                    <Col xs={24} sm={12} md={8} lg={4}>
-                      {createDropdownMenu("jobType", "Hình thức")}
-                    </Col>
-
-                    {/* Experience Filter */}
-                    <Col xs={24} sm={12} md={8} lg={4}>
-                      {createDropdownMenu("experience", "Kinh nghiệm")}
-                    </Col>
-
-                    {/* Education Filter */}
-                    <Col xs={24} sm={12} md={8} lg={4}>
-                      {createDropdownMenu("education", "Học vấn")}
-                    </Col>
-
-                    {/* Industry Filter */}
-                    <Col xs={24} sm={12} md={8} lg={4}>
-                      {createDropdownMenu("industry", "Lĩnh vực")}
-                    </Col>
-
-                    {/* Company Size Filter */}
-                    <Col xs={24} sm={12} md={8} lg={4}>
-                      {createDropdownMenu("companySize", "Quy mô")}
-                    </Col>
-
-                    {/* Salary Filter */}
-                    <Col xs={24} sm={24} md={16} lg={4}>
-                      <div className="salary-filter-group">
-                        <Text className="salary-filter-label" strong>
-                          Mức lương (triệu VNĐ)
-                        </Text>
-                        <div className="salary-slider-container">
-                          <Slider
-                            range
-                            min={0}
-                            max={100}
-                            value={filters.salary}
-                            onChange={(value) =>
-                              handleFilterChange("salary", value)
-                            }
-                            marks={{
-                              0: "0",
-                              25: "25",
-                              50: "50",
-                              75: "75",
-                              100: "100+",
-                            }}
-                            className="salary-slider"
-                          />
-                        </div>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
-              </div>
-            </section>
-          </Col>
-          <Col span={2} />
-        </Row>
-
         {/* All Jobs Section */}
         <Row>
           <Col span={2} />
           <Col span={20}>
-            <section className="all-jobs-section">
-              <div className="section-container">
-                <div className="section-header">
-                  <div className="section-title-group">
-                    <Title level={2} className="section-title">
-                      <FireOutlined className="section-icon" />
-                      Tất cả việc làm
-                    </Title>
-                    <Text className="section-subtitle">
-                      {allJobs.length} cơ hội việc làm đang chờ bạn
-                    </Text>
-                  </div>
-                </div>
+            <section className={styles.allJobsSection}>
+              <div className={styles.sectionContainer}>
+                <Row gutter={[16, 16]} align="middle">
+                  {/* Job Type Filter */}
+                  <Col xs={12} sm={6} md={3}>
+                    {createDropdownMenu("jobType", "Hình thức")}
+                  </Col>
 
-                <Row gutter={[24, 24]}>
-                  {currentJobs.map((job) => (
-                    <Col xs={24} sm={12} lg={6} key={job.id}>
-                      <Card className="job-card" hoverable>
-                        <div className="job-header">
-                          <Avatar
-                            src={job.logo}
-                            size={56}
-                            className="company-logo"
-                          />
-                          <div className="job-actions">
-                            <Button
-                              type="text"
-                              icon={<HeartOutlined />}
-                              className={`save-btn ${job.saved ? "saved" : ""}`}
-                            />
-                            <Button
-                              type="text"
-                              icon={<ShareAltOutlined />}
-                              className="share-btn"
-                            />
-                          </div>
-                        </div>
+                  {/* Experience Filter */}
+                  <Col xs={12} sm={6} md={3}>
+                    {createDropdownMenu("experience", "Kinh nghiệm")}
+                  </Col>
 
-                        <div className="job-info">
-                          <div className="job-title-group">
-                            <Title level={4} className="job-title">
-                              {job.title}
-                            </Title>
-                            {job.urgent && (
-                              <Badge count="Urgent" className="urgent-badge" />
-                            )}
-                          </div>
-                          <Text className="company-name">{job.company}</Text>
+                  {/* Education Filter */}
+                  <Col xs={12} sm={6} md={3}>
+                    {createDropdownMenu("education", "Học vấn")}
+                  </Col>
 
-                          <div className="job-details">
-                            <div className="detail-item">
-                              <EnvironmentOutlined className="detail-icon" />
-                              <Text>{job.location}</Text>
-                            </div>
-                            <div className="detail-item">
-                              <DollarOutlined className="detail-icon" />
-                              <Text className="salary-text">{job.salary}</Text>
-                            </div>
-                            <div className="detail-item">
-                              <ClockCircleOutlined className="detail-icon" />
-                              <Tag className="job-type-tag">{job.type}</Tag>
-                            </div>
-                          </div>
+                  {/* Industry Filter */}
+                  <Col xs={12} sm={6} md={3}>
+                    {createDropdownMenu("industry", "Lĩnh vực")}
+                  </Col>
 
-                          <div className="job-tags">
-                            {job.tags.map((tag) => (
-                              <Tag key={tag} className="skill-tag">
-                                {tag}
-                              </Tag>
-                            ))}
-                          </div>
+                  {/* Company Size Filter */}
+                  <Col xs={12} sm={6} md={3}>
+                    {createDropdownMenu("companySize", "Quy mô")}
+                  </Col>
 
-                          <div className="job-footer">
-                            <Text className="posted-time" type="secondary">
-                              <ClockCircleOutlined /> {job.posted}
-                            </Text>
-                            <Button type="primary" className="apply-btn">
-                              Ứng tuyển ngay
-                            </Button>
-                          </div>
-                        </div>
-                      </Card>
-                    </Col>
-                  ))}
+                  {/* Salary Filter */}
+                  <Col xs={12} sm={12} md={5}>
+                    <div className={styles.salaryFilterGroup}>
+                      <Text className={styles.salaryFilterLabel} strong>
+                        Mức lương (triệu VNĐ)
+                      </Text>
+                      <div className={styles.salarySliderContainer}>
+                        <Slider
+                          range
+                          min={0}
+                          max={100}
+                          value={filters.salary}
+                          onChange={(value) =>
+                            handleFilterChange("salary", value)
+                          }
+                          marks={{
+                            0: "0",
+                            25: "25",
+                            50: "50",
+                            75: "75",
+                            100: "100+",
+                          }}
+                          className={styles.salarySlider}
+                        />
+                      </div>
+                    </div>
+                  </Col>
+
+                  {/* Reset Button */}
+                  <Col xs={12} sm={12} md={4}>
+                    <Button
+                      type="primary"
+                      ghost
+                      className={styles.resetFilterBtn}
+                      onClick={handleResetFilters}
+                    >
+                      <ReloadOutlined /> Reset
+                    </Button>
+                  </Col>
                 </Row>
 
-                <div className="pagination-container">
+                <Row gutter={[16, 16]}>
+                  {currentJobs.length > 0 ? (
+                    currentJobs.map((job) => (
+                      <Col xs={24} sm={12} md={6} key={job.id}>
+                        <Card className={styles.jobCard} hoverable>
+                          <div className={styles.jobHeader}>
+                            <Avatar
+                              src={job.logo}
+                              size={56}
+                              className={styles.companyLogo}
+                            />
+                            <div className={styles.jobActions}>
+                              <Button
+                                type="text"
+                                icon={<HeartOutlined />}
+                                className={classNames(styles.saveBtn, {
+                                  [styles.saved]: job.saved,
+                                })}
+                              />
+                              <Button
+                                type="text"
+                                icon={<ShareAltOutlined />}
+                                className={styles.shareBtn}
+                              />
+                            </div>
+                          </div>
+                          <div className={styles.jobInfo}>
+                            <div className={styles.jobTitleGroup}>
+                              <Title level={4} className={styles.jobTitle}>
+                                {job.title}
+                              </Title>
+                              {job.urgent && (
+                                <Badge
+                                  count="Urgent"
+                                  className={styles.urgentBadge}
+                                />
+                              )}
+                            </div>
+                            <Text className={styles.companyName}>
+                              {job.company}
+                            </Text>
+                            <div className={styles.jobDetails}>
+                              <div className={styles.detailItem}>
+                                <EnvironmentOutlined
+                                  className={styles.detailIcon}
+                                />
+                                <Text>{job.location}</Text>
+                              </div>
+                              <div className={styles.detailItem}>
+                                <DollarOutlined className={styles.detailIcon} />
+                                <Text className={styles.salaryText}>
+                                  {job.salary}
+                                </Text>
+                              </div>
+                              <div className={styles.detailItem}>
+                                <ClockCircleOutlined
+                                  className={styles.detailIcon}
+                                />
+                                <Tag className={styles.jobTypeTag}>
+                                  {job.type}
+                                </Tag>
+                              </div>
+                            </div>
+                            <div className={styles.jobTags}>
+                              {job.tags.map((tag) => (
+                                <Tag key={tag} className={styles.skillTag}>
+                                  {tag}
+                                </Tag>
+                              ))}
+                            </div>
+                            <div className={styles.jobFooter}>
+                              <Text
+                                className={styles.postedTime}
+                                type="secondary"
+                              >
+                                <ClockCircleOutlined /> {job.posted}
+                              </Text>
+                              <Button
+                                type="primary"
+                                className={styles.applyBtn}
+                              >
+                                Ứng tuyển ngay
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      </Col>
+                    ))
+                  ) : (
+                    <Col span={24}>
+                      <Text className={styles.noResults}>
+                        Không tìm thấy công việc phù hợp
+                      </Text>
+                    </Col>
+                  )}
+                </Row>
+
+                <div className={styles.paginationContainer}>
                   <Pagination
                     current={currentPage}
                     pageSize={pageSize}
-                    total={allJobs.length}
+                    total={filteredJobs.length}
                     onChange={handlePageChange}
                     showSizeChanger={false}
-                    className="jobs-pagination"
+                    className={styles.jobsPagination}
                   />
                 </div>
               </div>
