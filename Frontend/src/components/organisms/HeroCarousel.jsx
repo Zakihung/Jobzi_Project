@@ -9,14 +9,13 @@ const HeroCarouselWrapper = styled.div`
 `;
 
 const CarouselItem = styled.div`
-  height: 400px;
+  height: 550px;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 `;
 
 const CarouselItemIt = styled(CarouselItem)`

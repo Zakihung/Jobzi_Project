@@ -1,9 +1,9 @@
 import React from "react";
 import { Row, Col, Typography } from "antd";
 import {
-  SearchOutlined,
-  UserOutlined,
-  CheckCircleOutlined,
+  AppstoreOutlined,
+  RocketOutlined,
+  BulbOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import FeatureItem from "../organisms/FeatureItem";
@@ -46,19 +46,19 @@ const SectionSubtitle = styled(Text)`
 const FeaturesSection = () => {
   const features = [
     {
-      icon: <SearchOutlined />,
-      title: "Tìm kiếm thông minh",
+      icon: <BulbOutlined />,
+      title: "AI thông minh",
       description:
-        "Công nghệ AI giúp tìm kiếm và gợi ý việc làm phù hợp với kỹ năng và kinh nghiệm của bạn",
+        "Công nghệ AI giúp ứng viên phân tích hồ sơ và gợi ý chỉnh sửa để tăng cơ hội trúng tuyển",
     },
     {
-      icon: <UserOutlined />,
-      title: "Hồ sơ chuyên nghiệp",
+      icon: <AppstoreOutlined />,
+      title: "Giao diện thân thiện & đa nền tảng",
       description:
-        "Tạo hồ sơ ấn tượng với các template được thiết kế bởi chuyên gia HR",
+        "Giao diện dễ sử dụng, tương thích với mọi thiết bị từ máy tính đến di động",
     },
     {
-      icon: <CheckCircleOutlined />,
+      icon: <RocketOutlined />,
       title: "Ứng tuyển nhanh chóng",
       description:
         "Ứng tuyển chỉ với một cú click và theo dõi trạng thái đơn ứng tuyển real-time",

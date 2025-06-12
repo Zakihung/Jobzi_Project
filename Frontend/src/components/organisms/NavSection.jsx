@@ -26,8 +26,8 @@ const NavButton = styled(Button)`
   height: 100%;
   cursor: pointer;
   &:hover {
-    background-color: #f5f9ff;
-    color: #577cf6;
+    background-color: #f5f9ff !important;
+    color: #577cf6 !important;
     border: none;
   }
   &.active {

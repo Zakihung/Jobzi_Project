@@ -1,105 +1,222 @@
 import React, { useState } from "react";
-import { Input, Select, Button } from "antd";
-import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { Input, Popover, Button, Divider, List } from "antd";
+import {
+  SearchOutlined,
+  EnvironmentOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 import styled from "styled-components";
-
-const { Option } = Select;
+import { useLocation } from "react-router-dom";
 
 const SearchContainer = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 8px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  padding: 8px;
+  padding: 4px;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
-const SearchInputGroup = styled.div`
-  flex: 2;
-`;
-
 const LocationInputGroup = styled.div`
   flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const SearchInputGroup = styled.div`
+  flex: 5;
 `;
 
 const SearchInput = styled(Input)`
   && {
     border: none !important;
     background: transparent !important;
-    height: 56px;
+    height: 40px;
+  }
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 `;
 
-const LocationSelect = styled(Select)`
+const DividerVer = styled(Divider)`
   && {
-    border: none !important;
-    background: transparent !important;
-    height: 56px;
-    .ant-select-selector {
-      background: transparent !important;
-      border: none !important;
+    margin: 0 2px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    height: 40px;
+  }
+`;
+
+const LocationTrigger = styled.div`
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  transition: all 0.3s ease;
+  &:hover {
+    color: #577cf6;
+  }
+
+  .location-text {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+  }
+
+  .location-prefix {
+    color: rgba(0, 0, 0, 0.88) !important;
+    margin-right: 8px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .arrow-icon {
+    margin-left: 8px;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  &.open .arrow-icon {
+    transform: rotate(180deg);
+  }
+`;
+
+const LocationList = styled(List)`
+  && {
+    .ant-list-item {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-bottom: none;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      &.selected {
+        background-color: #e6f4ff;
+        color: #577cf6;
+      }
     }
   }
 `;
 
 const SearchButton = styled(Button)`
-  height: 56px;
-  padding: 0 32px;
+  height: 40px;
+  padding: 0 15px;
   border-radius: 12px;
-  background: #577cf6;
-  border-color: #577cf6;
+  color: #577cf6 !important;
+  background: transparent !important;
   font-weight: 600;
   font-size: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 16px rgba(87, 124, 246, 0.3);
   transition: all 0.3s ease;
+  box-shadow: none;
+
+  .anticon {
+    transition: transform 0.3s ease;
+  }
+
   &:hover {
-    background: #4c6ef5;
-    border-color: #4c6ef5;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(87, 124, 246, 0.4);
+    .anticon {
+      transform: scale(1.4);
+    }
   }
 `;
 
 const SearchBar = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("Toàn quốc");
+  const [popoverVisible, setPopoverVisible] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
+  const locationOptions = [
+    { value: "toan-quoc", label: "Toàn quốc" },
+    { value: "ho-chi-minh", label: "Hồ Chí Minh" },
+    { value: "ha-noi", label: "Hà Nội" },
+    { value: "da-nang", label: "Đà Nẵng" },
+    { value: "can-tho", label: "Cần Thơ" },
+    { value: "ba-ria", label: "Bà Rịa - Vũng Tàu" },
+  ];
 
   const handleSearch = () => {
     console.log("Search:", searchKeyword, selectedLocation);
   };
 
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location.label);
+    setPopoverVisible(false);
+  };
+
+  const locationContent = (
+    <div style={{ width: 250 }}>
+      <LocationList
+        size="small"
+        dataSource={locationOptions}
+        renderItem={(item) => (
+          <List.Item
+            className={selectedLocation === item.label ? "selected" : ""}
+            onClick={() => handleLocationSelect(item)}
+          >
+            {item.label}
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+
   return (
     <SearchContainer>
+      {!isHomePage && (
+        <>
+          <LocationInputGroup>
+            <Popover
+              content={locationContent}
+              trigger="click"
+              placement="bottomLeft"
+              open={popoverVisible}
+              onOpenChange={setPopoverVisible}
+              arrow={false}
+              styles={{ body: { zIndex: 1000 } }}
+              getPopupContainer={() => document.body}
+            >
+              <LocationTrigger className={popoverVisible ? "open" : ""}>
+                <EnvironmentOutlined className="location-prefix" />
+                <span className="location-text">{selectedLocation}</span>
+                <DownOutlined className="arrow-icon" />
+              </LocationTrigger>
+            </Popover>
+          </LocationInputGroup>
+          <DividerVer type="vertical" />
+        </>
+      )}
       <SearchInputGroup>
         <SearchInput
           size="large"
           placeholder="Nhập vị trí công việc, kỹ năng..."
-          prefix={<SearchOutlined />}
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
+          onPressEnter={handleSearch}
         />
       </SearchInputGroup>
-      <LocationInputGroup>
-        <LocationSelect
-          size="large"
-          placeholder="Chọn địa điểm"
-          value={selectedLocation}
-          onChange={setSelectedLocation}
-          allowClear
-          suffixIcon={<EnvironmentOutlined />}
-        >
-          <Option value="ho-chi-minh">Hồ Chí Minh</Option>
-          <Option value="ha-noi">Hà Nội</Option>
-          <Option value="da-nang">Đà Nẵng</Option>
-          <Option value="can-tho">Cần Thơ</Option>
-          <Option value="remote">Remote</Option>
-        </LocationSelect>
-      </LocationInputGroup>
+      <DividerVer type="vertical" />
       <SearchButton type="primary" size="large" onClick={handleSearch}>
         <SearchOutlined /> Tìm kiếm
       </SearchButton>

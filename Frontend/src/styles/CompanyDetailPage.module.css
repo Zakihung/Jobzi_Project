@@ -131,6 +131,7 @@
 .recruiterItem {
   display: flex;
   align-items: center;
+  justify-content: flex-start !important;
   gap: 12px;
   padding: 8px 0;
 }
