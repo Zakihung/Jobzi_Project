@@ -188,7 +188,7 @@
 
 /* Filter Dropdown Styles */
 .filterDropdownBtn {
-  width: 100%;
+  width: fit-content;
   height: 44px;
   border: 2px solid #e8e8e8;
   background: var(--white);
