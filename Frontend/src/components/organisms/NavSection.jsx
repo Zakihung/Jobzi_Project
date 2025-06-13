@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Space } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const NavSectionWrapper = styled.div`
@@ -37,8 +37,9 @@ const NavButton = styled(Button)`
   }
 `;
 
-const NavSection = ({ current, setCurrent }) => {
+const NavSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     { key: "home", label: "Trang chủ", path: "/" },
@@ -47,23 +48,25 @@ const NavSection = ({ current, setCurrent }) => {
     { key: "about", label: "Về chúng tôi", path: "/about" },
   ];
 
-  const handleClick = (key, path) => {
-    setCurrent(key);
-    if (path) navigate(path);
+  const handleClick = (path) => {
+    navigate(path);
   };
 
   return (
     <NavSectionWrapper>
       <Space size="small">
-        {menuItems.map((item) => (
-          <NavButton
-            key={item.key}
-            className={current === item.key ? "active" : ""}
-            onClick={() => handleClick(item.key, item.path)}
-          >
-            {item.label}
-          </NavButton>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <NavButton
+              key={item.key}
+              className={isActive ? "active" : ""}
+              onClick={() => handleClick(item.path)}
+            >
+              {item.label}
+            </NavButton>
+          );
+        })}
       </Space>
     </NavSectionWrapper>
   );
