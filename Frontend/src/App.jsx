@@ -4,6 +4,7 @@ import Header from "../src/components/templates/Header.jsx";
 import { Outlet } from "react-router-dom";
 import ScrollToTop from "./components/atoms/ScrollToTop.jsx";
 import ScrollToTopButton from "./components/atoms/ScrollToTopButton.jsx";
+import Footer from "./components/templates/Footer.jsx";
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <Outlet />
         </Content>
       </Layout>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }
