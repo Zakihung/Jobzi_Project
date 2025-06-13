@@ -87,13 +87,14 @@ const NavigationItem = styled.div`
 const RoutesDevTool = () => {
   const navigationItems = [
     { path: "/", label: "Trang chủ" },
-    { path: "/jobs", label: "Danh sách việc làm" },
-    { path: "/employers", label: "Nhà tuyển dụng" },
+    { path: "/search", label: "Tìm kiếm việc làm" },
+    { path: "/companies", label: "Danh sách công ty" },
+    { path: "/companydetail", label: "Chi tiết công ty" },
+    { path: "/jobpostdetail", label: "Chi tiết tin" },
     { path: "/login", label: "Đăng nhập" },
-    { path: "/register", label: "Đăng ký" },
+    { path: "/signup", label: "Đăng ký" },
     { path: "/profile", label: "Hồ sơ người dùng" },
     { path: "/admin", label: "Trang quản trị" },
-    // Thêm các đường dẫn khác tại đây
   ];
 
   const handleNavigation = (path) => {

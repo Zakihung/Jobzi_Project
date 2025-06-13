@@ -45,8 +45,6 @@ const NavSection = ({ current, setCurrent }) => {
     { key: "search", label: "Tìm kiếm", path: "/search" },
     { key: "companies", label: "Công ty", path: "/companies" },
     { key: "about", label: "Về chúng tôi", path: "/about" },
-    { key: "jobpostdetail", label: "Chi tiết tin", path: "/jobpostdetail" },
-    { key: "companydetail", label: "Chi tiết cty", path: "/companydetail" },
   ];
 
   const handleClick = (key, path) => {
