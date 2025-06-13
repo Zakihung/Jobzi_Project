@@ -91,8 +91,9 @@ const RoutesDevTool = () => {
     { path: "/companies", label: "Danh sách công ty" },
     { path: "/companydetail", label: "Chi tiết công ty" },
     { path: "/jobpostdetail", label: "Chi tiết tin" },
-    { path: "/login", label: "Đăng nhập" },
-    { path: "/signup", label: "Đăng ký" },
+    { path: "/login", label: "Đăng nhập ứng viên" },
+    { path: "/signup", label: "Đăng ký ứng viên" },
+    { path: "employer-login", label: "Đăng nhập nhà tuyển dụng" },
     { path: "/profile", label: "Hồ sơ người dùng" },
     { path: "/admin", label: "Trang quản trị" },
   ];
