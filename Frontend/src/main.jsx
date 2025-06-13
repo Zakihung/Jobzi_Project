@@ -6,6 +6,7 @@ import "./styles/global.css";
 import App from "./App.jsx";
 // Thêm import ConfigProvider từ antd
 import { ConfigProvider, App as AntdApp } from "antd";
+import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
 
 import HomePage from "./pages/candidate/HomePage.jsx";
 // import ProfilePage from "./pages/candidate/ProfilePage";
@@ -160,6 +161,7 @@ createRoot(document.getElementById("root")).render(
       }}
     >
       <AntdApp>
+        <RoutesDevTool />
         <RouterProvider router={router} />
       </AntdApp>
     </ConfigProvider>
