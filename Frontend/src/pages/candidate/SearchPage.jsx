@@ -21,7 +21,7 @@ const SearchPage = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [filters, setFilters] = useState({
     jobType: [],
-    salary: [0, 100],
+    salary: [], // Mảng rỗng để chứa các chuỗi như ["negotiable", "5-10m"]
     experience: [],
     education: [],
     industry: [],
@@ -42,7 +42,7 @@ const SearchPage = () => {
         location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Remote", "Cần Thơ"][
           index % 5
         ],
-        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`,
+        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`, // Ví dụ: "10-20 triệu"
         type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
         tags: [
           ["React", "Node.js", "JavaScript"],
@@ -57,6 +57,22 @@ const SearchPage = () => {
       })),
     []
   );
+
+  // Hàm ánh xạ giá trị salary từ filterOptions.salary sang khoảng số
+  const salaryRanges = {
+    negotiable: [0, Infinity], // Thỏa thuận: bất kỳ mức lương nào
+    "under-5m": [0, 5], // Dưới 5 triệu
+    "5-10m": [5, 10],
+    "10-15m": [10, 15],
+    "15-20m": [15, 20],
+    "20-25m": [20, 25],
+    "25-30m": [25, 30],
+    "30-35m": [30, 35],
+    "35-40m": [35, 40],
+    "40-45m": [40, 45],
+    "45-50m": [45, 50],
+    "over-50m": [50, Infinity], // Trên 50 triệu
+  };
 
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
@@ -82,10 +98,17 @@ const SearchPage = () => {
           ? filters.jobType.includes(job.type.toLowerCase())
           : true;
 
-      const [minSalary] = job.salary.split("-").map((s) => parseInt(s));
       const matchesSalary =
-        minSalary >= filters.salary[0] &&
-        (filters.salary[1] === 100 || minSalary <= filters.salary[1]);
+        filters.salary.length > 0
+          ? filters.salary.some((salaryFilter) => {
+              const [min, max] = salaryRanges[salaryFilter] || [0, Infinity];
+              const [jobMin] = job.salary
+                .replace(" triệu", "")
+                .split("-")
+                .map((s) => parseInt(s));
+              return jobMin >= min && (max === Infinity || jobMin <= max);
+            })
+          : true;
 
       return (
         matchesKeyword && matchesLocation && matchesJobType && matchesSalary
@@ -100,7 +123,7 @@ const SearchPage = () => {
   const handleResetFilters = () => {
     setFilters({
       jobType: [],
-      salary: [0, 100],
+      salary: [],
       experience: [],
       education: [],
       industry: [],

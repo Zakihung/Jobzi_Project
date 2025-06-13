@@ -104,11 +104,6 @@ const LocationList = styled(List)`
       transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: #f5f5f5;
-      }
-
-      &.selected {
-        background-color: #e6f4ff;
         color: #577cf6;
       }
     }
@@ -189,7 +184,7 @@ const SearchBar = () => {
           <LocationInputGroup>
             <Popover
               content={locationContent}
-              trigger="click"
+              trigger="hover"
               placement="bottomLeft"
               open={popoverVisible}
               onOpenChange={setPopoverVisible}

@@ -1,12 +1,12 @@
 import React from "react";
 import { Row, Col } from "antd";
 import styled from "styled-components";
-import FilterDropdown from "../organisms/FilterDropdown";
-import SalaryFilter from "../organisms/SalaryFilter";
+// import SalaryFilter from "../organisms/SalaryFilter";
 import ResetFilterButton from "../organisms/ResetFilterButton";
 import JobCard from "../../features/job/components/organisms/JobCard";
 import PaginationSection from "../organisms/PaginationSection";
 import NoResults from "../organisms/NoResults";
+import FilterPopover from "../organisms/FilterPopover";
 
 const AllJobsSectionWrapper = styled.section`
   padding: 2rem 0;
@@ -67,64 +67,79 @@ const AllJobsSection = ({
       { label: "100-500 nhân viên", value: "100-500" },
       { label: "Trên 500 nhân viên", value: "over-500" },
     ],
+    salary: [
+      { label: "Thỏa thuận", value: "negotiable" },
+      { label: "Dưới 5 triệu", value: "under-5m" },
+      { label: "5-10 triệu", value: "5-10m" },
+      { label: "10-15 triệu", value: "10-15m" },
+      { label: "15-20 triệu", value: "15-20m" },
+      { label: "20-25 triệu", value: "20-25m" },
+      { label: "25-30 triệu", value: "25-30m" },
+      { label: "30-35 triệu", value: "30-35m" },
+      { label: "35-40 triệu", value: "35-40m" },
+      { label: "40-45 triệu", value: "40-45m" },
+      { label: "45-50 triệu", value: "45-50m" },
+      { label: "Trên 50 triệu", value: "over-50m" },
+    ],
   };
+
+  console.log("filters.salary:", filters.salary);
 
   return (
     <AllJobsSectionWrapper>
       <SectionContainer>
-        <Row gutter={[16, 16]} align="middle">
-          <Col xs={12} sm={6} md={3}>
-            <FilterDropdown
-              filterKey="jobType"
-              title="Hình thức"
-              options={filterOptions.jobType}
-              value={filters.jobType}
-              onChange={(values) => handleFilterChange("jobType", values)}
-            />
+        <Row
+          align="middle"
+          justify="space-between"
+          style={{ gap: "8px", marginBottom: "16px" }}
+        >
+          <Col>
+            <Row style={{ gap: "8px" }}>
+              <FilterPopover
+                filterKey="jobType"
+                title="Hình thức"
+                options={filterOptions.jobType}
+                value={filters.jobType}
+                onChange={(values) => handleFilterChange("jobType", values)}
+              />
+              <FilterPopover
+                filterKey="experience"
+                title="Kinh nghiệm"
+                options={filterOptions.experience}
+                value={filters.experience}
+                onChange={(values) => handleFilterChange("experience", values)}
+              />
+              <FilterPopover
+                filterKey="education"
+                title="Học vấn"
+                options={filterOptions.education}
+                value={filters.education}
+                onChange={(values) => handleFilterChange("education", values)}
+              />
+              <FilterPopover
+                filterKey="industry"
+                title="Lĩnh vực"
+                options={filterOptions.industry}
+                value={filters.industry}
+                onChange={(values) => handleFilterChange("industry", values)}
+              />
+              <FilterPopover
+                filterKey="companySize"
+                title="Quy mô"
+                options={filterOptions.companySize}
+                value={filters.companySize}
+                onChange={(values) => handleFilterChange("companySize", values)}
+              />
+              <FilterPopover
+                filterKey="salary"
+                title="Mức lương"
+                options={filterOptions.salary}
+                value={filters.salary}
+                onChange={(values) => handleFilterChange("salary", values)}
+              />
+            </Row>
           </Col>
-          <Col xs={12} sm={6} md={3}>
-            <FilterDropdown
-              filterKey="experience"
-              title="Kinh nghiệm"
-              options={filterOptions.experience}
-              value={filters.experience}
-              onChange={(values) => handleFilterChange("experience", values)}
-            />
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <FilterDropdown
-              filterKey="education"
-              title="Học vấn"
-              options={filterOptions.education}
-              value={filters.education}
-              onChange={(values) => handleFilterChange("education", values)}
-            />
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <FilterDropdown
-              filterKey="industry"
-              title="Lĩnh vực"
-              options={filterOptions.industry}
-              value={filters.industry}
-              onChange={(values) => handleFilterChange("industry", values)}
-            />
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <FilterDropdown
-              filterKey="companySize"
-              title="Quy mô"
-              options={filterOptions.companySize}
-              value={filters.companySize}
-              onChange={(values) => handleFilterChange("companySize", values)}
-            />
-          </Col>
-          <Col xs={12} sm={12} md={5}>
-            <SalaryFilter
-              value={filters.salary}
-              onChange={(value) => handleFilterChange("salary", value)}
-            />
-          </Col>
-          <Col xs={12} sm={12} md={4}>
+          <Col>
             <ResetFilterButton onClick={handleResetFilters} />
           </Col>
         </Row>
