@@ -7,12 +7,11 @@ const { Title, Text } = Typography;
 
 const BannerSectionWrapper = styled.section`
   background: linear-gradient(135deg, #577cf6 0%, #667eea 50%, #764ba2 100%);
-  padding: 60px 0;
+  padding: 18px 0;
   color: #ffffff;
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  margin-top: 2rem;
   @media (max-width: 576px) {
     padding: 40px 0;
   }
@@ -20,7 +19,6 @@ const BannerSectionWrapper = styled.section`
 
 const BannerBackground = styled.div`
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -73,7 +71,7 @@ const Highlight = styled.span`
 const BannerDescription = styled(Text)`
   color: rgba(255, 255, 255, 0.9);
   font-size: 18px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   line-height: 1.6;
   max-width: 600px;
   margin-left: auto;
@@ -99,7 +97,7 @@ const BannerSection = ({
           Tìm kiếm việc làm <Highlight>phù hợp</Highlight>
         </BannerTitle>
         <BannerDescription>
-          Khám phá hàng nghìn cơ hội việc làm với bộ lọc thông minh
+          Khám phá nhiều cơ hội việc làm với bộ lọc chi tiết
         </BannerDescription>
         <SearchBar
           searchKeyword={searchKeyword}

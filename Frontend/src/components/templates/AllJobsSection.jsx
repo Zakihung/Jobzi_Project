@@ -9,15 +9,14 @@ import NoResults from "../organisms/NoResults";
 import FilterPopover from "../organisms/FilterPopover";
 
 const AllJobsSectionWrapper = styled.section`
-  padding: 2rem 0;
+  padding: 1.5rem 0;
   background: #f8f9fa;
   border-radius: 24px;
-  margin-top: 2rem;
+  margin-top: 1rem;
 `;
 
 const SectionContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 20px;
   padding: 0;
 `;
 
@@ -91,7 +90,7 @@ const AllJobsSection = ({
         <Row
           align="middle"
           justify="space-between"
-          style={{ gap: "8px", marginBottom: "16px" }}
+          style={{ gap: "8px", marginBottom: "24px" }}
         >
           <Col>
             <Row style={{ gap: "8px" }}>

@@ -8,8 +8,8 @@ const FilterPopoverBtn = styled(Button)`
   height: 44px;
   border: 2px solid #e8e8e8;
   background: #ffffff;
-  color: #666;
-  font-weight: 500;
+  color: #1a1a1a;
+  font-weight: 600;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -17,6 +17,7 @@ const FilterPopoverBtn = styled(Button)`
   padding: 0 16px;
   transition: all 0.3s ease;
   text-align: left;
+
   &:hover {
     border-color: #577cf6;
     color: #577cf6;
@@ -26,7 +27,6 @@ const FilterPopoverBtn = styled(Button)`
     border-color: #577cf6;
     background: #577cf6;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(87, 124, 246, 0.2);
   }
   &.active:hover {
     background: #4c6ef5;
@@ -40,7 +40,7 @@ const FilterPopoverBtn = styled(Button)`
 
 const FilterPopoverMenu = styled.div`
   background: #ffffff;
-  padding: 4px !important;
+  padding: 0px !important;
   border-radius: 12px;
   min-width: 220px;
   max-height: 300px;
@@ -73,31 +73,38 @@ const FilterPopoverMenu = styled.div`
 const FilterPopoverContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  font-weight: 600;
 
   /* Đảm bảo các checkbox hiển thị dọc */
   .ant-checkbox-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
 
   /* Tùy chỉnh style cho mỗi checkbox */
   .ant-checkbox-wrapper {
     margin: 0;
-    padding: 4px 0;
+    padding: 8px 4px;
     font-size: 14px;
+    border-radius: 8px;
     color: #333;
     display: flex;
     align-items: center;
     flex-direction: row-reverse; /* Checkbox nằm sau chữ */
     justify-content: flex-end; /* Đẩy checkbox về bên phải */
 
+    &:hover {
+      border-color: #577cf6;
+      color: #577cf6;
+      background: #f7f8ff;
+    }
+
     /* Đảm bảo label thẳng hàng */
     .ant-checkbox + span {
-      flex-grow: 1; /* Label chiếm toàn bộ không gian còn lại */
-      text-align: left; /* Căn trái label */
-      min-width: 150px; /* Đặt chiều rộng tối thiểu để đảm bảo thẳng hàng */
+      flex-grow: 1;
+      text-align: left;
+      min-width: 150px;
     }
   }
 

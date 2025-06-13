@@ -63,8 +63,14 @@ const LocationTrigger = styled.div`
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   transition: all 0.3s ease;
+  .location-prefix {
+    transition: transform 0.3s ease;
+  }
   &:hover {
     color: #577cf6;
+    .location-prefix {
+      transform: scale(1.3);
+    }
   }
 
   .location-text {
@@ -78,9 +84,9 @@ const LocationTrigger = styled.div`
   }
 
   .location-prefix {
-    color: rgba(0, 0, 0, 0.88) !important;
+    color: #577cf6;
     margin-right: 8px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
   }
 
