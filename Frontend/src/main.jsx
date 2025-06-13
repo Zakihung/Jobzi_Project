@@ -19,6 +19,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import JobPostDetailPage from "./pages/candidate/JobPostDetailPage.jsx";
 import CompanyDetailPage from "./pages/candidate/CompanyDetailPage.jsx";
 import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
+import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
 // import EmployerDashboardPage from "./pages/employer/EmployerDashboardPage";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
@@ -50,10 +51,10 @@ const router = createBrowserRouter([
         path: "search",
         element: <SearchPage />,
       },
-      // {
-      //   path: "profile",
-      //   element: <ProfilePage />,
-      // },
+      {
+        path: "profile",
+        element: <ProfileCandidatePage />,
+      },
       // {
       //   path: "account",
       //   element: <AccountPage />,

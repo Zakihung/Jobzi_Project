@@ -93,6 +93,7 @@ const RoutesDevTool = () => {
     { path: "/jobpostdetail", label: "Chi tiết tin" },
     { path: "/login", label: "Đăng nhập ứng viên" },
     { path: "/signup", label: "Đăng ký ứng viên" },
+    { path: "/profile", label: "Profile ứng viên" },
     { path: "employer-login", label: "Đăng nhập nhà tuyển dụng" },
     { path: "/profile", label: "Hồ sơ người dùng" },
     { path: "/admin", label: "Trang quản trị" },
