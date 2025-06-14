@@ -1,0 +1,299 @@
+/* CSS Variables */
+:root {
+  --primary: #577cf6;
+  --primary-dark: #4667ca;
+  --gray-200: #e2e8f0;
+  --text-primary: #333333;
+  --text-secondary: #4a5568;
+  --text-light: #718096;
+  --white: #ffffff;
+  --border-radius: 6px;
+}
+
+/* Header */
+.header {
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  height: 60px;
+  padding: 0;
+  line-height: 60px;
+}
+
+/* Header Container */
+.headerContainer {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 20px;
+}
+
+/* Left Section */
+.leftSection {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.menuButton {
+  color: var(--text-secondary) !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: var(--border-radius) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin-right: 12px !important;
+  transition: all 0.2s ease !important;
+  background: transparent !important;
+  line-height: 1 !important;
+}
+
+.menuButton:hover {
+  background-color: rgba(87, 124, 246, 0.1) !important;
+  color: var(--primary) !important;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Right Section */
+.rightSection {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Navigation Menu */
+.navMenu {
+  margin-right: 20px;
+}
+
+.navMenu :global(.ant-menu-horizontal) {
+  border-bottom: none !important;
+  background: transparent !important;
+  line-height: 60px !important;
+  height: 60px !important;
+}
+
+.navMenu :global(.ant-menu-item) {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  padding: 8px 16px !important;
+  margin-right: 4px !important;
+  border-radius: var(--border-radius) !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+  border: none !important;
+  height: auto !important;
+  line-height: normal !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navMenu :global(.ant-menu-item::after) {
+  display: none !important;
+}
+
+.navMenu :global(.ant-menu-item-selected),
+.navMenu :global(.ant-menu-item:hover) {
+  background-color: #f5f9ff !important;
+  color: var(--primary) !important;
+  border: none !important;
+}
+
+.navMenu :global(.ant-menu-item-icon) {
+  margin-right: 6px !important;
+}
+
+/* User Profile */
+.userProfile {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  height: 36px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.userProfile:hover {
+  background-color: rgba(87, 124, 246, 0.1);
+}
+
+.userName {
+  font-weight: 500;
+  color: #2d3748;
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+/* User Menu Dropdown */
+.userMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--white);
+  min-width: 160px;
+  border: 1px solid var(--gray-200);
+  display: none;
+  z-index: 1002;
+}
+
+.userMenuVisible {
+  display: block;
+}
+
+.userMenu :global(.ant-menu) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.userMenu :global(.ant-menu-item) {
+  font-size: 14px !important;
+  color: var(--text-primary) !important;
+  padding: 8px 16px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  transition: background-color 0.2s ease !important;
+  line-height: 1.5 !important;
+  height: auto !important;
+}
+
+.userMenu :global(.ant-menu-item:hover) {
+  background-color: #f5f9ff !important;
+  color: var(--primary) !important;
+}
+
+.userMenu :global(.ant-menu-item:first-child) {
+  border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+.userMenu :global(.ant-menu-item:last-child) {
+  border-radius: 0 0 var(--border-radius) var(--border-radius) !important;
+}
+
+/* Drawer */
+.drawer :global(.ant-drawer-content) {
+  border-radius: 0 16px 16px 0;
+  background: var(--white);
+}
+
+.drawer :global(.ant-drawer-header) {
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 24px;
+}
+
+.drawer :global(.ant-drawer-body) {
+  padding: 0;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawerUserName {
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.drawerMenu :global(.ant-menu) {
+  border: none !important;
+  background: transparent !important;
+}
+
+.drawerMenu :global(.ant-menu-item) {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: var(--text-primary) !important;
+  padding: 12px 24px !important;
+  margin: 4px 12px !important;
+  border-radius: var(--border-radius) !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+}
+
+.drawerMenu :global(.ant-menu-item:hover) {
+  background-color: #f5f9ff !important;
+  color: var(--primary) !important;
+}
+
+.drawerMenu :global(.ant-menu-item-icon) {
+  margin-right: 8px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .headerContainer {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .headerContainer {
+    padding: 0 12px;
+  }
+
+  .navMenu {
+    display: none;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .userProfile {
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    height: 32px;
+  }
+
+  .menuButton {
+    width: 32px !important;
+    height: 32px !important;
+    margin-right: 8px !important;
+  }
+
+  .userProfile {
+    padding: 4px;
+  }
+
+  .drawerHeader {
+    padding: 12px 20px;
+  }
+
+  .drawerMenu :global(.ant-menu-item) {
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+    margin: 2px 8px !important;
+  }
+}
