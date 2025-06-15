@@ -18,6 +18,7 @@ const JobCardWrapper = styled(Card)`
   transition: all 0.3s ease;
   overflow: hidden;
   background: #ffffff;
+  padding: 24px;
   height: 100%;
   &:hover {
     transform: translateY(-8px);
