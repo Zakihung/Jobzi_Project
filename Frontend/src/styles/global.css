@@ -16,3 +16,25 @@ body {
 .ant-card .ant-card-body {
   padding: 0 !important;
 }
+
+.ant-input-lg,
+.ant-select-selector {
+  font-size: 14px;
+}
+
+.ant-list .ant-list-item {
+  padding: 8px 0;
+}
+
+.ant-list .ant-list-header,
+.ant-list .ant-list-footer {
+  padding-block: 4px;
+}
+
+.ant-divider-horizontal {
+  margin: auto 0;
+}
+
+.ant-list .ant-list-empty-text {
+  padding: 0;
+}

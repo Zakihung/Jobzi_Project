@@ -6,7 +6,7 @@ const FloatingButton = styled(Button)`
   position: fixed !important;
   bottom: 70px;
   right: 15px;
-  z-index: 1010;
+  z-index: 1111;
   background-color: #ffffff !important;
   border: 2px solid #577cf6;
   width: 50px;
@@ -94,9 +94,10 @@ const RoutesDevTool = () => {
     { path: "/login", label: "Đăng nhập ứng viên" },
     { path: "/signup", label: "Đăng ký ứng viên" },
     { path: "/profile", label: "Profile ứng viên" },
+    { path: "/online-resume", label: "Resume ứng viên" },
     { path: "employer-login", label: "Đăng nhập nhà tuyển dụng" },
-    { path: "/profile", label: "Hồ sơ người dùng" },
-    { path: "/admin", label: "Trang quản trị" },
+    { path: "employer", label: "Dashboard nhà tuyển dụng" },
+    { path: "employer/postjob", label: "Đăng tin tuyển dụng" },
   ];
 
   const handleNavigation = (path) => {

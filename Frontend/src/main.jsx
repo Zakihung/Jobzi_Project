@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./styles/global.css";
 import App from "./App.jsx";
+import EmployerApp from "./EmployerApp.jsx";
 // Thêm import ConfigProvider từ antd
 import { ConfigProvider, App as AntdApp } from "antd";
 import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
@@ -25,6 +26,7 @@ import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 //Employer
 import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
 import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
+import PostJobPage from "./pages/employer/PostJobPage.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
@@ -80,10 +82,6 @@ const router = createBrowserRouter([
         path: "online-resume",
         element: <OnlineResumePage />,
       },
-      {
-        path: "employer",
-        element: <DashboardEmployer />,
-      },
     ],
   },
   {
@@ -99,19 +97,21 @@ const router = createBrowserRouter([
     element: <LoginCandidatePage />,
   },
 
-  // Routes cho Employer
-  // {
-  //   path: "/employer",
-  //   element: <EmployerApp />, // App với header, footer cho employer
-  //   children: [
-  //     {
-  //       index: true,
-  //       element: <EmployerDashboardPage />,
-  //     },
-  //     {
-  //       path: "search",
-  //       element: <CandidateSearchPage />,
-  //     },
+  //Routes cho Employer
+  {
+    path: "/employer",
+    element: <EmployerApp />,
+    children: [
+      {
+        index: true,
+        element: <DashboardEmployer />,
+      },
+      {
+        path: "postjob",
+        element: <PostJobPage />,
+      },
+    ],
+  },
   //     {
   //       path: "profile",
   //       element: <EmployerProfilePage />,
