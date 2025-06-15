@@ -10,16 +10,13 @@ import HeaderEmployer from "./components/templates/HeaderEmployer.jsx";
 function App() {
   return (
     <div className="App">
-      {/* <Header /> */}
-      <HeaderEmployer />
+      <Header />
+      {/* <HeaderEmployer /> */}
 
-      <Layout
-        style={{ marginLeft: 0, minHeight: "100vh", overflowX: "hidden" }}
-      >
+      <Layout style={{ marginLeft: 0, minHeight: "100vh" }}>
         <Content
           style={{
             maxWidth: "100vw",
-            overflowX: "hidden",
             boxSizing: "border-box",
           }}
         >

@@ -8,6 +8,7 @@ import App from "./App.jsx";
 import { ConfigProvider, App as AntdApp } from "antd";
 import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
 
+//Candidate
 import HomePage from "./pages/candidate/HomePage.jsx";
 // import ProfilePage from "./pages/candidate/ProfilePage";
 // import AccountPage from "./pages/candidate/AccountPage";
@@ -18,10 +19,13 @@ import CompanyPage from "./pages/candidate/CompanyPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import JobPostDetailPage from "./pages/candidate/JobPostDetailPage.jsx";
 import CompanyDetailPage from "./pages/candidate/CompanyDetailPage.jsx";
-import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
 import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
+import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
+
+//Employer
+import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
+import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
-// import EmployerDashboardPage from "./pages/employer/EmployerDashboardPage";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
 // import EmployerAccountPage from "./pages/employer/EmployerAccountPage";
@@ -29,7 +33,8 @@ import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 // import EmployerJobPostListPage from "./pages/employer/EmployerJobPostListPage";
 // import EmployerJobPostDetailPage from "./pages/employer/EmployerJobPostDetailPage";
 // import SignupEmployerPage from "./pages/employer/SignupEmployerPage";
-// import LoginEmployerPage from "./pages/employer/LoginEmployerPage";
+
+//Admin
 // import AdminApp from "./AdminApp.jsx";
 // import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 // import AdminJobPostManagementPage from "./pages/admin/AdminJobPostManagementPage";
@@ -41,7 +46,7 @@ const router = createBrowserRouter([
   // Routes cho Candidate
   {
     path: "/",
-    element: <App />, // App với header, footer cho candidate
+    element: <App />,
     children: [
       {
         index: true,
@@ -70,6 +75,14 @@ const router = createBrowserRouter([
       {
         path: "jobpostdetail",
         element: <JobPostDetailPage />,
+      },
+      {
+        path: "online-resume",
+        element: <OnlineResumePage />,
+      },
+      {
+        path: "employer",
+        element: <DashboardEmployer />,
       },
     ],
   },
