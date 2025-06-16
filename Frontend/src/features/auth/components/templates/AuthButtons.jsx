@@ -1,128 +1,113 @@
 import React from "react";
-import { Button, Space } from "antd";
-import { UserOutlined, LoginOutlined } from "@ant-design/icons";
+import { Button, Dropdown } from "antd";
+import { UserOutlined, LoginOutlined, DownOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const AuthButtonsContainer = styled.div`
+// Wrapper cho toàn bộ nút đăng nhập / đăng ký
+const AuthButtonContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  @media (max-width: 768px) {
-    gap: 4px;
-  }
 `;
 
-const LoginButton = styled(Button)`
-  border-radius: 6px;
-  font-weight: 500;
-  height: 36px;
+// Nút chính
+const AuthButton = styled(Button)`
+  color: #333333;
+  border-radius: 16px;
+  padding: 8px 16px;
+  margin-right: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid #577cf6;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
 
   &:hover {
-    background-color: #f0f2f5;
-    border-color: #d9d9d9;
+    background-color: #f5f9ff !important;
+    color: #577cf6 !important;
+    border: 1px solid #577cf6;
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+    font-size: 14px;
+    padding: 0 16px;
   }
 `;
 
-const RegisterButton = styled(Button)`
-  border-radius: 6px;
+// Styled div dùng làm label trong menu items
+const MenuItemLabel = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
   font-weight: 500;
-  height: 36px;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: linear-gradient(135deg, #096dd9 0%, #0050b3 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+    background-color: #f5f9ff;
+    color: #577cf6;
   }
 
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const MobileAuthButtons = styled.div`
-  @media (min-width: 769px) {
-    display: none;
-  }
-
-  @media (max-width: 768px) {
-    display: flex;
-    gap: 4px;
+  svg {
+    margin-right: 8px;
   }
 `;
 
-const DesktopAuthButtons = styled.div`
-  @media (max-width: 768px) {
-    display: none;
-  }
-
-  @media (min-width: 769px) {
-    display: flex;
-    gap: 8px;
-  }
-`;
-
-const AuthButtons = ({ onLogin, onRegister }) => {
+const AuthButtons = ({ onLogin, onSignup }) => {
   const navigate = useNavigate();
+
   const handleLogin = () => {
-    if (onLogin) {
-      onLogin();
-    } else {
-      navigate("/login");
-    }
+    if (onLogin) onLogin();
+    else navigate("/login");
   };
 
-  const handleRegister = () => {
-    if (onRegister) {
-      onRegister();
-    } else {
-      navigate("/signup");
-    }
+  const handleSignup = () => {
+    if (onSignup) onSignup();
+    else navigate("/signup");
   };
+
+  const handleEmployerClick = () => {
+    navigate("/employer");
+  };
+
+  // Menu items với styled label
+  const menuItems = [
+    {
+      key: "login",
+      label: (
+        <MenuItemLabel onClick={handleLogin}>
+          <LoginOutlined /> Đăng nhập
+        </MenuItemLabel>
+      ),
+    },
+    {
+      key: "signup",
+      label: (
+        <MenuItemLabel onClick={handleSignup}>
+          <UserOutlined /> Tạo tài khoản
+        </MenuItemLabel>
+      ),
+    },
+  ];
 
   return (
-    <AuthButtonsContainer>
-      {/* Desktop Version */}
-      <DesktopAuthButtons>
-        <LoginButton
-          type="default"
-          icon={<LoginOutlined />}
-          onClick={handleLogin}
-        >
-          Đăng nhập
-        </LoginButton>
-        <RegisterButton
-          type="primary"
-          icon={<UserOutlined />}
-          onClick={handleRegister}
-        >
-          Đăng ký
-        </RegisterButton>
-      </DesktopAuthButtons>
-
-      {/* Mobile Version */}
-      <MobileAuthButtons>
-        <LoginButton
-          type="default"
-          size="small"
-          icon={<LoginOutlined />}
-          onClick={handleLogin}
-        >
-          Đăng nhập
-        </LoginButton>
-        <RegisterButton
-          type="primary"
-          size="small"
-          icon={<UserOutlined />}
-          onClick={handleRegister}
-        >
-          Đăng ký
-        </RegisterButton>
-      </MobileAuthButtons>
-    </AuthButtonsContainer>
+    <AuthButtonContainer>
+      <AuthButton onClick={handleEmployerClick}>Nhà tuyển dụng</AuthButton>
+      <Dropdown
+        menu={{ items: menuItems }}
+        placement="bottomRight"
+        trigger={["click"]}
+      >
+        <AuthButton type="default" icon={<LoginOutlined />}>
+          Tài khoản <DownOutlined />
+        </AuthButton>
+      </Dropdown>
+    </AuthButtonContainer>
   );
 };
 

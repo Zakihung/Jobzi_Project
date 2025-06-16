@@ -38,3 +38,16 @@ body {
 .ant-list .ant-list-empty-text {
   padding: 0;
 }
+
+.ant-dropdown .ant-dropdown-menu,
+.ant-dropdown-menu-submenu .ant-dropdown-menu {
+  padding: 4px;
+  box-shadow: none;
+}
+
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item,
+.ant-dropdown-menu-submenu .ant-dropdown-menu .ant-dropdown-menu-item,
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-submenu-title,
+.ant-dropdown-menu-submenu .ant-dropdown-menu .ant-dropdown-menu-submenu-title {
+  padding: 0;
+}

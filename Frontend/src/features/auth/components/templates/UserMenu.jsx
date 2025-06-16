@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Dropdown, Avatar, Button, Space, message } from "antd";
+import { Dropdown, Avatar, Button, Space, message, Badge } from "antd";
 import {
   UserOutlined,
   SettingOutlined,
@@ -23,27 +23,69 @@ const UserMenuContainer = styled.div`
 const UserAvatar = styled(Avatar)`
   cursor: pointer;
   border: 2px solid #f0f0f0;
-  transition: all 0.3s ease;
 
   &:hover {
     border-color: #577cf6;
-    transform: scale(1.05);
   }
 `;
 
 const NotificationButton = styled(Button)`
   border: none;
+  border-radius: 50%;
+  width: 45px !important;
+  height: 45px;
+  padding: 20px;
   background: transparent;
-  color: #595959;
-  margin-right: 8px;
+  color: #333333;
+  margin-right: 16px;
 
   &:hover {
-    background-color: #f5f5f5;
-    color: #1890ff;
+    background-color: #f5f9ff !important;
+    border: none;
+    .anticon {
+      color: #577cf6;
+    }
   }
 
   @media (max-width: 768px) {
     display: none;
+  }
+`;
+
+// Styled div dùng làm label trong menu items
+const MenuItemLabel = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f5f9ff;
+    color: #577cf6;
+  }
+
+  svg {
+    margin-right: 8px;
+  }
+`;
+
+const MenuItemLabelLogout = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #fff5f5;
+    color: #f65757;
+  }
+
+  svg {
+    margin-right: 8px;
   }
 `;
 
@@ -71,28 +113,34 @@ const UserMenu = ({ onLogin, onSignup }) => {
     }
   };
 
+  // Menu items với styled label
   const menuItems = [
     {
       key: "cv-management",
-      icon: <ProfileOutlined />,
-      label: "Quản lý CV",
-      onClick: () => handleMenuClick("cv-management"),
+      label: (
+        <MenuItemLabel onClick={() => handleMenuClick("cv-management")}>
+          <ProfileOutlined /> Quản lý CV
+        </MenuItemLabel>
+      ),
     },
     {
       key: "settings",
-      icon: <SettingOutlined />,
-      label: "Cài đặt",
-      onClick: () => handleMenuClick("settings"),
+      label: (
+        <MenuItemLabel onClick={() => handleMenuClick("settings")}>
+          <SettingOutlined /> Cài đặt
+        </MenuItemLabel>
+      ),
     },
     {
       type: "divider",
     },
     {
       key: "logout",
-      icon: <LogoutOutlined />,
-      label: "Đăng xuất",
-      onClick: handleLogout,
-      danger: true,
+      label: (
+        <MenuItemLabelLogout onClick={handleLogout}>
+          <LogoutOutlined /> Đăng xuất
+        </MenuItemLabelLogout>
+      ),
     },
   ];
 
@@ -117,14 +165,31 @@ const UserMenu = ({ onLogin, onSignup }) => {
 
   // Nếu đã đăng nhập, hiển thị menu người dùng
   return (
-    <Dropdown
-      menu={{ items: menuItems }}
-      placement="bottomRight"
-      arrow={true}
-      trigger={["click"]}
-    >
-      <UserAvatar size={45} src={auth.user.avatar} icon={<UserOutlined />} />
-    </Dropdown>
+    <UserMenuContainer>
+      <NotificationButton
+        icon={
+          <Badge
+            count={5} // Example notification count
+            style={{
+              backgroundColor: "#ff0000",
+              top: "-3px",
+              right: "-3px",
+            }}
+          >
+            <BellOutlined style={{ fontSize: "24px" }} />
+          </Badge>
+        }
+        onClick={() => handleMenuClick("notifications")}
+      />
+      <Dropdown
+        menu={{ items: menuItems }}
+        placement="bottomRight"
+        arrow={true}
+        trigger={["hover"]}
+      >
+        <UserAvatar size={45} src={auth.user.avatar} icon={<UserOutlined />} />
+      </Dropdown>
+    </UserMenuContainer>
   );
 };
 
