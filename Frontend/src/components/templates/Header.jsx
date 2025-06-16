@@ -5,6 +5,7 @@ import LogoSection from "../organisms/LogoSection";
 import NavSection from "../organisms/NavSection";
 import UserMenu from "../../features/auth/components/templates/UserMenu";
 import MobileMenuButton from "../organisms/MobileMenuButton";
+import { useNavigate } from "react-router-dom";
 
 const { Header: AntHeader } = Layout;
 
@@ -38,6 +39,17 @@ const HeaderContainer = styled.div`
 
 const Header = () => {
   const [current, setCurrent] = useState("home");
+  const navigate = useNavigate();
+
+  // Xử lý sự kiện đăng nhập
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  // Xử lý sự kiện đăng ký
+  const handleSignup = () => {
+    navigate("/signup");
+  };
 
   return (
     <HeaderRow className="headerRow">
@@ -48,7 +60,7 @@ const Header = () => {
             <LogoSection setCurrent={setCurrent} />
             <NavSection current={current} setCurrent={setCurrent} />
             <MobileMenuButton />
-            <UserMenu />
+            <UserMenu onLogin={handleLogin} onSignup={handleSignup} />
           </HeaderContainer>
         </JobziHeader>
       </Col>

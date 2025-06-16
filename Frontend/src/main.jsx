@@ -27,6 +27,7 @@ import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
 import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
+import { AuthWrapper } from "./contexts/auth.context.jsx";
 // import EmployerApp from "./EmployerApp.jsx";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
@@ -177,7 +178,9 @@ createRoot(document.getElementById("root")).render(
     >
       <AntdApp>
         <RoutesDevTool />
-        <RouterProvider router={router} />
+        <AuthWrapper>
+          <RouterProvider router={router} />
+        </AuthWrapper>
       </AntdApp>
     </ConfigProvider>
     <ReactQueryDevtools initialIsOpen={false} />
