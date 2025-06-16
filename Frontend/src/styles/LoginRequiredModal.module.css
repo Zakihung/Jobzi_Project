@@ -86,32 +86,29 @@
   border-color: var(--primary) !important;
   border-radius: var(--border-radius);
   font-weight: 600;
+  width: 11rem;
   height: 48px;
   padding: 0 24px;
-  transition: all 0.3s ease;
 }
 
 .loginButton:hover {
   background: var(--primary-dark) !important;
   border-color: var(--primary-dark) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
 }
 
 .cancelButton {
-  border-color: var(--gray-200) !important;
+  border: 2px solid var(--gray-200) !important;
   color: var(--text-secondary) !important;
   border-radius: var(--border-radius);
   font-weight: 600;
+  width: 11rem;
   height: 48px;
   padding: 0 24px;
-  transition: all 0.3s ease;
 }
 
 .cancelButton:hover {
   border-color: var(--primary) !important;
   color: var(--primary) !important;
-  transform: translateY(-2px);
 }
 
 .modalCloseIcon {

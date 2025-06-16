@@ -23,6 +23,8 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import LoginRequiredModal from "../../components/organisms/LoginRequiredModal";
+import { useAuth } from "../../contexts/auth.context";
 import styles from "../../styles/JobPostDetailPage.module.css";
 
 const { Content } = Layout;
@@ -31,7 +33,9 @@ const { Title, Text, Paragraph } = Typography;
 const JobPostDetailPage = () => {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
+  const { isLoggedIn } = useAuth();
   const [loading, setLoading] = useState(false); // Giả lập loading state
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Sample job post data
   const job = {
@@ -80,7 +84,16 @@ const JobPostDetailPage = () => {
 
   // Xử lý ứng tuyển
   const handleApply = () => {
-    navigate("/login");
+    if (isLoggedIn) {
+      navigate("/apply");
+    } else {
+      setModalVisible(true);
+    }
+  };
+
+  // Handle modal cancel
+  const handleModalCancel = () => {
+    setModalVisible(false);
   };
 
   // Xử lý xem công ty
@@ -279,6 +292,10 @@ const JobPostDetailPage = () => {
           </Col>
           <Col span={2} />
         </Row>
+        <LoginRequiredModal
+          visible={modalVisible}
+          onCancel={handleModalCancel}
+        />
       </Content>
     </Layout>
   );

@@ -31,12 +31,19 @@ const LoginRequiredModal = ({ visible, onCancel }) => {
           <LockOutlined />
         </div>
         <Title level={3} className={styles.modalTitle}>
-          Yêu cầu đăng nhập
+          Tài khoản chưa đăng nhập
         </Title>
         <Text className={styles.modalDescription}>
-          Vui lòng đăng nhập để sử dụng chức năng này.
+          Vui lòng đăng nhập để sử dụng tính năng này.
         </Text>
         <Space className={styles.modalButtons}>
+          <Button
+            size="large"
+            className={styles.cancelButton}
+            onClick={onCancel}
+          >
+            Hủy
+          </Button>
           <Button
             type="primary"
             size="large"
@@ -44,13 +51,6 @@ const LoginRequiredModal = ({ visible, onCancel }) => {
             onClick={handleLogin}
           >
             Đăng nhập
-          </Button>
-          <Button
-            size="large"
-            className={styles.cancelButton}
-            onClick={onCancel}
-          >
-            Hủy
           </Button>
         </Space>
       </div>
