@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Typography, Select, Row, Col } from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
@@ -44,6 +44,73 @@ const StyledSubTitle = styled(Title)`
   }
 `;
 
+const industryData = {
+  "Công nghệ thông tin": {
+    detailedIndustries: ["Software Engineer", "Data Science", "Cybersecurity"],
+    positions: {
+      "Software Engineer": [
+        "Fullstack Developer",
+        "Frontend Developer",
+        "Backend Developer",
+      ],
+      "Data Science": [
+        "Data Analyst",
+        "Machine Learning Engineer",
+        "Data Engineer",
+      ],
+      Cybersecurity: [
+        "Security Analyst",
+        "Penetration Tester",
+        "Security Engineer",
+      ],
+    },
+  },
+  Marketing: {
+    detailedIndustries: [
+      "Digital Marketing",
+      "Content Marketing",
+      "Brand Management",
+    ],
+    positions: {
+      "Digital Marketing": [
+        "SEO Specialist",
+        "PPC Specialist",
+        "Social Media Manager",
+      ],
+      "Content Marketing": [
+        "Content Writer",
+        "Content Strategist",
+        "Copywriter",
+      ],
+      "Brand Management": [
+        "Brand Manager",
+        "Marketing Coordinator",
+        "Brand Strategist",
+      ],
+    },
+  },
+  "Kinh doanh": {
+    detailedIndustries: [
+      "Sales",
+      "Business Development",
+      "Operations Management",
+    ],
+    positions: {
+      Sales: ["Sales Manager", "Account Executive", "Sales Representative"],
+      "Business Development": [
+        "Business Development Manager",
+        "Partnership Manager",
+        "Market Research Analyst",
+      ],
+      "Operations Management": [
+        "Operations Manager",
+        "Supply Chain Manager",
+        "Logistics Coordinator",
+      ],
+    },
+  },
+};
+
 const IndustrySection = ({
   control,
   errors,
@@ -51,6 +118,36 @@ const IndustrySection = ({
   completedSections,
   setCompletedSections,
 }) => {
+  const [selectedGeneralIndustry, setSelectedGeneralIndustry] = useState(null);
+  const [selectedDetailedIndustry, setSelectedDetailedIndustry] =
+    useState(null);
+
+  const handleGeneralIndustryChange = (
+    value,
+    field,
+    detailedField,
+    positionField
+  ) => {
+    field.onChange(value);
+    setSelectedGeneralIndustry(value);
+    setSelectedDetailedIndustry(null);
+    detailedField.onChange(null); // Reset detailed industry
+    positionField.onChange(null); // Reset position
+  };
+
+  const handleDetailedIndustryChange = (value, field, positionField) => {
+    field.onChange(value);
+    setSelectedDetailedIndustry(value);
+    positionField.onChange(null); // Reset position
+  };
+
+  const handlePositionChange = (value, field) => {
+    field.onChange(value);
+    if (value && !completedSections.includes("Ngành nghề và vị trí")) {
+      setCompletedSections([...completedSections, "Ngành nghề và vị trí"]);
+    }
+  };
+
   return (
     <StyledCard ref={sectionRefs.industry}>
       <StyledTitle level={3}>Ngành nghề và vị trí</StyledTitle>
@@ -62,28 +159,38 @@ const IndustrySection = ({
             control={control}
             rules={{ required: "Vui lòng chọn ngành nghề chung" }}
             render={({ field }) => (
-              <Select
-                {...field}
-                placeholder="Chọn ngành nghề chung"
-                size="large"
-                style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (
-                    value &&
-                    !completedSections.includes("Ngành nghề và vị trí")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Ngành nghề và vị trí",
-                    ]);
-                  }
-                }}
-              >
-                <Option value="Công nghệ thông tin">Công nghệ thông tin</Option>
-                <Option value="Marketing">Marketing</Option>
-                <Option value="Kinh doanh">Kinh doanh</Option>
-              </Select>
+              <Controller
+                name="detailedIndustry"
+                control={control}
+                render={({ field: detailedField }) => (
+                  <Controller
+                    name="position"
+                    control={control}
+                    render={({ field: positionField }) => (
+                      <Select
+                        {...field}
+                        placeholder="Chọn ngành nghề chung"
+                        size="large"
+                        style={{ width: "100%", marginBottom: 16 }}
+                        onChange={(value) =>
+                          handleGeneralIndustryChange(
+                            value,
+                            field,
+                            detailedField,
+                            positionField
+                          )
+                        }
+                      >
+                        {Object.keys(industryData).map((industry) => (
+                          <Option key={industry} value={industry}>
+                            {industry}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                )}
+              />
             )}
           />
           {errors.generalIndustry && (
@@ -100,28 +207,31 @@ const IndustrySection = ({
             control={control}
             rules={{ required: "Vui lòng chọn ngành nghề chi tiết" }}
             render={({ field }) => (
-              <Select
-                {...field}
-                placeholder="Chọn ngành nghề chi tiết"
-                size="large"
-                style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (
-                    value &&
-                    !completedSections.includes("Ngành nghề và vị trí")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Ngành nghề và vị trí",
-                    ]);
-                  }
-                }}
-              >
-                <Option value="Công nghệ thông tin">Công nghệ thông tin</Option>
-                <Option value="Marketing">Marketing</Option>
-                <Option value="Kinh doanh">Kinh doanh</Option>
-              </Select>
+              <Controller
+                name="position"
+                control={control}
+                render={({ field: positionField }) => (
+                  <Select
+                    {...field}
+                    placeholder="Chọn ngành nghề chi tiết"
+                    size="large"
+                    style={{ width: "100%", marginBottom: 16 }}
+                    onChange={(value) =>
+                      handleDetailedIndustryChange(value, field, positionField)
+                    }
+                    disabled={!selectedGeneralIndustry}
+                  >
+                    {selectedGeneralIndustry &&
+                      industryData[
+                        selectedGeneralIndustry
+                      ].detailedIndustries.map((detailed) => (
+                        <Option key={detailed} value={detailed}>
+                          {detailed}
+                        </Option>
+                      ))}
+                  </Select>
+                )}
+              />
             )}
           />
           {errors.detailedIndustry && (
@@ -140,22 +250,18 @@ const IndustrySection = ({
                 placeholder="Chọn vị trí tuyển dụng"
                 size="large"
                 style={{ width: "100%" }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (
-                    value &&
-                    !completedSections.includes("Ngành nghề và vị trí")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Ngành nghề và vị trí",
-                    ]);
-                  }
-                }}
+                onChange={(value) => handlePositionChange(value, field)}
+                disabled={!selectedDetailedIndustry}
               >
-                <Option value="Frontend Developer">Frontend Developer</Option>
-                <Option value="Backend Developer">Backend Developer</Option>
-                <Option value="Product Manager">Product Manager</Option>
+                {selectedGeneralIndustry &&
+                  selectedDetailedIndustry &&
+                  industryData[selectedGeneralIndustry].positions[
+                    selectedDetailedIndustry
+                  ].map((position) => (
+                    <Option key={position} value={position}>
+                      {position}
+                    </Option>
+                  ))}
               </Select>
             )}
           />

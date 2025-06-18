@@ -87,7 +87,7 @@ const NavPostJobMenu = ({ sectionRefs }) => {
             Tiêu đề tin tuyển dụng
           </Menu.Item>
           <Menu.Item key="industry" icon={<BulbOutlined />}>
-            Ngành nghề và lĩnh vực
+            Ngành nghề và vị trí
           </Menu.Item>
           <Menu.Item key="generalInfo" icon={<StarOutlined />}>
             Thông tin chung

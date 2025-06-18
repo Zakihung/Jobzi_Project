@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Typography, Input } from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
@@ -28,6 +27,13 @@ const StyledTitle = styled(Title)`
   }
 `;
 
+const CharCountText = styled(Text)`
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #8c8c8c;
+`;
+
 const JobTitleSection = ({
   control,
   errors,
@@ -35,31 +41,52 @@ const JobTitleSection = ({
   completedSections,
   setCompletedSections,
 }) => {
+  const maxLength = 100;
+
   return (
     <StyledCard ref={sectionRefs.title}>
       <StyledTitle level={3}>Tiêu đề tin tuyển dụng</StyledTitle>
       <Controller
         name="title"
         control={control}
-        rules={{ required: "Vui lòng nhập tiêu đề" }}
+        rules={{
+          required: "Vui lòng nhập tiêu đề",
+          maxLength: {
+            value: maxLength,
+            message: `Tiêu đề không được vượt quá ${maxLength} ký tự`,
+          },
+        }}
         render={({ field }) => (
-          <Input
-            {...field}
-            placeholder="Nhập tiêu đề tin tuyển dụng"
-            size="large"
-            onChange={(e) => {
-              field.onChange(e);
-              if (
-                e.target.value &&
-                !completedSections.includes("Tiêu đề tin tuyển dụng")
-              ) {
-                setCompletedSections([
-                  ...completedSections,
-                  "Tiêu đề tin tuyển dụng",
-                ]);
-              }
-            }}
-          />
+          <>
+            <Input
+              {...field}
+              placeholder="Nhập tiêu đề tin tuyển dụng"
+              size="large"
+              maxLength={maxLength}
+              onChange={(e) => {
+                field.onChange(e);
+                const value = e.target.value;
+                if (
+                  value &&
+                  !completedSections.includes("Tiêu đề tin tuyển dụng")
+                ) {
+                  setCompletedSections([
+                    ...completedSections,
+                    "Tiêu đề tin tuyển dụng",
+                  ]);
+                } else if (
+                  !value &&
+                  completedSections.includes("Tiêu đề tin tuyển dụng")
+                ) {
+                  setCompletedSections(
+                    completedSections.filter(
+                      (section) => section !== "Tiêu đề tin tuyển dụng"
+                    )
+                  );
+                }
+              }}
+            />
+          </>
         )}
       />
       {errors.title && <Text type="danger">{errors.title.message}</Text>}
