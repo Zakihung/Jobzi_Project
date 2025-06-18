@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
-import StepsCard from "../../features/postjob/components/templates/StepsCard";
 import NavPostJobMenu from "../../features/postjob/components/templates/NavPostJobMenu";
 import PostJobForm from "../../features/postjob/components/templates/PostJobForm";
 import SidebarProgress from "../../features/postjob/components/templates/SidebarProgress";
@@ -17,7 +16,6 @@ const ContentContainer = styled(Layout.Content)`
 `;
 
 const PostJobPage = () => {
-  const [currentStep, setCurrentStep] = useState(0);
   const [locations, setLocations] = useState([{ city: "", address: "" }]);
   const [completedSections, setCompletedSections] = useState([]);
   const sectionRefs = {
@@ -32,7 +30,7 @@ const PostJobPage = () => {
 
   const allSections = [
     "Tiêu đề tin tuyển dụng",
-    "Ngành nghề và lĩnh vực",
+    "Ngành nghề và vị trí",
     "Thông tin chung",
     "Nội dung tuyển dụng chi tiết",
     "Yêu cầu ứng viên",
@@ -75,7 +73,6 @@ const PostJobPage = () => {
               padding: "16px",
             }}
           >
-            <StepsCard currentStep={currentStep} />
             <Row gutter={[16, 16]}>
               <Col xs={24} md={6} lg={6}>
                 <NavPostJobMenu sectionRefs={sectionRefs} />
@@ -86,7 +83,6 @@ const PostJobPage = () => {
                   locations={locations}
                   handleLocationChange={handleLocationChange}
                   addLocation={addLocation}
-                  setCurrentStep={setCurrentStep}
                   completedSections={completedSections}
                   setCompletedSections={setCompletedSections}
                   allSections={allSections}

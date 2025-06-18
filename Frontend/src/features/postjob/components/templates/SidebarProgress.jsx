@@ -66,7 +66,7 @@ const SidebarProgress = ({ completedSections, allSections, onSubmit }) => {
         />
         <Divider style={{ margin: "0 0 10px" }} />
         <Button type="primary" block onClick={onSubmit}>
-          Lưu và tiếp tục
+          Đăng tuyển dụng
         </Button>
       </StyledCard>
     </StickyMenu>

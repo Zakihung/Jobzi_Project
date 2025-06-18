@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Tooltip } from "antd";
+import { Button, Card, Tooltip, Typography } from "antd";
+import { EditorContent } from "@tiptap/react";
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -8,11 +9,91 @@ import {
   UnorderedListOutlined,
   UndoOutlined,
   RedoOutlined,
-  AlignLeftOutlined,
-  AlignCenterOutlined,
-  AlignRightOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
+
+const EditorContainer = styled.div`
+  background: #ffffff;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border: 1px solid #d8d9d9;
+  border-top: none;
+  padding: 20px;
+  min-height: 240px;
+  position: relative;
+  transition: all 0.3s ease;
+
+  .ProseMirror {
+    outline: none;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    line-height: 1.3;
+    color: #2c3e50;
+    min-height: 200px;
+    padding: 0;
+
+    p {
+      margin: 0 0 12px 0;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    strong {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    em {
+      font-style: italic;
+      color: #34495e;
+    }
+
+    u {
+      text-decoration: underline;
+      text-decoration-color: #2c3e50;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 1px;
+    }
+
+    ul,
+    ol {
+      padding-left: 24px;
+      margin: 0;
+
+      li {
+        margin: 0;
+        line-height: 1.5;
+        p {
+          margin: 0;
+        }
+      }
+    }
+
+    ul {
+      list-style-type: disc;
+      li::marker {
+        color: #1a1a1a;
+      }
+    }
+
+    ol {
+      list-style-type: decimal;
+      li::marker {
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+    }
+
+    &:empty::before {
+      content: "Bắt đầu viết nội dung của bạn...";
+      color: #a0a0a0;
+      pointer-events: none;
+      position: absolute;
+      font-style: italic;
+    }
+  }
+`;
 
 const Toolbar = styled.div`
   display: flex;
@@ -61,7 +142,11 @@ const ToolbarGroup = styled.div`
   align-items: center;
 `;
 
-const EditorToolbar = ({ editor }) => {
+const EditorWrapper = styled.div`
+  position: relative;
+`;
+
+const TextEditor = ({ editor }) => {
   if (!editor) return null;
 
   const toolbarButtons = [
@@ -126,7 +211,7 @@ const EditorToolbar = ({ editor }) => {
     },
   ];
 
-  return (
+  const renderToolbar = () => (
     <Toolbar>
       {toolbarButtons.map((group, groupIndex) => (
         <React.Fragment key={group.group}>
@@ -150,6 +235,15 @@ const EditorToolbar = ({ editor }) => {
       ))}
     </Toolbar>
   );
+
+  return (
+    <EditorWrapper>
+      {renderToolbar()}
+      <EditorContainer>
+        <EditorContent editor={editor} />
+      </EditorContainer>
+    </EditorWrapper>
+  );
 };
 
-export default EditorToolbar;
+export default TextEditor;

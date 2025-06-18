@@ -53,29 +53,29 @@ const IndustrySection = ({
 }) => {
   return (
     <StyledCard ref={sectionRefs.industry}>
-      <StyledTitle level={3}>Ngành nghề và lĩnh vực</StyledTitle>
+      <StyledTitle level={3}>Ngành nghề và vị trí</StyledTitle>
       <Row gutter={[12, 12]}>
         <Col span={12}>
-          <StyledSubTitle>Ngành nghề</StyledSubTitle>
+          <StyledSubTitle>Ngành nghề chung</StyledSubTitle>
           <Controller
-            name="industry"
+            name="generalIndustry"
             control={control}
-            rules={{ required: "Vui lòng chọn ngành nghề" }}
+            rules={{ required: "Vui lòng chọn ngành nghề chung" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn ngành nghề"
+                placeholder="Chọn ngành nghề chung"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
                 onChange={(value) => {
                   field.onChange(value);
                   if (
                     value &&
-                    !completedSections.includes("Ngành nghề và lĩnh vực")
+                    !completedSections.includes("Ngành nghề và vị trí")
                   ) {
                     setCompletedSections([
                       ...completedSections,
-                      "Ngành nghề và lĩnh vực",
+                      "Ngành nghề và vị trí",
                     ]);
                   }
                 }}
@@ -86,8 +86,46 @@ const IndustrySection = ({
               </Select>
             )}
           />
-          {errors.industry && (
-            <Text type="danger">{errors.industry.message}</Text>
+          {errors.generalIndustry && (
+            <Text type="danger">{errors.generalIndustry.message}</Text>
+          )}
+        </Col>
+        <Col span={12}></Col>
+      </Row>
+      <Row gutter={[12, 12]}>
+        <Col span={12}>
+          <StyledSubTitle>Ngành nghề chi tiết</StyledSubTitle>
+          <Controller
+            name="detailedIndustry"
+            control={control}
+            rules={{ required: "Vui lòng chọn ngành nghề chi tiết" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Chọn ngành nghề chi tiết"
+                size="large"
+                style={{ width: "100%", marginBottom: 16 }}
+                onChange={(value) => {
+                  field.onChange(value);
+                  if (
+                    value &&
+                    !completedSections.includes("Ngành nghề và vị trí")
+                  ) {
+                    setCompletedSections([
+                      ...completedSections,
+                      "Ngành nghề và vị trí",
+                    ]);
+                  }
+                }}
+              >
+                <Option value="Công nghệ thông tin">Công nghệ thông tin</Option>
+                <Option value="Marketing">Marketing</Option>
+                <Option value="Kinh doanh">Kinh doanh</Option>
+              </Select>
+            )}
+          />
+          {errors.detailedIndustry && (
+            <Text type="danger">{errors.detailedIndustry.message}</Text>
           )}
         </Col>
         <Col span={12}>
@@ -106,11 +144,11 @@ const IndustrySection = ({
                   field.onChange(value);
                   if (
                     value &&
-                    !completedSections.includes("Ngành nghề và lĩnh vực")
+                    !completedSections.includes("Ngành nghề và vị trí")
                   ) {
                     setCompletedSections([
                       ...completedSections,
-                      "Ngành nghề và lĩnh vực",
+                      "Ngành nghề và vị trí",
                     ]);
                   }
                 }}

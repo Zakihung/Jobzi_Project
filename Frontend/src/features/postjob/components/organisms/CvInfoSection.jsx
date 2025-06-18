@@ -28,6 +28,21 @@ const StyledTitle = styled(Title)`
   }
 `;
 
+const StyledSubTitle = styled(Title)`
+  color: #1a1a1a !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  margin-bottom: 12px !important;
+
+  @media (max-width: 768px) {
+    font-size: 16px !important;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 14px !important;
+  }
+`;
+
 const CvInfoSection = ({
   control,
   errors,
@@ -38,6 +53,7 @@ const CvInfoSection = ({
   return (
     <StyledCard ref={sectionRefs.cvInfo}>
       <StyledTitle level={3}>Thông tin nhận CV</StyledTitle>
+      <StyledSubTitle>Hạn chót nhận CV</StyledSubTitle>
       <Controller
         name="deadline"
         control={control}

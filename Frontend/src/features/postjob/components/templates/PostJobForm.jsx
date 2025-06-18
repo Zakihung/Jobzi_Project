@@ -4,12 +4,12 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { message } from "antd";
-import EditorSection from "../organisms/EditorSection";
-import EditorToolbar from "../organisms/EditorToolbar";
 import JobTitleSection from "../organisms/JobTitleSection";
 import IndustrySection from "../organisms/IndustrySection";
 import GeneralInfoSection from "../organisms/GeneralInfoSection";
+import DescriptionSection from "../organisms/DescriptionSection";
 import RequirementsSection from "../organisms/RequirementsSection";
+import BenefitsSection from "../organisms/BenefitsSection";
 import CvInfoSection from "../organisms/CvInfoSection";
 
 const PostJobForm = ({
@@ -17,7 +17,6 @@ const PostJobForm = ({
   locations,
   handleLocationChange,
   addLocation,
-  setCurrentStep,
   completedSections,
   setCompletedSections,
   allSections,
@@ -32,7 +31,6 @@ const PostJobForm = ({
   } = useForm({
     defaultValues: {
       title: "",
-      industry: null,
       position: null,
       jobType: null,
       level: null,
@@ -112,10 +110,11 @@ const PostJobForm = ({
       completedSections.length === allSections.length &&
       locations.every((loc) => loc.city && loc.address)
     ) {
-      setCurrentStep(1);
-      message.success("Đã hoàn thành bước 1, chuyển sang bước 2!");
+      message.success("Đăng tin thành công");
+      console.log("Đăng tin thành công");
     } else {
-      message.warning("Vui lòng hoàn thành tất cả các mục trước khi tiếp tục!");
+      message.warning("Vui lòng hoàn thành tất cả các mục trước khi đăng!");
+      console.log("Vui lòng hoàn thành tất cả các mục trước khi đăng!");
     }
   };
 
@@ -146,32 +145,28 @@ const PostJobForm = ({
         addLocation={addLocation}
         salaryType={salaryType}
       />
-      <div>
-        <EditorSection
-          title="Nội dung tuyển dụng chi tiết"
-          editor={descriptionEditor}
-          renderToolbar={() => <EditorToolbar editor={descriptionEditor} />}
-        />
-        {errors.description && (
-          <div style={{ color: "red" }}>{errors.description.message}</div>
-        )}
-      </div>
-      <RequirementsSection
-        control={control}
+      <DescriptionSection
+        editor={descriptionEditor}
         errors={errors}
         sectionRefs={sectionRefs}
         completedSections={completedSections}
         setCompletedSections={setCompletedSections}
-        requirementsEditor={requirementsEditor}
       />
-      <EditorSection
-        title="Quyền lợi ứng viên"
+      <RequirementsSection
+        control={control}
+        editor={requirementsEditor}
+        errors={errors}
+        sectionRefs={sectionRefs}
+        completedSections={completedSections}
+        setCompletedSections={setCompletedSections}
+      />
+      <BenefitsSection
         editor={benefitsEditor}
-        renderToolbar={() => <EditorToolbar editor={benefitsEditor} />}
+        errors={errors}
+        sectionRefs={sectionRefs}
+        completedSections={completedSections}
+        setCompletedSections={setCompletedSections}
       />
-      {errors.benefits && (
-        <div style={{ color: "red" }}>{errors.benefits.message}</div>
-      )}
       <CvInfoSection
         control={control}
         errors={errors}
