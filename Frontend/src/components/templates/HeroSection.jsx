@@ -9,7 +9,7 @@ const { Title, Text, Paragraph } = Typography;
 
 const HeroSectionWrapper = styled.section`
   background: linear-gradient(135deg, #577cf6 0%, #667eea 50%, #764ba2 100%);
-  padding: 40px 0;
+  padding: 30px 0;
   color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -80,20 +80,19 @@ const HeroDescription = styled(Paragraph)`
   && {
     color: rgba(255, 255, 255, 0.9) !important;
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     line-height: 1.6;
     max-width: 600px;
   }
 `;
 
 const QuickTags = styled.div`
-  margin-bottom: 40px;
+  margin: 20px 0;
 `;
 
 const TagsLabel = styled(Text)`
   color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
-  margin-right: 16px;
   font-weight: 500;
 `;
 
@@ -116,7 +115,7 @@ const QuickTag = styled(Tag)`
 const HeroStats = styled.div`
   display: flex;
   gap: 48px;
-  margin-top: 40px;
+  margin-top: 20px;
 `;
 
 const StatItem = styled.div`
@@ -158,7 +157,7 @@ const HeroSection = () => {
         <Row gutter={[40, 40]} align="middle">
           <Col xs={24} lg={14}>
             <HeroBadge>
-              <TrophyOutlined /> #1tr Nền tảng tuyển dụng Việt Nam
+              <TrophyOutlined /> #1.000.000 Nền tảng tuyển dụng Việt Nam
             </HeroBadge>
             <HeroTitle level={1}>
               Tìm kiếm cơ hội nghề nghiệp
@@ -180,15 +179,15 @@ const HeroSection = () => {
             </QuickTags>
             <HeroStats>
               <StatItem>
-                <StatNumber level={4}>10K+</StatNumber>
+                <StatNumber level={4}>10.000+</StatNumber>
                 <StatLabel>Việc làm</StatLabel>
               </StatItem>
               <StatItem>
-                <StatNumber level={4}>5K+</StatNumber>
+                <StatNumber level={4}>5.000+</StatNumber>
                 <StatLabel>Công ty</StatLabel>
               </StatItem>
               <StatItem>
-                <StatNumber level={4}>100K+</StatNumber>
+                <StatNumber level={4}>100.000+</StatNumber>
                 <StatLabel>Ứng viên</StatLabel>
               </StatItem>
             </HeroStats>

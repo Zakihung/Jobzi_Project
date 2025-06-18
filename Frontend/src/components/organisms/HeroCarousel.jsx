@@ -4,12 +4,10 @@ import styled from "styled-components";
 
 const { Title, Text } = Typography;
 
-const HeroCarouselWrapper = styled.div`
-  margin-top: 20px;
-`;
+const HeroCarouselWrapper = styled.div``;
 
 const CarouselItem = styled.div`
-  height: 550px;
+  height: 540px;
   border-radius: 20px;
   display: flex;
   align-items: center;
