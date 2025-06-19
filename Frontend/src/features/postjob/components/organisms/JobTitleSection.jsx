@@ -27,13 +27,6 @@ const StyledTitle = styled(Title)`
   }
 `;
 
-const CharCountText = styled(Text)`
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  color: #8c8c8c;
-`;
-
 const JobTitleSection = ({
   control,
   errors,

@@ -1,8 +1,14 @@
-import React from "react";
-import { Card, Typography, Select, Input, Button, Row, Col } from "antd";
+import React, { useEffect, useRef } from "react";
+import { Card, Typography, Select, Input, Button, Row, Col, Space } from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  MinusOutlined,
+  MinusSquareOutlined,
+  PlusOutlined,
+  PlusSquareOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -49,6 +55,61 @@ const LocationItem = styled.div`
   margin-bottom: 16px;
 `;
 
+const NumberInputGroup = styled(Space.Compact)`
+  display: flex;
+  width: 100%;
+  .ant-input {
+    text-align: center;
+    border-radius: 8px;
+    &:hover {
+      border-color: #577cf6;
+    }
+  }
+  .ant-btn {
+    &:first-child {
+      border-radius: 8px;
+    }
+    &:last-child {
+      border-radius: 8px;
+    }
+  }
+`;
+
+// Dữ liệu cho các Select
+const jobTypeData = {
+  "Full-time": "Full-time",
+  "Part-time": "Part-time",
+  Remote: "Remote",
+};
+
+const genderData = {
+  Nam: "Nam",
+  Nữ: "Nữ",
+};
+
+const levelData = {
+  "Nhân viên": "Nhân viên",
+  "Trưởng nhóm": "Trưởng nhóm",
+  "Quản lý": "Quản lý",
+};
+
+const experienceData = {
+  "Không yêu cầu": "Không yêu cầu",
+  "1-2 năm": "1-2 năm",
+  "3-5 năm": "3-5 năm",
+};
+
+const cityData = {
+  "Hồ Chí Minh": "Hồ Chí Minh",
+  "Hà Nội": "Hà Nội",
+  "Đà Nẵng": "Đà Nẵng",
+};
+
+const salaryTypeData = {
+  "Thỏa thuận": "Thỏa thuận",
+  "Khoảng lương": "Khoảng lương",
+};
+
 const GeneralInfoSection = ({
   control,
   errors,
@@ -58,8 +119,76 @@ const GeneralInfoSection = ({
   locations,
   handleLocationChange,
   addLocation,
+  removeLocation,
   salaryType,
+  watch,
 }) => {
+  // Theo dõi tất cả các trường cần thiết
+  const watchedFields = watch([
+    "number",
+    "jobType",
+    "gender",
+    "level",
+    "experience",
+    "salaryType",
+    "salaryRange.min",
+    "salaryRange.max",
+  ]);
+
+  // Sử dụng ref để lưu trạng thái trước đó của isLocationValid
+  const prevIsLocationValidRef = useRef(null);
+
+  // Kiểm tra xem tất cả các trường đã được điền đầy đủ chưa
+  useEffect(() => {
+    const [
+      number,
+      jobType,
+      gender,
+      level,
+      experience,
+      salaryType,
+      salaryMin,
+      salaryMax,
+    ] = watchedFields;
+
+    const isSalaryValid =
+      salaryType === "Thỏa thuận" ||
+      (salaryType === "Khoảng lương" && salaryMin && salaryMax);
+
+    // Chỉ kiểm tra locations có dữ liệu hợp lệ, bỏ qua các location rỗng mới thêm
+    const isLocationValid = locations.every(
+      (loc) =>
+        (!loc.city && !loc.address) ||
+        (loc.city && loc.address && loc.address.trim() !== "")
+    );
+
+    const isSectionComplete =
+      number &&
+      jobType &&
+      gender &&
+      level &&
+      experience &&
+      salaryType &&
+      isSalaryValid &&
+      isLocationValid &&
+      locations.some((loc) => loc.city && loc.address); // Đảm bảo ít nhất 1 location có dữ liệu
+
+    // Chỉ cập nhật completedSections nếu trạng thái hoàn thành thay đổi
+    if (isSectionComplete && !completedSections.includes("Thông tin chung")) {
+      setCompletedSections([...completedSections, "Thông tin chung"]);
+    } else if (
+      !isSectionComplete &&
+      completedSections.includes("Thông tin chung")
+    ) {
+      setCompletedSections(
+        completedSections.filter((section) => section !== "Thông tin chung")
+      );
+    }
+
+    // Cập nhật prevIsLocationValidRef
+    prevIsLocationValidRef.current = isLocationValid;
+  }, [watchedFields, locations, completedSections, setCompletedSections]);
+
   return (
     <StyledCard ref={sectionRefs.generalInfo}>
       <StyledTitle level={3}>Thông tin chung</StyledTitle>
@@ -69,25 +198,47 @@ const GeneralInfoSection = ({
           <Controller
             name="number"
             control={control}
-            rules={{ required: "Vui lòng nhập số lượng" }}
+            rules={{
+              required: "Vui lòng nhập số lượng",
+              pattern: {
+                value: /^[1-9]\d*$/,
+                message: "Vui lòng nhập số nguyên dương",
+              },
+            }}
             render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Nhập số lượng"
-                size="large"
-                onChange={(e) => {
-                  field.onChange(e);
-                  if (
-                    e.target.value &&
-                    !completedSections.includes("Thông tin chung")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
-              />
+              <NumberInputGroup>
+                <Button
+                  icon={<MinusOutlined />}
+                  onClick={() => {
+                    const value = parseInt(field.value) || 1;
+                    if (value > 1) {
+                      field.onChange(value - 1);
+                    }
+                  }}
+                  size="large"
+                />
+                <Input
+                  {...field}
+                  value={field.value || ""}
+                  placeholder="Nhập số lượng"
+                  size="large"
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      field.onChange(value ? parseInt(value) : "");
+                    }
+                  }}
+                />
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    const value = parseInt(field.value) || 0;
+                    field.onChange(value + 1);
+                  }}
+                  size="large"
+                />
+              </NumberInputGroup>
             )}
           />
           {errors.number && <Text type="danger">{errors.number.message}</Text>}
@@ -104,19 +255,12 @@ const GeneralInfoSection = ({
                 placeholder="Chọn loại công việc"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (value && !completedSections.includes("Thông tin chung")) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               >
-                <Option value="Full-time">Full-time</Option>
-                <Option value="Part-time">Part-time</Option>
-                <Option value="Remote">Remote</Option>
+                {Object.keys(jobTypeData).map((type) => (
+                  <Option key={type} value={type}>
+                    {jobTypeData[type]}
+                  </Option>
+                ))}
               </Select>
             )}
           />
@@ -138,18 +282,12 @@ const GeneralInfoSection = ({
                 placeholder="Chọn giới tính"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (value && !completedSections.includes("Thông tin chung")) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               >
-                <Option value="Nam">Nam</Option>
-                <Option value="Nữ">Nữ</Option>
+                {Object.keys(genderData).map((gender) => (
+                  <Option key={gender} value={gender}>
+                    {genderData[gender]}
+                  </Option>
+                ))}
               </Select>
             )}
           />
@@ -167,19 +305,12 @@ const GeneralInfoSection = ({
                 placeholder="Chọn cấp bậc"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (value && !completedSections.includes("Thông tin chung")) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               >
-                <Option value="Nhân viên">Nhân viên</Option>
-                <Option value="Trưởng nhóm">Trưởng nhóm</Option>
-                <Option value="Quản lý">Quản lý</Option>
+                {Object.keys(levelData).map((level) => (
+                  <Option key={level} value={level}>
+                    {levelData[level]}
+                  </Option>
+                ))}
               </Select>
             )}
           />
@@ -197,19 +328,12 @@ const GeneralInfoSection = ({
                 placeholder="Chọn kinh nghiệm"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (value && !completedSections.includes("Thông tin chung")) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               >
-                <Option value="Không yêu cầu">Không yêu cầu</Option>
-                <Option value="1-2 năm">1-2 năm</Option>
-                <Option value="3-5 năm">3-5 năm</Option>
+                {Object.keys(experienceData).map((exp) => (
+                  <Option key={exp} value={exp}>
+                    {experienceData[exp]}
+                  </Option>
+                ))}
               </Select>
             )}
           />
@@ -231,18 +355,12 @@ const GeneralInfoSection = ({
                 placeholder="Chọn kiểu lương"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(value) => {
-                  field.onChange(value);
-                  if (value && !completedSections.includes("Thông tin chung")) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               >
-                <Option value="Thỏa thuận">Thỏa thuận</Option>
-                <Option value="Khoảng lương">Khoảng lương</Option>
+                {Object.keys(salaryTypeData).map((type) => (
+                  <Option key={type} value={type}>
+                    {salaryTypeData[type]}
+                  </Option>
+                ))}
               </Select>
             )}
           />
@@ -268,18 +386,6 @@ const GeneralInfoSection = ({
                 size="large"
                 disabled={salaryType !== "Khoảng lương"}
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(e) => {
-                  field.onChange(e);
-                  if (
-                    e.target.value &&
-                    !completedSections.includes("Thông tin chung")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               />
             )}
           />
@@ -305,18 +411,6 @@ const GeneralInfoSection = ({
                 size="large"
                 disabled={salaryType !== "Khoảng lương"}
                 style={{ width: "100%", marginBottom: 16 }}
-                onChange={(e) => {
-                  field.onChange(e);
-                  if (
-                    e.target.value &&
-                    !completedSections.includes("Thông tin chung")
-                  ) {
-                    setCompletedSections([
-                      ...completedSections,
-                      "Thông tin chung",
-                    ]);
-                  }
-                }}
               />
             )}
           />
@@ -328,7 +422,7 @@ const GeneralInfoSection = ({
       <StyledSubTitle>Khu vực làm việc</StyledSubTitle>
       {locations.map((location, index) => (
         <LocationItem key={index}>
-          <Row gutter={[12, 12]}>
+          <Row gutter={[12, 12]} align="middle">
             <Col span={8}>
               <Select
                 placeholder="Chọn tỉnh/thành phố"
@@ -337,15 +431,18 @@ const GeneralInfoSection = ({
                 size="large"
                 style={{ width: "100%" }}
               >
-                <Option value="Hồ Chí Minh">Hồ Chí Minh</Option>
-                <Option value="Hà Nội">Hà Nội</Option>
-                <Option value="Đà Nẵng">Đà Nẵng</Option>
+                {Object.keys(cityData).map((city) => (
+                  <Option key={city} value={city}>
+                    {cityData[city]}
+                  </Option>
+                ))}
               </Select>
             </Col>
-            <Col span={16}>
+            <Col span={index === 0 ? 16 : 14}>
               <Input
                 placeholder="Nhập địa điểm làm việc cụ thể"
-                value={location.address || null}
+                value={location.address || ""}
+                allowClear
                 onChange={(e) =>
                   handleLocationChange(index, "address", e.target.value)
                 }
@@ -353,10 +450,25 @@ const GeneralInfoSection = ({
                 style={{ width: "100%" }}
               />
             </Col>
+            {index > 0 && (
+              <Col span={2}>
+                <Button
+                  icon={<DeleteOutlined />}
+                  onClick={() => removeLocation(index)}
+                  size="large"
+                  danger
+                />
+              </Col>
+            )}
           </Row>
         </LocationItem>
       ))}
-      <Button type="primary" icon={<PlusOutlined />} onClick={addLocation}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={addLocation}
+        disabled={locations.length >= 3}
+      >
         Thêm khu vực làm việc
       </Button>
     </StyledCard>

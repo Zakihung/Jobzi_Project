@@ -17,6 +17,7 @@ const PostJobForm = ({
   locations,
   handleLocationChange,
   addLocation,
+  removeLocation,
   completedSections,
   setCompletedSections,
   allSections,
@@ -32,7 +33,9 @@ const PostJobForm = ({
     defaultValues: {
       title: "",
       position: null,
+      number: 1,
       jobType: null,
+      gender: null,
       level: null,
       experience: null,
       salaryType: null,
@@ -143,7 +146,9 @@ const PostJobForm = ({
         locations={locations}
         handleLocationChange={handleLocationChange}
         addLocation={addLocation}
+        removeLocation={removeLocation}
         salaryType={salaryType}
+        watch={watch}
       />
       <DescriptionSection
         editor={descriptionEditor}

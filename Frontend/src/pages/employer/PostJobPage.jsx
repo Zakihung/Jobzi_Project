@@ -55,6 +55,11 @@ const PostJobPage = () => {
     setLocations([...locations, { city: "", address: "" }]);
   };
 
+  const removeLocation = (index) => {
+    const newLocations = locations.filter((_, i) => i !== index);
+    setLocations(newLocations);
+  };
+
   return (
     <PostJobContainer>
       <ContentContainer>
@@ -83,6 +88,7 @@ const PostJobPage = () => {
                   locations={locations}
                   handleLocationChange={handleLocationChange}
                   addLocation={addLocation}
+                  removeLocation={removeLocation}
                   completedSections={completedSections}
                   setCompletedSections={setCompletedSections}
                   allSections={allSections}
