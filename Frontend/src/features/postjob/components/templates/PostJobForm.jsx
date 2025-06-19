@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -21,6 +20,7 @@ const PostJobForm = ({
   completedSections,
   setCompletedSections,
   allSections,
+  formRef, // Nhận formRef từ prop
 }) => {
   const {
     control,
@@ -126,8 +126,6 @@ const PostJobForm = ({
     },
   });
 
-  const formRef = useRef(null);
-
   const onSubmit = async (data) => {
     const isValid = await trigger();
 
@@ -185,8 +183,14 @@ const PostJobForm = ({
       completedSections.length === allSections.length &&
       locations.every((loc) => loc.city && loc.address)
     ) {
+      const jobPostingData = {
+        ...data,
+        locations,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      console.log("Dữ liệu gửi đến backend MongoDB:", jobPostingData);
       message.success("Đăng tin thành công");
-      console.log("Đăng tin thành công");
     } else {
       message.warning("Vui lòng hoàn thành tất cả các mục trước khi đăng!");
       console.log("Vui lòng hoàn thành tất cả các mục trước khi đăng!");

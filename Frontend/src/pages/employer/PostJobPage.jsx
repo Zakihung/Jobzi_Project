@@ -27,6 +27,7 @@ const PostJobPage = () => {
     benefits: useRef(null),
     cvInfo: useRef(null),
   };
+  const formRef = useRef(null); // Thêm ref cho form
 
   const allSections = [
     "Tiêu đề tin tuyển dụng",
@@ -58,6 +59,14 @@ const PostJobPage = () => {
   const removeLocation = (index) => {
     const newLocations = locations.filter((_, i) => i !== index);
     setLocations(newLocations);
+  };
+
+  const handleSubmit = () => {
+    if (formRef.current) {
+      formRef.current.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
+    }
   };
 
   return (
@@ -92,16 +101,14 @@ const PostJobPage = () => {
                   completedSections={completedSections}
                   setCompletedSections={setCompletedSections}
                   allSections={allSections}
+                  formRef={formRef} // Truyền ref vào PostJobForm
                 />
               </Col>
               <Col xs={24} md={6} lg={5}>
                 <SidebarProgress
                   completedSections={completedSections}
                   allSections={allSections}
-                  onSubmit={() => {
-                    // Gọi submit form từ JobForm thông qua ref hoặc prop
-                    // Ở đây giả định JobForm sẽ xử lý logic submit
-                  }}
+                  onSubmit={handleSubmit} // Gọi handleSubmit
                 />
               </Col>
             </Row>
