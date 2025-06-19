@@ -44,6 +44,12 @@ const StyledSubTitle = styled(Title)`
   }
 `;
 
+const skillsData = {
+  React: "React",
+  "Node.js": "Node.js",
+  Python: "Python",
+};
+
 const RequirementsSection = ({
   control,
   editor,
@@ -51,7 +57,25 @@ const RequirementsSection = ({
   sectionRefs,
   completedSections,
   setCompletedSections,
+  watch,
 }) => {
+  const requirements = watch("requirements") || "";
+  const sectionName = "Yêu cầu ứng viên";
+
+  const updateSectionStatus = (skills, editorContent) => {
+    if (skills.length > 0 && editorContent && editorContent !== "<p></p>") {
+      if (!completedSections.includes(sectionName)) {
+        setCompletedSections([...completedSections, sectionName]);
+      }
+    } else {
+      if (completedSections.includes(sectionName)) {
+        setCompletedSections(
+          completedSections.filter((section) => section !== sectionName)
+        );
+      }
+    }
+  };
+
   return (
     <StyledCard ref={sectionRefs.requirements}>
       <StyledTitle level={3}>Yêu cầu ứng viên</StyledTitle>
@@ -76,20 +100,14 @@ const RequirementsSection = ({
               style={{ width: "100%" }}
               onChange={(value) => {
                 field.onChange(value);
-                if (
-                  value.length > 0 &&
-                  !completedSections.includes("Yêu cầu ứng viên")
-                ) {
-                  setCompletedSections([
-                    ...completedSections,
-                    "Yêu cầu ứng viên",
-                  ]);
-                }
+                updateSectionStatus(value, requirements);
               }}
             >
-              <Option value="React">React</Option>
-              <Option value="Node.js">Node.js</Option>
-              <Option value="Python">Python</Option>
+              {Object.keys(skillsData).map((type) => (
+                <Select.Option key={type} value={type}>
+                  {skillsData[type]}
+                </Select.Option>
+              ))}
             </Select>
           )}
         />

@@ -44,6 +44,9 @@ const PostJobForm = ({
       requirements: "",
       benefits: "",
       deadline: "",
+      recipient_name: "",
+      recipient_phone_number: "",
+      recipient_email: "",
       skills: [],
     },
   });
@@ -57,15 +60,19 @@ const PostJobForm = ({
     ],
     content: "",
     onUpdate: ({ editor }) => {
-      setValue("description", editor.getHTML());
-      if (
-        editor.getText().length > 0 &&
-        !completedSections.includes("Nội dung tuyển dụng chi tiết")
-      ) {
-        setCompletedSections([
-          ...completedSections,
-          "Nội dung tuyển dụng chi tiết",
-        ]);
+      const content = editor.getHTML();
+      setValue("description", content);
+      const sectionName = "Nội dung tuyển dụng chi tiết";
+      if (editor.getText().length > 0) {
+        if (!completedSections.includes(sectionName)) {
+          setCompletedSections([...completedSections, sectionName]);
+        }
+      } else {
+        if (completedSections.includes(sectionName)) {
+          setCompletedSections(
+            completedSections.filter((section) => section !== sectionName)
+          );
+        }
       }
     },
   });
@@ -77,12 +84,20 @@ const PostJobForm = ({
     ],
     content: "",
     onUpdate: ({ editor }) => {
-      setValue("requirements", editor.getHTML());
-      if (
-        editor.getText().length > 0 &&
-        !completedSections.includes("Yêu cầu ứng viên")
-      ) {
-        setCompletedSections([...completedSections, "Yêu cầu ứng viên"]);
+      const content = editor.getHTML();
+      setValue("requirements", content);
+      const sectionName = "Yêu cầu ứng viên";
+      const skills = watch("skills") || [];
+      if (editor.getText().length > 0 && skills.length > 0) {
+        if (!completedSections.includes(sectionName)) {
+          setCompletedSections([...completedSections, sectionName]);
+        }
+      } else {
+        if (completedSections.includes(sectionName)) {
+          setCompletedSections(
+            completedSections.filter((section) => section !== sectionName)
+          );
+        }
       }
     },
   });
@@ -94,12 +109,19 @@ const PostJobForm = ({
     ],
     content: "",
     onUpdate: ({ editor }) => {
-      setValue("benefits", editor.getHTML());
-      if (
-        editor.getText().length > 0 &&
-        !completedSections.includes("Quyền lợi ứng viên")
-      ) {
-        setCompletedSections([...completedSections, "Quyền lợi ứng viên"]);
+      const content = editor.getHTML();
+      setValue("benefits", content);
+      const sectionName = "Quyền lợi ứng viên";
+      if (editor.getText().length > 0) {
+        if (!completedSections.includes(sectionName)) {
+          setCompletedSections([...completedSections, sectionName]);
+        }
+      } else {
+        if (completedSections.includes(sectionName)) {
+          setCompletedSections(
+            completedSections.filter((section) => section !== sectionName)
+          );
+        }
       }
     },
   });
@@ -108,6 +130,56 @@ const PostJobForm = ({
 
   const onSubmit = async (data) => {
     const isValid = await trigger();
+
+    // Kiểm tra lại trạng thái description, requirements, và benefits
+    const descriptionSectionName = "Nội dung tuyển dụng chi tiết";
+    if (!data.description || data.description === "<p></p>") {
+      if (completedSections.includes(descriptionSectionName)) {
+        setCompletedSections(
+          completedSections.filter(
+            (section) => section !== descriptionSectionName
+          )
+        );
+      }
+    } else {
+      if (!completedSections.includes(descriptionSectionName)) {
+        setCompletedSections([...completedSections, descriptionSectionName]);
+      }
+    }
+
+    const requirementsSectionName = "Yêu cầu ứng viên";
+    if (
+      !data.requirements ||
+      data.requirements === "<p></p>" ||
+      !data.skills ||
+      data.skills.length === 0
+    ) {
+      if (completedSections.includes(requirementsSectionName)) {
+        setCompletedSections(
+          completedSections.filter(
+            (section) => section !== requirementsSectionName
+          )
+        );
+      }
+    } else {
+      if (!completedSections.includes(requirementsSectionName)) {
+        setCompletedSections([...completedSections, requirementsSectionName]);
+      }
+    }
+
+    const benefitsSectionName = "Quyền lợi ứng viên";
+    if (!data.benefits || data.benefits === "<p></p>") {
+      if (completedSections.includes(benefitsSectionName)) {
+        setCompletedSections(
+          completedSections.filter((section) => section !== benefitsSectionName)
+        );
+      }
+    } else {
+      if (!completedSections.includes(benefitsSectionName)) {
+        setCompletedSections([...completedSections, benefitsSectionName]);
+      }
+    }
+
     if (
       isValid &&
       completedSections.length === allSections.length &&
@@ -164,17 +236,17 @@ const PostJobForm = ({
         sectionRefs={sectionRefs}
         completedSections={completedSections}
         setCompletedSections={setCompletedSections}
+        watch={watch}
       />
       <BenefitsSection
         editor={benefitsEditor}
         errors={errors}
         sectionRefs={sectionRefs}
-        completedSections={completedSections}
-        setCompletedSections={setCompletedSections}
       />
       <CvInfoSection
         control={control}
         errors={errors}
+        watch={watch}
         sectionRefs={sectionRefs}
         completedSections={completedSections}
         setCompletedSections={setCompletedSections}

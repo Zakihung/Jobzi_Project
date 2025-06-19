@@ -19,7 +19,8 @@ const EditorContainer = styled.div`
   border: 1px solid #d8d9d9;
   border-top: none;
   padding: 20px;
-  min-height: 240px;
+  height: 300px;
+  overflow-y: auto;
   position: relative;
   transition: all 0.3s ease;
 
