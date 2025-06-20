@@ -103,7 +103,7 @@ const AuthButtons = ({ onSignin, onSignup }) => {
         placement="bottomRight"
         trigger={["click"]}
       >
-        <AuthButton type="default" icon={<SigninOutlined />}>
+        <AuthButton type="default" icon={<LoginOutlined />}>
           Tài khoản <DownOutlined />
         </AuthButton>
       </Dropdown>

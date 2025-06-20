@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
 import { signinUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { notification } from "antd";
 
 export const useSignin = () => {
   const { setAuth } = useContext(AuthContext);
@@ -13,7 +13,11 @@ export const useSignin = () => {
     mutationFn: (data) => signinUser(data),
     onSuccess: (data) => {
       if (data.message !== "Đăng nhập thành công") {
-        message.error(data.message || "Đăng nhập thất bại!");
+        notification.error({
+          message: "Lỗi",
+          description: data.message || "Đăng nhập thất bại!",
+          placement: "topRight",
+        });
         return;
       }
 
@@ -41,7 +45,12 @@ export const useSignin = () => {
       // Cập nhật trạng thái xác thực
       setAuth({ isAuthenticated: true, user: userData });
 
-      message.success("Đăng nhập thành công!");
+      // Hiển thị thông báo thành công ở góc trên bên phải
+      notification.success({
+        message: "Thành công",
+        description: "Đăng nhập thành công!",
+        placement: "topRight",
+      });
 
       // Điều hướng dựa trên vai trò
       if (userData.role === "admin") {
@@ -56,7 +65,11 @@ export const useSignin = () => {
       // Xử lý lỗi từ API hoặc lỗi mạng
       const errorMessage =
         error.response?.data?.message || "Đăng nhập thất bại!";
-      message.error(errorMessage);
+      notification.error({
+        message: "Lỗi",
+        description: errorMessage,
+        placement: "topRight",
+      });
     },
   });
 };

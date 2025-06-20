@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
 import { signupUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { notification } from "antd";
 
 export const useSignup = () => {
   const { setAuth } = useContext(AuthContext);
@@ -14,7 +14,11 @@ export const useSignup = () => {
     onSuccess: (data) => {
       // Kiểm tra phản hồi API
       if (!data.message.includes("Đăng ký") || !data.user) {
-        message.error(data.message || "Đăng ký thất bại!");
+        notification.error({
+          message: "Lỗi",
+          description: data.message || "Đăng ký thất bại!",
+          placement: "topRight",
+        });
         return;
       }
 
@@ -42,7 +46,12 @@ export const useSignup = () => {
       // Cập nhật trạng thái xác thực
       setAuth({ isAuthenticated: true, user: userData });
 
-      message.success("Đăng ký thành công!");
+      // Hiển thị thông báo thành công ở góc trên bên phải
+      notification.success({
+        message: "Thành công",
+        description: "Đăng ký thành công!",
+        placement: "topRight",
+      });
 
       // Điều hướng dựa trên vai trò
       if (userData.role === "admin") {
@@ -56,7 +65,11 @@ export const useSignup = () => {
     onError: (error) => {
       // Xử lý lỗi từ API hoặc lỗi mạng
       const errorMessage = error.response?.data?.message || "Đăng ký thất bại!";
-      message.error(errorMessage);
+      notification.error({
+        message: "Lỗi",
+        description: errorMessage,
+        placement: "topRight",
+      });
     },
   });
 };

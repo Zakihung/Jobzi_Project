@@ -41,9 +41,10 @@ const SignupCandidateForm = () => {
       role: "candidate",
       date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
     };
-    console.log("formatData: ", formattedValues);
     signupMutation(formattedValues, {
-      onSettled: () => setLoading(false),
+      onSettled: () => {
+        setLoading(false);
+      },
     });
   };
 

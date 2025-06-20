@@ -1,26 +1,15 @@
-import React, { useState } from "react";
 import { Form, Input, Button, Typography } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninCandidateForm.module.css";
-import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const SigninCandidateForm = () => {
-  const { mutate: signinMutation } = useSignin();
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { mutate: signinMutation, isLoading } = useSignin();
 
   const onFinish = (values) => {
-    setLoading(true); // Hiển thị loading khi bắt đầu đăng nhập
-    signinMutation(values, {
-      onSettled: () => setLoading(false), // Tắt loading khi hoàn tất
-    });
-  };
-
-  const handleSignUp = () => {
-    navigate("/signup");
+    signinMutation(values);
   };
 
   return (
@@ -77,7 +66,7 @@ const SigninCandidateForm = () => {
             layout="vertical"
             size="large"
             className={styles.signinForm}
-            disabled={loading}
+            disabled={isLoading}
           >
             <Form.Item
               name="email"
@@ -127,10 +116,10 @@ const SigninCandidateForm = () => {
                 type="primary"
                 htmlType="submit"
                 className={styles.signinButton}
-                loading={loading}
+                isLoading={isLoading}
                 block
               >
-                {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
+                {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
               </Button>
             </Form.Item>
 
@@ -138,14 +127,9 @@ const SigninCandidateForm = () => {
             <div className={styles.signupSection}>
               <Text className={styles.signupText}>
                 Chưa có tài khoản?
-                <Button
-                  type="link"
-                  onClick={handleSignUp}
-                  className={styles.signupLink}
-                  style={{ padding: "0 0 0 8px" }}
-                >
+                <a href="/signup" className={styles.signupLink}>
                   Đăng ký ngay
-                </Button>
+                </a>
               </Text>
             </div>
           </Form>
