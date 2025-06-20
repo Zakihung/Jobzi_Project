@@ -89,12 +89,12 @@ const MenuItemLabelLogout = styled.div`
   }
 `;
 
-const UserMenu = ({ onLogin, onSignup }) => {
+const UserMenu = ({ onSignin, onSignup }) => {
   const { auth, logout, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/login");
+    navigate("/signin");
     logout();
     message.success("Đăng xuất thành công!");
   };
@@ -158,7 +158,7 @@ const UserMenu = ({ onLogin, onSignup }) => {
   if (!auth.isAuthenticated) {
     return (
       <UserMenuContainer>
-        <AuthButtons onLogin={onLogin} onSignup={onSignup} />
+        <AuthButtons onSignin={onSignin} onSignup={onSignup} />
       </UserMenuContainer>
     );
   }

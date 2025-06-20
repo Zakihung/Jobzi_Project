@@ -42,8 +42,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   // Xử lý sự kiện đăng nhập
-  const handleLogin = () => {
-    navigate("/login");
+  const handleSignin = () => {
+    navigate("/signin");
   };
 
   // Xử lý sự kiện đăng ký
@@ -60,7 +60,7 @@ const Header = () => {
             <LogoSection setCurrent={setCurrent} />
             <NavSection current={current} setCurrent={setCurrent} />
             <MobileMenuButton />
-            <UserMenu onLogin={handleLogin} onSignup={handleSignup} />
+            <UserMenu onSignin={handleSignin} onSignup={handleSignup} />
           </HeaderContainer>
         </JobziHeader>
       </Col>

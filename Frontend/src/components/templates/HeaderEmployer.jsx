@@ -48,7 +48,7 @@ const HeaderEmployer = () => {
     if (key === "logout") {
       // Xử lý đăng xuất (ví dụ: xóa token)
       localStorage.removeItem("token");
-      navigate("/employer-login");
+      navigate("/employer-signin");
     } else if (key === "settings") {
       navigate("/employer/settings");
     }
@@ -178,7 +178,7 @@ const HeaderEmployer = () => {
               label: "Đăng xuất",
               onClick: () => {
                 localStorage.removeItem("token");
-                navigate("/employer-login");
+                navigate("/employer-signin");
                 closeDrawer();
               },
             },

@@ -14,7 +14,7 @@ import HomePage from "./pages/candidate/HomePage.jsx";
 // import ProfilePage from "./pages/candidate/ProfilePage";
 // import AccountPage from "./pages/candidate/AccountPage";
 import SignupCandidatePage from "./pages/candidate/SignupCandidatePage";
-import LoginCandidatePage from "./pages/candidate/LoginCandidatePage";
+import SigninCandidatePage from "./pages/candidate/SigninCandidatePage";
 import SearchPage from "./pages/candidate/SearchPage.jsx";
 import CompanyPage from "./pages/candidate/CompanyPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
@@ -24,7 +24,7 @@ import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 
 //Employer
-import LoginEmployerPage from "./pages/employer/LoginEmployerPage.jsx";
+import SigninEmployerPage from "./pages/employer/SigninEmployerPage.jsx";
 import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
@@ -94,8 +94,8 @@ const router = createBrowserRouter([
     element: <SignupCandidatePage />,
   },
   {
-    path: "login",
-    element: <LoginCandidatePage />,
+    path: "signin",
+    element: <SigninCandidatePage />,
   },
 
   //Routes cho Employer
@@ -140,8 +140,8 @@ const router = createBrowserRouter([
   //   element: <SignupEmployerPage />,
   // },
   {
-    path: "employer-login",
-    element: <LoginEmployerPage />,
+    path: "employer-signin",
+    element: <SigninEmployerPage />,
   },
 
   // Routes cho Admin

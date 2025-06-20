@@ -1,71 +1,83 @@
-import React from "react";
-import { Form, Input, Button, Typography, Space } from "antd";
+import React, { useState } from "react";
+import { Form, Input, Button, Typography } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
-import styles from "../../styles/LoginEmployerForm.module.css";
+import { useSignin } from "../../../auth/hooks/useSignin";
+import styles from "../../styles/SigninCandidateForm.module.css";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
-const LoginEmployerForm = () => {
-  const [form] = Form.useForm();
+const SigninCandidateForm = () => {
+  const { mutate: signinMutation } = useSignin();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = (values) => {
-    console.log("Employer login submitted:", values);
+    setLoading(true); // Hiển thị loading khi bắt đầu đăng nhập
+    signinMutation(values, {
+      onSettled: () => setLoading(false), // Tắt loading khi hoàn tất
+    });
+  };
+
+  const handleSignUp = () => {
+    navigate("/signup");
   };
 
   return (
-    <div className={styles.loginContainer}>
+    <div className={styles.signinContainer}>
       {/* Left side - Image/Illustration */}
-      <div className={styles.loginImageSection}>
+      <div className={styles.signinImageSection}>
         <div className={styles.imageContent}>
           <div className={styles.illustrationWrapper}>
             <img
               src="/src/assets/logo/logo_ngang.png"
-              alt="Employer Login Illustration"
-              className={styles.loginIllustration}
+              alt="Signin Illustration"
+              className={styles.signinIllustration}
             />
           </div>
           <div className={styles.imageText}>
             <Title level={2} className={styles.imageTitle}>
-              Tìm kiếm nhân tài cho doanh nghiệp của bạn
+              Chào mừng đến với tương lai nghề nghiệp của bạn
             </Title>
             <Text className={styles.imageDescription}>
-              Đăng nhập để tiếp cận hàng ngàn ứng viên tiềm năng, quản lý tin
-              tuyển dụng, và xây dựng đội ngũ mơ ước cho công ty của bạn.
+              Khám phá hàng ngàn cơ hội việc làm phù hợp với kỹ năng và đam mê
+              của bạn. Hãy bắt đầu hành trình tìm kiếm công việc mơ ước ngay hôm
+              nay!
             </Text>
           </div>
         </div>
       </div>
 
-      {/* Right side - Login Form */}
-      <div className={styles.loginFormSection}>
+      {/* Right side - Signin Form */}
+      <div className={styles.signinFormSection}>
         <div className={styles.formWrapper}>
           {/* Logo */}
-          <div className={styles.logoLoginSection}>
+          <div className={styles.logoSigninSection}>
             <img
               src="/src/assets/logo/logo.png"
               alt="Logo"
-              className={styles.logoLogin}
+              className={styles.logoSignin}
             />
           </div>
 
           {/* Welcome Header */}
           <div className={styles.welcomeHeader}>
             <Title level={1} className={styles.welcomeTitle}>
-              Đăng nhập nhà tuyển dụng
+              Chào mừng bạn quay trở lại
             </Title>
             <Text className={styles.welcomeSubtitle}>
-              Truy cập tài khoản để quản lý tuyển dụng hiệu quả
+              Đăng nhập để tiếp tục hành trình tìm việc của bạn
             </Text>
           </div>
 
-          {/* Login Form */}
+          {/* Signin Form */}
           <Form
-            form={form}
-            name="employerLoginForm"
+            name="signinForm"
             onFinish={onFinish}
             layout="vertical"
             size="large"
-            className={styles.loginForm}
+            className={styles.signinForm}
+            disabled={loading}
           >
             <Form.Item
               name="email"
@@ -79,6 +91,7 @@ const LoginEmployerForm = () => {
                 prefix={<MailOutlined className={styles.inputIcon} />}
                 placeholder="Nhập email của bạn"
                 className={styles.customInput}
+                autoComplete="email"
               />
             </Form.Item>
 
@@ -87,34 +100,52 @@ const LoginEmployerForm = () => {
               label="Mật khẩu"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu!" },
-                { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
+                { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined className={styles.inputIcon} />}
                 placeholder="Nhập mật khẩu của bạn"
                 className={styles.customInput}
+                autoComplete="current-password"
               />
             </Form.Item>
+
+            {/* Forgot Password Link */}
+            {/* <div style={{ textAlign: "right", marginBottom: "16px" }}>
+              <Button
+                type="link"
+                onClick={handleForgotPassword}
+                style={{ padding: 0, fontSize: "14px" }}
+              >
+                Quên mật khẩu?
+              </Button>
+            </div> */}
 
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
-                className={styles.loginButton}
+                className={styles.signinButton}
+                loading={loading}
                 block
               >
-                Đăng nhập
+                {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
               </Button>
             </Form.Item>
 
             {/* Sign up link */}
             <div className={styles.signupSection}>
               <Text className={styles.signupText}>
-                Chưa có tài khoản nhà tuyển dụng?
-                <a href="/employer-signup" className={styles.signupLink}>
+                Chưa có tài khoản?
+                <Button
+                  type="link"
+                  onClick={handleSignUp}
+                  className={styles.signupLink}
+                  style={{ padding: "0 0 0 8px" }}
+                >
                   Đăng ký ngay
-                </a>
+                </Button>
               </Text>
             </div>
           </Form>
@@ -124,4 +155,4 @@ const LoginEmployerForm = () => {
   );
 };
 
-export default LoginEmployerForm;
+export default SigninCandidateForm;

@@ -1,16 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
-import { loginUser } from "../services/userApi";
+import { signinUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-export const useLogin = () => {
+export const useSignin = () => {
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data) => loginUser(data),
+    mutationFn: (data) => signinUser(data),
     onSuccess: (data) => {
       if (data.message !== "Đăng nhập thành công") {
         message.error(data.message || "Đăng nhập thất bại!");

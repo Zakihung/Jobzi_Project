@@ -24,7 +24,7 @@
 }
 
 /* Main Container */
-.loginContainer {
+.signinContainer {
   display: flex;
   min-height: 100vh;
   background: var(--white);
@@ -32,7 +32,7 @@
 }
 
 /* Left Side - Image Section */
-.loginImageSection {
+.signinImageSection {
   flex: 1;
   background: linear-gradient(
     135deg,
@@ -48,7 +48,7 @@
   overflow: hidden;
 }
 
-.loginImageSection::before {
+.signinImageSection::before {
   content: "";
   position: absolute;
   top: 0;
@@ -90,7 +90,7 @@
   }
 }
 
-.loginIllustration {
+.signinIllustration {
   width: 100%;
   max-width: 400px;
   height: auto;
@@ -113,7 +113,7 @@
 }
 
 /* Right Side - Form Section */
-.loginFormSection {
+.signinFormSection {
   flex: 1;
   display: flex;
   align-items: center;
@@ -129,18 +129,18 @@
 }
 
 /* Logo Section */
-.logoLoginSection {
+.logoSigninSection {
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
-.logoLogin {
+.logoSignin {
   height: 3.5rem;
   width: auto;
   transition: transform 0.3s ease;
 }
 
-.logoLogin:hover {
+.logoSignin:hover {
   transform: scale(1.05);
 }
 
@@ -165,7 +165,7 @@
 }
 
 /* Form Styles */
-.loginForm {
+.signinForm {
   margin-top: 1rem;
 }
 
@@ -186,8 +186,8 @@
   font-size: 1rem;
 }
 
-/* Login Button */
-.loginButton {
+/* Signin Button */
+.signinButton {
   height: 48px;
   border-radius: var(--border-radius);
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -200,7 +200,7 @@
   overflow: hidden;
 }
 
-.loginButton::before {
+.signinButton::before {
   content: "";
   position: absolute;
   top: 0;
@@ -216,16 +216,16 @@
   transition: left 0.5s;
 }
 
-.loginButton:hover::before {
+.signinButton:hover::before {
   left: 100%;
 }
 
-.loginButton:hover {
+.signinButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
 }
 
-.loginButton:active {
+.signinButton:active {
   transform: translateY(0);
 }
 
@@ -255,11 +255,11 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .loginContainer {
+  .signinContainer {
     flex-direction: column;
   }
 
-  .loginImageSection {
+  .signinImageSection {
     flex: none;
     min-height: 300px;
     padding: 2rem;
@@ -275,7 +275,7 @@
 }
 
 @media (max-width: 768px) {
-  .loginFormSection {
+  .signinFormSection {
     padding: 1rem;
   }
 
@@ -287,7 +287,7 @@
     font-size: 1.75rem !important;
   }
 
-  .loginImageSection {
+  .signinImageSection {
     min-height: 250px;
     padding: 1.5rem;
   }
@@ -298,11 +298,11 @@
 }
 
 @media (max-width: 480px) {
-  .loginContainer {
+  .signinContainer {
     min-height: 100vh;
   }
 
-  .loginImageSection {
+  .signinImageSection {
     min-height: 200px;
     padding: 1rem;
   }

@@ -198,11 +198,11 @@ const SignupCandidateForm = () => {
               </Button>
             </Form.Item>
 
-            {/* Login link */}
-            <div className={styles.loginSection}>
-              <Text className={styles.loginText}>
+            {/* Signin link */}
+            <div className={styles.signinSection}>
+              <Text className={styles.signinText}>
                 Đã có tài khoản?
-                <a href="/login" className={styles.loginLink}>
+                <a href="/signin" className={styles.signinLink}>
                   Đăng nhập ngay
                 </a>
               </Text>

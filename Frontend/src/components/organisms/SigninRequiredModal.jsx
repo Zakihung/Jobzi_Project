@@ -2,16 +2,16 @@ import React from "react";
 import { Modal, Button, Typography, Space } from "antd";
 import { LockOutlined, CloseOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import styles from "../../styles/LoginRequiredModal.module.css";
+import styles from "../../styles/SigninRequiredModal.module.css";
 
 const { Title, Text } = Typography;
 
-const LoginRequiredModal = ({ visible, onCancel }) => {
+const SigninRequiredModal = ({ visible, onCancel }) => {
   const navigate = useNavigate();
 
   // Xử lý điều hướng đến trang đăng nhập
-  const handleLogin = () => {
-    navigate("/login");
+  const handleSignin = () => {
+    navigate("/signin");
     onCancel();
   };
 
@@ -23,7 +23,7 @@ const LoginRequiredModal = ({ visible, onCancel }) => {
       centered
       closable
       closeIcon={<CloseOutlined className={styles.modalCloseIcon} />}
-      className={styles.loginRequiredModal}
+      className={styles.signinRequiredModal}
       wrapClassName={styles.modalWrapper}
     >
       <div className={styles.modalContent}>
@@ -47,8 +47,8 @@ const LoginRequiredModal = ({ visible, onCancel }) => {
           <Button
             type="primary"
             size="large"
-            className={styles.loginButton}
-            onClick={handleLogin}
+            className={styles.signinButton}
+            onClick={handleSignin}
           >
             Đăng nhập
           </Button>
@@ -58,4 +58,4 @@ const LoginRequiredModal = ({ visible, onCancel }) => {
   );
 };
 
-export default LoginRequiredModal;
+export default SigninRequiredModal;

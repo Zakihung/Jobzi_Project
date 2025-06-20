@@ -23,7 +23,7 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import LoginRequiredModal from "../../components/organisms/LoginRequiredModal";
+import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
 import { useAuth } from "../../contexts/auth.context";
 import styles from "../../styles/JobPostDetailPage.module.css";
 
@@ -292,7 +292,7 @@ const JobPostDetailPage = () => {
           </Col>
           <Col span={2} />
         </Row>
-        <LoginRequiredModal
+        <SigninRequiredModal
           visible={modalVisible}
           onCancel={handleModalCancel}
         />

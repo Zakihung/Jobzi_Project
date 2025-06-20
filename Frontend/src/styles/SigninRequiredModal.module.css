@@ -23,19 +23,19 @@
   align-items: center;
 }
 
-.loginRequiredModal {
+.signinRequiredModal {
   max-width: 400px;
   width: 100%;
 }
 
-.loginRequiredModal :global(.ant-modal-content) {
+.signinRequiredModal :global(.ant-modal-content) {
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-md);
   background: var(--white);
   padding: 32px;
 }
 
-.loginRequiredModal :global(.ant-modal-body) {
+.signinRequiredModal :global(.ant-modal-body) {
   padding: 0;
 }
 
@@ -81,7 +81,7 @@
   justify-content: center;
 }
 
-.loginButton {
+.signinButton {
   background: var(--primary) !important;
   border-color: var(--primary) !important;
   border-radius: var(--border-radius);
@@ -91,7 +91,7 @@
   padding: 0 24px;
 }
 
-.loginButton:hover {
+.signinButton:hover {
   background: var(--primary-dark) !important;
   border-color: var(--primary-dark) !important;
 }
@@ -123,7 +123,7 @@
 
 /* Responsive Design */
 @media (max-width: 576px) {
-  .loginRequiredModal :global(.ant-modal-content) {
+  .signinRequiredModal :global(.ant-modal-content) {
     padding: 24px;
   }
 
@@ -141,7 +141,7 @@
     font-size: 24px;
   }
 
-  .loginButton,
+  .signinButton,
   .cancelButton {
     height: 40px;
     padding: 0 16px;
@@ -154,7 +154,7 @@
     width: 100%;
   }
 
-  .loginButton,
+  .signinButton,
   .cancelButton {
     width: 100%;
   }

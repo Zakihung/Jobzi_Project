@@ -256,18 +256,18 @@
   transform: translateY(0);
 }
 
-/* Login Section */
-.loginSection {
+/* Signin Section */
+.signinSection {
   text-align: center;
   margin-top: 1.5rem;
 }
 
-.loginText {
+.signinText {
   color: var(--text-secondary) !important;
   font-size: 0.9rem;
 }
 
-.loginLink {
+.signinLink {
   color: var(--primary) !important;
   font-weight: 600;
   text-decoration: none;
@@ -275,7 +275,7 @@
   transition: all 0.3s ease;
 }
 
-.loginLink:hover {
+.signinLink:hover {
   color: var(--primary-dark) !important;
   text-decoration: underline;
 }

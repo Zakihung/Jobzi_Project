@@ -1,7 +1,7 @@
 import axios from "../../../services/axios.customize";
 
 // API để đăng nhập
-const loginUser = (data) => {
+const signinUser = (data) => {
   const URL_API = "/api/user/signin";
   return axios.post(URL_API, data);
 };
@@ -10,4 +10,5 @@ const signupUser = (data) => {
   const URL_API = "/api/user/signup";
   return axios.post(URL_API, data);
 };
-export { loginUser, signupUser };
+
+export { signinUser, signupUser };

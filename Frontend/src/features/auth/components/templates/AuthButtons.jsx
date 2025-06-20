@@ -58,12 +58,12 @@ const MenuItemLabel = styled.div`
   }
 `;
 
-const AuthButtons = ({ onLogin, onSignup }) => {
+const AuthButtons = ({ onSignin, onSignup }) => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (onLogin) onLogin();
-    else navigate("/login");
+  const handleSignin = () => {
+    if (onSignin) onSignin();
+    else navigate("/signin");
   };
 
   const handleSignup = () => {
@@ -78,9 +78,9 @@ const AuthButtons = ({ onLogin, onSignup }) => {
   // Menu items với styled label
   const menuItems = [
     {
-      key: "login",
+      key: "signin",
       label: (
-        <MenuItemLabel onClick={handleLogin}>
+        <MenuItemLabel onClick={handleSignin}>
           <LoginOutlined /> Đăng nhập
         </MenuItemLabel>
       ),
@@ -103,7 +103,7 @@ const AuthButtons = ({ onLogin, onSignup }) => {
         placement="bottomRight"
         trigger={["click"]}
       >
-        <AuthButton type="default" icon={<LoginOutlined />}>
+        <AuthButton type="default" icon={<SigninOutlined />}>
           Tài khoản <DownOutlined />
         </AuthButton>
       </Dropdown>
