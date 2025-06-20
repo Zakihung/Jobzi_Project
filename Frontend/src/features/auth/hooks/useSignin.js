@@ -3,20 +3,22 @@ import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
 import { signinUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
-import { notification } from "antd";
+import { App } from "antd";
 
 export const useSignin = () => {
+  const { notification } = App.useApp();
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data) => signinUser(data),
     onSuccess: (data) => {
-      if (data.message !== "Đăng nhập thành công") {
+      if (!data?.user || !data?.accessToken) {
         notification.error({
           message: "Lỗi",
           description: data.message || "Đăng nhập thất bại!",
           placement: "topRight",
+          duration: 2,
         });
         return;
       }
@@ -50,16 +52,18 @@ export const useSignin = () => {
         message: "Thành công",
         description: "Đăng nhập thành công!",
         placement: "topRight",
+        duration: 3,
       });
 
-      // Điều hướng dựa trên vai trò
-      if (userData.role === "admin") {
-        navigate("/admin");
-      } else if (userData.role === "employer") {
-        navigate("/employer");
-      } else {
-        navigate("/");
-      }
+      setTimeout(() => {
+        if (userData.role === "admin") {
+          navigate("/admin");
+        } else if (userData.role === "employer") {
+          navigate("/employer");
+        } else {
+          navigate("/");
+        }
+      }, 1000);
     },
     onError: (error) => {
       // Xử lý lỗi từ API hoặc lỗi mạng
@@ -69,6 +73,7 @@ export const useSignin = () => {
         message: "Lỗi",
         description: errorMessage,
         placement: "topRight",
+        duration: 2,
       });
     },
   });

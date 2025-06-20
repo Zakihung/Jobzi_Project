@@ -2,11 +2,10 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ConfigProvider, App as AntdApp } from "antd";
 import "./styles/global.css";
 import App from "./App.jsx";
 import EmployerApp from "./EmployerApp.jsx";
-// Thêm import ConfigProvider từ antd
-import { ConfigProvider, App as AntdApp } from "antd";
 import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
 
 //Candidate
