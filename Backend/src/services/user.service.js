@@ -9,11 +9,28 @@ const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
 
-const signupService = async ({ email, password, full_name, role }) => {
+const signupService = async ({
+  email,
+  password,
+  full_name,
+  role,
+  gender,
+  date_of_birth,
+  phone_number,
+}) => {
   // Kiểm tra dữ liệu đầu vào
-  if (!email || !password || !full_name || !role) {
+  if (
+    !email ||
+    !password ||
+    !full_name ||
+    !role ||
+    !gender ||
+    !date_of_birth ||
+    !phone_number
+  ) {
     throw new AppError("Dữ liệu trống", 400);
   }
+
   // Kiểm tra role hợp lệ
   if (!["candidate", "employer", "admin"].includes(role)) {
     throw new AppError(
@@ -21,10 +38,12 @@ const signupService = async ({ email, password, full_name, role }) => {
       400
     );
   }
+
   // Kiểm tra định dạng email
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
     throw new AppError("Email không hợp lệ", 400);
   }
+
   // Kiểm tra định dạng mật khẩu
   if (
     !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
@@ -36,6 +55,7 @@ const signupService = async ({ email, password, full_name, role }) => {
       400
     );
   }
+
   // Kiểm tra định dạng họ tên
   if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
     throw new AppError(
@@ -43,19 +63,64 @@ const signupService = async ({ email, password, full_name, role }) => {
       400
     );
   }
+
+  // Kiểm tra giới tính
+  if (!["male", "female"].includes(gender)) {
+    throw new AppError(
+      "Giới tính không hợp lệ: chỉ chấp nhận 'male', 'female'",
+      400
+    );
+  }
+
+  // Kiểm tra ngày tháng năm sinh
+  const dob = new Date(date_of_birth);
+  const today = new Date();
+  const minAge = 15;
+  const maxAge = 60;
+  const minDate = new Date(
+    today.getFullYear() - maxAge,
+    today.getMonth(),
+    today.getDate()
+  );
+  const maxDate = new Date(
+    today.getFullYear() - minAge,
+    today.getMonth(),
+    today.getDate()
+  );
+
+  if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
+    throw new AppError(
+      `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
+      400
+    );
+  }
+
+  // Kiểm tra định dạng số điện thoại
+  if (!/^\+?[0-9]{10,12}$/.test(phone_number)) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải chứa 10-12 chữ số và có thể bắt đầu bằng '+'",
+      400
+    );
+  }
+
   // Kiểm tra tồn tại email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new AppError("Email đã tồn tại", 400);
   }
+
   // Băm mật khẩu
   const hashedPassword = await bcrypt.hash(password, 10);
+
   // Tạo user mới
   const user = new User({
     email,
     password: hashedPassword,
     role,
     full_name,
+    gender,
+    date_of_birth: dob,
+    phone_number,
   });
   await user.save();
 

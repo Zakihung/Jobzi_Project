@@ -14,12 +14,23 @@ const {
 
 const signup = async (req, res) => {
   try {
-    const { email, password, full_name, role } = req.body;
+    const {
+      email,
+      password,
+      full_name,
+      role,
+      gender,
+      date_of_birth,
+      phone_number,
+    } = req.body;
     const result = await signupService({
       email,
       password,
       full_name,
       role,
+      gender,
+      date_of_birth,
+      phone_number,
     });
     let message;
     if (role === "candidate") {
