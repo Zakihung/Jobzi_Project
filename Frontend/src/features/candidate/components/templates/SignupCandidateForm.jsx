@@ -1,14 +1,61 @@
-import { Form, Input, Button, Typography, Space, Checkbox } from "antd";
-import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Input,
+  Button,
+  Typography,
+  Space,
+  Checkbox,
+  DatePicker,
+  Row,
+  Col,
+} from "antd";
+import {
+  MailOutlined,
+  LockOutlined,
+  UserOutlined,
+  PhoneOutlined,
+  ManOutlined,
+  WomanOutlined,
+} from "@ant-design/icons";
+import { useSignup } from "../../../auth/hooks/useSignup";
 import styles from "../../styles/SignupCandidateForm.module.css";
+import { useState } from "react";
+import moment from "moment";
 
 const { Title, Text } = Typography;
 
 const SignupCandidateForm = () => {
   const [form] = Form.useForm();
+  const { mutate: signupMutation } = useSignup();
+  const [loading, setLoading] = useState(false);
+  const [selectedGender, setSelectedGender] = useState("male"); // Mặc định là Nam
 
   const onFinish = (values) => {
-    console.log("Form submitted:", values);
+    setLoading(true);
+    const formattedValues = {
+      full_name: values.full_name,
+      email: values.email,
+      gender: values.gender,
+      phone_number: values.phone_number,
+      password: values.password,
+      role: "candidate",
+      date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
+    };
+    console.log("formatData: ", formattedValues);
+    signupMutation(formattedValues, {
+      onSettled: () => setLoading(false),
+    });
+  };
+
+  // Lấy ngày hiện tại và tính giới hạn tuổi
+  const today = moment();
+  const maxDate = today.clone().subtract(15, "years");
+  const minDate = today.clone().subtract(60, "years");
+
+  // Xử lý chọn giới tính
+  const handleGenderSelect = (gender) => {
+    setSelectedGender(gender);
+    form.setFieldsValue({ gender: gender });
   };
 
   return (
@@ -51,7 +98,7 @@ const SignupCandidateForm = () => {
           {/* Welcome Header */}
           <div className={styles.welcomeHeader}>
             <Title level={1} className={styles.welcomeTitle}>
-              Tạo tài khoản mới
+              Tạo tài khoản ứng viên
             </Title>
             <Text className={styles.welcomeSubtitle}>
               Chỉ vài bước đơn giản để bắt đầu tìm kiếm công việc mơ ước
@@ -67,18 +114,19 @@ const SignupCandidateForm = () => {
             size="large"
             className={styles.signupForm}
             scrollToFirstError
+            disabled={loading}
+            initialValues={{ gender: "male" }} // Thiết lập giá trị mặc định
           >
             {/* Full Name Field */}
             <Form.Item
-              name="fullName"
+              name="full_name"
               label="Họ và tên"
               rules={[
                 { required: true, message: "Vui lòng nhập họ và tên!" },
-                { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự!" },
-                { max: 50, message: "Họ và tên không được vượt quá 50 ký tự!" },
                 {
-                  pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
-                  message: "Họ và tên chỉ được chứa chữ cái và khoảng trắng!",
+                  pattern: /^[a-zA-ZÀ-ỹ\s.-]{2,100}$/,
+                  message:
+                    "Họ tên chỉ được chứa chữ cái, khoảng trắng và chứa từ 2 đến 100 ký tự!",
                 },
               ]}
             >
@@ -95,7 +143,6 @@ const SignupCandidateForm = () => {
               label="Email"
               rules={[
                 { required: true, message: "Vui lòng nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" },
                 {
                   pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                   message: "Định dạng email không đúng!",
@@ -109,18 +156,115 @@ const SignupCandidateForm = () => {
               />
             </Form.Item>
 
+            <Row gutter={[24, 24]}>
+              <Col span={12}>
+                {/* Gender Field với Button */}
+                <Form.Item
+                  name="gender"
+                  label="Giới tính"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn giới tính!" },
+                  ]}
+                >
+                  <div className={styles.genderButtonGroup}>
+                    <Button
+                      type={selectedGender === "male" ? "primary" : "default"}
+                      icon={<ManOutlined />}
+                      onClick={() => handleGenderSelect("male")}
+                      className={`${styles.genderButton} ${
+                        selectedGender === "male"
+                          ? styles.genderButtonActive
+                          : ""
+                      }`}
+                    >
+                      Nam
+                    </Button>
+                    <Button
+                      type={selectedGender === "female" ? "primary" : "default"}
+                      icon={<WomanOutlined />}
+                      onClick={() => handleGenderSelect("female")}
+                      className={`${styles.genderButton} ${
+                        selectedGender === "female"
+                          ? styles.genderButtonActive
+                          : ""
+                      }`}
+                    >
+                      Nữ
+                    </Button>
+                  </div>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                {/* Date of Birth Field */}
+                <Form.Item
+                  name="date_of_birth"
+                  label="Ngày sinh"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn ngày sinh!" },
+                    {
+                      validator: (_, value) =>
+                        value &&
+                        value.isAfter(minDate) &&
+                        value.isBefore(maxDate)
+                          ? Promise.resolve()
+                          : Promise.reject(
+                              new Error("Tuổi phải từ 15 đến 60 tuổi!")
+                            ),
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    format="DD/MM/YYYY"
+                    placeholder="Chọn ngày sinh"
+                    className={styles.customInput}
+                    disabledDate={(current) =>
+                      current && (current < minDate || current > maxDate)
+                    }
+                    allowClear
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Phone Number Field */}
+            <Form.Item
+              name="phone_number"
+              label="Số điện thoại cá nhân"
+              rules={[
+                { required: true, message: "Vui lòng nhập số điện thoại!" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Số điện thoại phải gồm đúng 10 chữ số!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<PhoneOutlined className={styles.inputIcon} />}
+                placeholder="Nhập số điện thoại"
+                className={styles.customInput}
+              />
+            </Form.Item>
+
             {/* Password Field */}
             <Form.Item
               name="password"
               label="Mật khẩu"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu!" },
-                { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
                 {
                   pattern:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-                  message:
-                    "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt!",
+                    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message: (
+                    <>
+                      Mật khẩu phải có:
+                      <ul style={{ margin: "2px 0 0 25px", padding: 0 }}>
+                        <li>Ít nhất 8 ký tự</li>
+                        <li>Ít nhất một chữ cái viết hoa</li>
+                        <li>Ít nhất một chữ số</li>
+                        <li>Ít nhất một ký tự đặc biệt</li>
+                      </ul>
+                    </>
+                  ),
                 },
               ]}
               hasFeedback
@@ -160,7 +304,7 @@ const SignupCandidateForm = () => {
             </Form.Item>
 
             {/* Terms and Conditions */}
-            <Form.Item
+            {/* <Form.Item
               name="agreement"
               valuePropName="checked"
               rules={[
@@ -184,7 +328,7 @@ const SignupCandidateForm = () => {
                   Chính sách bảo mật
                 </a>
               </Checkbox>
-            </Form.Item>
+            </Form.Item> */}
 
             {/* Signup Button */}
             <Form.Item>
@@ -193,8 +337,9 @@ const SignupCandidateForm = () => {
                 htmlType="submit"
                 className={styles.signupButton}
                 block
+                loading={loading}
               >
-                Tạo tài khoản
+                {loading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
               </Button>
             </Form.Item>
 

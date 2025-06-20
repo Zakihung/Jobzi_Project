@@ -113,7 +113,7 @@
 }
 
 .imageDescription {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: RGBA(255, 255, 255, 0.9) !important;
   font-size: 1.125rem !important;
   line-height: 1.6 !important;
   max-width: 400px;
@@ -182,16 +182,74 @@
   border: 2px solid var(--gray-200);
   font-size: 0.95rem;
   transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .customInput:hover {
   border-color: var(--primary-light);
 }
 
+.customInput .ant-picker {
+  height: 46px !important;
+  border-radius: var(--border-radius) !important;
+  border: 2px solid var(--gray-200) !important;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem !important;
+  width: 100%;
+}
+
+.customInput .ant-picker:hover {
+  border-color: var(--primary-light) !important;
+}
+
 .inputIcon {
   color: var(--text-secondary);
   font-size: 1rem;
   margin-right: 5px;
+}
+
+/* Gender Button Group Styles */
+.genderButtonGroup {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.genderButton {
+  flex: 1;
+  height: 46px !important;
+  border-radius: var(--border-radius) !important;
+  border: 2px solid var(--gray-200) !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transition: all 0.3s ease !important;
+  background: var(--white) !important;
+  color: var(--text-secondary) !important;
+}
+
+.genderButton:hover {
+  border-color: var(--primary-light) !important;
+  color: var(--primary) !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+.genderButtonActive {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: var(--white) !important;
+}
+
+.genderButtonActive:hover {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: var(--white) !important;
 }
 
 /* Agreement Checkbox */
@@ -237,7 +295,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    RGBA(255, 255, 255, 0.2),
     transparent
   );
   transition: left 0.5s;
@@ -249,7 +307,7 @@
 
 .signupButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 16px RGBA(99, 102, 241, 0.3);
 }
 
 .signupButton:active {
@@ -354,6 +412,16 @@
   .customInput {
     height: 44px;
     font-size: 0.9rem;
+  }
+
+  .customInput .ant-picker {
+    height: 44px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .genderButton {
+    height: 44px !important;
+    font-size: 0.9rem !important;
   }
 
   .signupButton {

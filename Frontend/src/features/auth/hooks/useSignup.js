@@ -1,19 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
-import { signinUser } from "../services/userApi";
+import { signupUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
-export const useSignin = () => {
+export const useSignup = () => {
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data) => signinUser(data),
+    mutationFn: (data) => signupUser(data),
     onSuccess: (data) => {
-      if (data.message !== "Đăng nhập thành công") {
-        message.error(data.message || "Đăng nhập thất bại!");
+      // Kiểm tra phản hồi API
+      if (!data.message.includes("Đăng ký") || !data.user) {
+        message.error(data.message || "Đăng ký thất bại!");
         return;
       }
 
@@ -41,7 +42,7 @@ export const useSignin = () => {
       // Cập nhật trạng thái xác thực
       setAuth({ isAuthenticated: true, user: userData });
 
-      message.success("Đăng nhập thành công!");
+      message.success("Đăng ký thành công!");
 
       // Điều hướng dựa trên vai trò
       if (userData.role === "admin") {
@@ -54,8 +55,7 @@ export const useSignin = () => {
     },
     onError: (error) => {
       // Xử lý lỗi từ API hoặc lỗi mạng
-      const errorMessage =
-        error.response?.data?.message || "Đăng nhập thất bại!";
+      const errorMessage = error.response?.data?.message || "Đăng ký thất bại!";
       message.error(errorMessage);
     },
   });
