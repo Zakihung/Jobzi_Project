@@ -3,18 +3,12 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninEmployerForm.module.css";
 import { useState } from "react";
-import RoleSelectionModal from "./RoleSelectionModal";
-import { useLocation } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const SigninEmployerForm = () => {
   const { mutate: signinMutation, isLoading } = useSignin();
   const [errorMessage, setErrorMessage] = useState("");
-  const location = useLocation();
-  const [modalVisible, setModalVisible] = useState(
-    location.state?.showRoleModal || false
-  );
 
   const onFinish = (values) => {
     setErrorMessage(""); // Xóa thông báo lỗi trước khi gọi API
@@ -26,11 +20,6 @@ const SigninEmployerForm = () => {
       },
     });
   };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-  };
-
   // Hàm xử lý khi người dùng thay đổi input
   const handleInputChange = () => {
     if (errorMessage) {
@@ -40,7 +29,6 @@ const SigninEmployerForm = () => {
 
   return (
     <div className={styles.signinContainer}>
-      <RoleSelectionModal visible={modalVisible} onClose={handleModalClose} />
       {/* Left side - Image/Illustration */}
       <div className={styles.signinImageSection}>
         <div className={styles.imageContent}>
@@ -163,7 +151,7 @@ const SigninEmployerForm = () => {
             <div className={styles.signupSection}>
               <Text className={styles.signupText}>
                 Chưa có tài khoản?
-                <a href="/employer/signup" className={styles.signupLink}>
+                <a href="/employer-signup" className={styles.signupLink}>
                   Đăng ký ngay
                 </a>
               </Text>

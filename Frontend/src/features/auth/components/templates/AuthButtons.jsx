@@ -72,7 +72,7 @@ const AuthButtons = ({ onSignin, onSignup }) => {
   };
 
   const handleEmployerClick = () => {
-    navigate("/employer-signin", { state: { showRoleModal: true } });
+    navigate("/employer-signup", { state: { showRoleModal: true } });
   };
 
   // Menu items với styled label

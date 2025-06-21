@@ -23,18 +23,17 @@ import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 
 //Employer
+import SignupEmployerPage from "./pages/employer/SignupEmployerPage.jsx";
 import SigninEmployerPage from "./pages/employer/SigninEmployerPage.jsx";
 import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
-// import EmployerApp from "./EmployerApp.jsx";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
 // import EmployerAccountPage from "./pages/employer/EmployerAccountPage";
 // import EmployerCompanyPage from "./pages/employer/EmployerCompanyPage";
 // import EmployerJobPostListPage from "./pages/employer/EmployerJobPostListPage";
 // import EmployerJobPostDetailPage from "./pages/employer/EmployerJobPostDetailPage";
-// import SignupEmployerPage from "./pages/employer/SignupEmployerPage";
 
 //Admin
 // import AdminApp from "./AdminApp.jsx";
@@ -134,10 +133,10 @@ const router = createBrowserRouter([
   //     },
   //   ],
   // },
-  // {
-  //   path: "signupEmployer",
-  //   element: <SignupEmployerPage />,
-  // },
+  {
+    path: "/employer-signup",
+    element: <SignupEmployerPage />,
+  },
   {
     path: "/employer-signin",
     element: <SigninEmployerPage />,
