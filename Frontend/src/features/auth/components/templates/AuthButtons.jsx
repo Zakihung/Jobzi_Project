@@ -72,7 +72,7 @@ const AuthButtons = ({ onSignin, onSignup }) => {
   };
 
   const handleEmployerClick = () => {
-    navigate("/employer");
+    navigate("/employer-signin", { state: { showRoleModal: true } });
   };
 
   // Menu items với styled label
@@ -98,7 +98,7 @@ const AuthButtons = ({ onSignin, onSignup }) => {
   return (
     <AuthButtonContainer>
       <AuthButton onClick={handleEmployerClick}>
-        Đăng tuyển & tìm hồ sơ
+        Đăng tuyển & tìm ứng viên
       </AuthButton>
       <Dropdown
         menu={{ items: menuItems }}

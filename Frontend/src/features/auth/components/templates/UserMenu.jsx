@@ -91,10 +91,15 @@ const MenuItemLabelLogout = styled.div`
 
 const UserMenu = ({ onSignin, onSignup }) => {
   const { auth, logout, loading } = useContext(AuthContext);
+  const role = auth?.user?.role;
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/signin");
+    if (role === "candidate") {
+      window.location.href = "/signin";
+    } else if (role === "employer") {
+      window.location.href = "/employer-signin";
+    }
     logout();
     message.success("Đăng xuất thành công!");
   };
@@ -105,8 +110,12 @@ const UserMenu = ({ onSignin, onSignup }) => {
         navigate("/profile");
         break;
 
+      case "profile":
+        navigate("/employer/profile");
+        break;
+
       case "settings":
-        console.log("Mở cài đặt");
+        navigate("/settings");
         break;
       default:
         break;
@@ -115,22 +124,38 @@ const UserMenu = ({ onSignin, onSignup }) => {
 
   // Menu items với styled label
   const menuItems = [
-    {
-      key: "cv-management",
-      label: (
-        <MenuItemLabel onClick={() => handleMenuClick("cv-management")}>
-          <ProfileOutlined /> Quản lý CV
-        </MenuItemLabel>
-      ),
-    },
-    {
-      key: "settings",
-      label: (
-        <MenuItemLabel onClick={() => handleMenuClick("settings")}>
-          <SettingOutlined /> Cài đặt
-        </MenuItemLabel>
-      ),
-    },
+    ...(role !== "employer"
+      ? [
+          {
+            key: "cv-management",
+            label: (
+              <MenuItemLabel onClick={() => handleMenuClick("cv-management")}>
+                <ProfileOutlined /> Quản lý CV
+              </MenuItemLabel>
+            ),
+          },
+          {
+            key: "settings",
+            label: (
+              <MenuItemLabel onClick={() => handleMenuClick("settings")}>
+                <SettingOutlined /> Cài đặt
+              </MenuItemLabel>
+            ),
+          },
+        ]
+      : []),
+    ...(role !== "candidate"
+      ? [
+          {
+            key: "profile",
+            label: (
+              <MenuItemLabel onClick={() => handleMenuClick("profile")}>
+                <ProfileOutlined /> Tài khoản
+              </MenuItemLabel>
+            ),
+          },
+        ]
+      : []),
     {
       type: "divider",
     },

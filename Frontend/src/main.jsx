@@ -139,7 +139,7 @@ const router = createBrowserRouter([
   //   element: <SignupEmployerPage />,
   // },
   {
-    path: "/employer/signin",
+    path: "/employer-signin",
     element: <SigninEmployerPage />,
   },
 

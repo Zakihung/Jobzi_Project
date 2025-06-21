@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Space } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { AuthContext } from "../../contexts/auth.context";
 
 const NavSectionWrapper = styled.div`
   flex: 1;
@@ -38,14 +39,29 @@ const NavButton = styled(Button)`
 `;
 
 const NavSection = () => {
+  const { auth } = useContext(AuthContext);
+  const role = auth?.user?.role;
   const navigate = useNavigate();
   const location = useLocation();
 
-  const menuItems = [
+  const menuCandidateItems = [
     { key: "home", label: "Trang chủ", path: "/" },
     { key: "search", label: "Tìm kiếm", path: "/search" },
     { key: "companies", label: "Công ty", path: "/companies" },
     { key: "about", label: "Về chúng tôi", path: "/about" },
+  ];
+
+  const menuEmployerItems = [
+    { key: "dashboard", label: "Dashboard", path: "/employer" },
+    { key: "cadidate", label: "Ứng viên", path: "/employer/cadidate" },
+    {
+      key: "postjobmanagement",
+      label: "Quản lý tuyển dụng",
+      path: "/employer/postjob-management",
+    },
+    { key: "reports", label: "Báo cáo", path: "/employer/reports" },
+    { key: "company", label: "Công ty", path: "/employer/company" },
+    { key: "postjob", label: "Đăng tuyển dụng", path: "/employer/postjob" },
   ];
 
   const handleClick = (path) => {
@@ -55,7 +71,12 @@ const NavSection = () => {
   return (
     <NavSectionWrapper>
       <Space size="small">
-        {menuItems.map((item) => {
+        {(role === "candidate"
+          ? menuCandidateItems
+          : role === "employer"
+          ? menuEmployerItems
+          : menuCandidateItems
+        ).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <NavButton

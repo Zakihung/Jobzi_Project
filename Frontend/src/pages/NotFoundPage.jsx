@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Typography, Result } from "antd";
-import { HomeOutlined, FrownOutlined } from "@ant-design/icons";
+import { FrownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/auth.context";
 
 const { Title, Text } = Typography;
 
 const NotFoundPage = () => {
+  const { auth } = useContext(AuthContext);
+  const role = auth?.user?.role;
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate("/");
+    role === "cadidate"
+      ? navigate("/")
+      : role === "employer"
+      ? navigate("/employer")
+      : navigate("/");
   };
 
   return (
