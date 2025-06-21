@@ -1,15 +1,31 @@
-import React from "react";
-import { Form, Input, Button, Typography, Space } from "antd";
+import { Form, Input, Button, Typography, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninEmployerForm.module.css";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 
 const SigninEmployerForm = () => {
-  const [form] = Form.useForm();
+  const { mutate: signinMutation, isLoading } = useSignin();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onFinish = (values) => {
-    console.log("Employer signin submitted:", values);
+    setErrorMessage(""); // Xóa thông báo lỗi trước khi gọi API
+    signinMutation(values, {
+      onError: (error) => {
+        setErrorMessage(
+          error.errorMessage || "Email hoặc mật khẩu không chính xác!"
+        );
+      },
+    });
+  };
+
+  // Hàm xử lý khi người dùng thay đổi input
+  const handleInputChange = () => {
+    if (errorMessage) {
+      setErrorMessage(""); // Xóa thông báo lỗi khi người dùng bắt đầu nhập lại
+    }
   };
 
   return (
@@ -20,7 +36,7 @@ const SigninEmployerForm = () => {
           <div className={styles.illustrationWrapper}>
             <img
               src="/src/assets/logo/logo_ngang.png"
-              alt="Employer Signin Illustration"
+              alt="Signin Illustration"
               className={styles.signinIllustration}
             />
           </div>
@@ -51,7 +67,7 @@ const SigninEmployerForm = () => {
           {/* Welcome Header */}
           <div className={styles.welcomeHeader}>
             <Title level={1} className={styles.welcomeTitle}>
-              Đăng nhập nhà tuyển dụng
+              Chào mừng bạn quay trở lại
             </Title>
             <Text className={styles.welcomeSubtitle}>
               Truy cập tài khoản để quản lý tuyển dụng hiệu quả
@@ -60,25 +76,30 @@ const SigninEmployerForm = () => {
 
           {/* Signin Form */}
           <Form
-            form={form}
-            name="employerSigninForm"
+            name="signinForm"
             onFinish={onFinish}
             layout="vertical"
             size="large"
             className={styles.signinForm}
+            disabled={isLoading}
           >
             <Form.Item
               name="email"
               label="Email"
               rules={[
                 { required: true, message: "Vui lòng nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" },
+                {
+                  pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Định dạng email không đúng!",
+                },
               ]}
             >
               <Input
                 prefix={<MailOutlined className={styles.inputIcon} />}
                 placeholder="Nhập email của bạn"
                 className={styles.customInput}
+                autoComplete="email"
+                onChange={handleInputChange}
               />
             </Form.Item>
 
@@ -87,32 +108,51 @@ const SigninEmployerForm = () => {
               label="Mật khẩu"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu!" },
-                { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
+                { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined className={styles.inputIcon} />}
                 placeholder="Nhập mật khẩu của bạn"
                 className={styles.customInput}
+                autoComplete="current-password"
+                onChange={handleInputChange}
               />
             </Form.Item>
+
+            {/* Forgot Password Link */}
+            {/* <div style={{ textAlign: "right", marginBottom: "16px" }}>
+              <Button
+                type="link"
+                onClick={handleForgotPassword}
+                style={{ padding: 0, fontSize: "14px" }}
+              >
+                Quên mật khẩu?
+              </Button>
+            </div> */}
+
+            {/* Hiển thị thông báo lỗi */}
+            {errorMessage && (
+              <Alert message={errorMessage} type="error" showIcon />
+            )}
 
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
                 className={styles.signinButton}
+                isLoading={isLoading}
                 block
               >
-                Đăng nhập
+                {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
               </Button>
             </Form.Item>
 
             {/* Sign up link */}
             <div className={styles.signupSection}>
               <Text className={styles.signupText}>
-                Chưa có tài khoản nhà tuyển dụng?
-                <a href="/employer-signup" className={styles.signupLink}>
+                Chưa có tài khoản?
+                <a href="/employer/signup" className={styles.signupLink}>
                   Đăng ký ngay
                 </a>
               </Text>

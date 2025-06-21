@@ -1,10 +1,10 @@
 /* CSS Variables */
 :root {
-  --primary: #577cf6;
-  --primary-dark: #4c6ef5;
-  --primary-light: #8097f8;
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
   --secondary: #f8fafc;
-  --accent: #764ba2;
+  --accent: #ec4899;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-light: #94a3b8;
@@ -114,7 +114,7 @@
 
 /* Right Side - Form Section */
 .signinFormSection {
-  flex: 1;
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +124,7 @@
 
 .formWrapper {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   padding: 2rem 0;
 }
 
@@ -222,7 +222,7 @@
 
 .signinButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(87, 124, 246, 0.3);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
 }
 
 .signinButton:active {
@@ -232,7 +232,7 @@
 /* Signup Section */
 .signupSection {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .signupText {

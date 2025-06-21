@@ -114,7 +114,7 @@
 
 /* Right Side - Form Section */
 .signinFormSection {
-  flex: 1;
+  flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,7 +124,7 @@
 
 .formWrapper {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   padding: 2rem 0;
 }
 

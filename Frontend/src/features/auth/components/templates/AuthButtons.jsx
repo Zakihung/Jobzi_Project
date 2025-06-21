@@ -97,7 +97,9 @@ const AuthButtons = ({ onSignin, onSignup }) => {
 
   return (
     <AuthButtonContainer>
-      <AuthButton onClick={handleEmployerClick}>Nhà tuyển dụng</AuthButton>
+      <AuthButton onClick={handleEmployerClick}>
+        Đăng tuyển & tìm hồ sơ
+      </AuthButton>
       <Dropdown
         menu={{ items: menuItems }}
         placement="bottomRight"
