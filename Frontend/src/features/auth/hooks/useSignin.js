@@ -52,7 +52,7 @@ export const useSignin = () => {
         message: "Thành công",
         description: "Đăng nhập thành công!",
         placement: "topRight",
-        duration: 3,
+        duration: 2,
       });
 
       setTimeout(() => {
@@ -65,16 +65,12 @@ export const useSignin = () => {
         }
       }, 1000);
     },
-    onError: (error) => {
-      // Xử lý lỗi từ API hoặc lỗi mạng
-      const errorMessage =
-        error.response?.data?.message || "Đăng nhập thất bại!";
-      notification.error({
-        message: "Lỗi",
-        description: errorMessage,
-        placement: "topRight",
-        duration: 2,
-      });
+    onError: () => {
+      // Trả về object chứa thông báo lỗi để component có thể sử dụng
+      const errorMessage = "Email hoặc mật khẩu không chính xác!";
+
+      // Ném lỗi với thông báo cụ thể để component có thể bắt
+      throw { errorMessage };
     },
   });
 };

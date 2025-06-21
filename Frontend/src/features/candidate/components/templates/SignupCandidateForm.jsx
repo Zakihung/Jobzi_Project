@@ -26,12 +26,10 @@ const { Title, Text } = Typography;
 
 const SignupCandidateForm = () => {
   const [form] = Form.useForm();
-  const { mutate: signupMutation } = useSignup();
-  const [loading, setLoading] = useState(false);
+  const { mutate: signupMutation, isLoading } = useSignup(form);
   const [selectedGender, setSelectedGender] = useState("male"); // Mặc định là Nam
 
   const onFinish = (values) => {
-    setLoading(true);
     const formattedValues = {
       full_name: values.full_name,
       email: values.email,
@@ -41,11 +39,7 @@ const SignupCandidateForm = () => {
       role: "candidate",
       date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
     };
-    signupMutation(formattedValues, {
-      onSettled: () => {
-        setLoading(false);
-      },
-    });
+    signupMutation(formattedValues);
   };
 
   // Lấy ngày hiện tại và tính giới hạn tuổi
@@ -115,7 +109,7 @@ const SignupCandidateForm = () => {
             size="large"
             className={styles.signupForm}
             scrollToFirstError
-            disabled={loading}
+            disabled={isLoading}
             initialValues={{ gender: "male" }} // Thiết lập giá trị mặc định
           >
             {/* Full Name Field */}
@@ -149,6 +143,7 @@ const SignupCandidateForm = () => {
                   message: "Định dạng email không đúng!",
                 },
               ]}
+              hasFeedback
             >
               <Input
                 prefix={<MailOutlined className={styles.inputIcon} />}
@@ -338,9 +333,9 @@ const SignupCandidateForm = () => {
                 htmlType="submit"
                 className={styles.signupButton}
                 block
-                loading={loading}
+                isLoading={isLoading}
               >
-                {loading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+                {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
               </Button>
             </Form.Item>
 

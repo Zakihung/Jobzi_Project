@@ -45,7 +45,9 @@ const signup = async (req, res) => {
       ...result,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    const statusCode = error.statusCode || 500;
+    const message = error.message || "Đã xảy ra lỗi máy chủ";
+    res.status(statusCode).json({ message });
   }
 };
 

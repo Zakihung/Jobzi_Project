@@ -35,13 +35,13 @@ const signupService = async ({
   if (!["candidate", "employer", "admin"].includes(role)) {
     throw new AppError(
       "Vai trò không hợp lệ: chỉ chấp nhận 'candidate' hoặc 'employer' hoặc 'admin'",
-      401
+      400
     );
   }
 
   // Kiểm tra định dạng email
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-    throw new AppError("Email không hợp lệ", 401);
+    throw new AppError("Email không hợp lệ", 400);
   }
 
   // Kiểm tra định dạng mật khẩu
@@ -52,7 +52,7 @@ const signupService = async ({
   ) {
     throw new AppError(
       "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
-      401
+      400
     );
   }
 
@@ -60,7 +60,7 @@ const signupService = async ({
   if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
     throw new AppError(
       "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
-      401
+      400
     );
   }
 
@@ -68,7 +68,7 @@ const signupService = async ({
   if (!["male", "female"].includes(gender)) {
     throw new AppError(
       "Giới tính không hợp lệ: chỉ chấp nhận 'male', 'female'",
-      401
+      400
     );
   }
 
@@ -91,22 +91,22 @@ const signupService = async ({
   if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
     throw new AppError(
       `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
-      401
+      400
     );
   }
 
   // Kiểm tra định dạng số điện thoại
-  if (!/^\+?[0-9]{10,15}$/.test(phone_number)) {
+  if (!/^\+?[0-9]{10}$/.test(phone_number)) {
     throw new AppError(
-      "Số điện thoại không hợp lệ! Phải chứa 10-15 chữ số và có thể bắt đầu bằng '+'",
-      401
+      "Số điện thoại không hợp lệ! Phải chứa đúng 10 chữ số",
+      400
     );
   }
 
   // Kiểm tra tồn tại email
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw new AppError("Email đã tồn tại", 403);
+    throw new AppError("Email đã tồn tại", 409);
   }
 
   // Băm mật khẩu

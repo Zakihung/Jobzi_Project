@@ -1,15 +1,31 @@
-import { Form, Input, Button, Typography } from "antd";
+import { Form, Input, Button, Typography, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninCandidateForm.module.css";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 
 const SigninCandidateForm = () => {
   const { mutate: signinMutation, isLoading } = useSignin();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onFinish = (values) => {
-    signinMutation(values);
+    setErrorMessage(""); // Xóa thông báo lỗi trước khi gọi API
+    signinMutation(values, {
+      onError: (error) => {
+        setErrorMessage(
+          error.errorMessage || "Email hoặc mật khẩu không chính xác!"
+        );
+      },
+    });
+  };
+
+  // Hàm xử lý khi người dùng thay đổi input
+  const handleInputChange = () => {
+    if (errorMessage) {
+      setErrorMessage(""); // Xóa thông báo lỗi khi người dùng bắt đầu nhập lại
+    }
   };
 
   return (
@@ -73,7 +89,10 @@ const SigninCandidateForm = () => {
               label="Email"
               rules={[
                 { required: true, message: "Vui lòng nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" },
+                {
+                  pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Định dạng email không đúng!",
+                },
               ]}
             >
               <Input
@@ -81,6 +100,7 @@ const SigninCandidateForm = () => {
                 placeholder="Nhập email của bạn"
                 className={styles.customInput}
                 autoComplete="email"
+                onChange={handleInputChange}
               />
             </Form.Item>
 
@@ -97,6 +117,7 @@ const SigninCandidateForm = () => {
                 placeholder="Nhập mật khẩu của bạn"
                 className={styles.customInput}
                 autoComplete="current-password"
+                onChange={handleInputChange}
               />
             </Form.Item>
 
@@ -110,6 +131,11 @@ const SigninCandidateForm = () => {
                 Quên mật khẩu?
               </Button>
             </div> */}
+
+            {/* Hiển thị thông báo lỗi */}
+            {errorMessage && (
+              <Alert message={errorMessage} type="error" showIcon />
+            )}
 
             <Form.Item>
               <Button

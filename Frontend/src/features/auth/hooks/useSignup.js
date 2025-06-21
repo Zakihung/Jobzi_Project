@@ -3,21 +3,22 @@ import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
 import { signupUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
-import { notification } from "antd";
+import { App } from "antd";
 
-export const useSignup = () => {
+export const useSignup = (form) => {
+  const { notification } = App.useApp();
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data) => signupUser(data),
     onSuccess: (data) => {
-      // Kiểm tra phản hồi API
-      if (!data.message.includes("Đăng ký") || !data.user) {
+      if (!data?.user || !data?.accessToken) {
         notification.error({
           message: "Lỗi",
-          description: data.message || "Đăng ký thất bại!",
+          description: data.message || "Đăng ký tài khoản thất bại!",
           placement: "topRight",
+          duration: 2,
         });
         return;
       }
@@ -49,26 +50,50 @@ export const useSignup = () => {
       // Hiển thị thông báo thành công ở góc trên bên phải
       notification.success({
         message: "Thành công",
-        description: "Đăng ký thành công!",
+        description: "Đăng ký tài khoản thành công!",
         placement: "topRight",
+        duration: 2,
       });
 
-      // Điều hướng dựa trên vai trò
-      if (userData.role === "admin") {
-        navigate("/admin");
-      } else if (userData.role === "employer") {
-        navigate("/employer");
-      } else {
-        navigate("/");
-      }
+      setTimeout(() => {
+        if (userData.role === "admin") {
+          navigate("/admin");
+        } else if (userData.role === "employer") {
+          navigate("/employer");
+        } else {
+          navigate("/");
+        }
+      }, 1000);
     },
     onError: (error) => {
-      // Xử lý lỗi từ API hoặc lỗi mạng
-      const errorMessage = error.response?.data?.message || "Đăng ký thất bại!";
+      // Kiểm tra lỗi từ API response
+      if (error?.message) {
+        if (error.message === "Email đã tồn tại") {
+          // Xử lý lỗi cho trường email
+          if (form) {
+            // Đặt lỗi cho trường email
+            form.setFields([
+              {
+                name: "email",
+                errors: ["Email này đã được sử dụng, vui lòng chọn email khác"],
+              },
+            ]);
+
+            // Cuộn đến trường email
+            form.scrollToField("email", {
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }
+      }
+
+      // Hiển thị thông báo lỗi
       notification.error({
         message: "Lỗi",
         description: errorMessage,
         placement: "topRight",
+        duration: 3,
       });
     },
   });
