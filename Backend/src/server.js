@@ -22,6 +22,13 @@ const resume_analysisRoutes = require("./routes/resume_analysis.route");
 const resume_fileRoutes = require("./routes/resume_file.route");
 const salary_rangeRoutes = require("./routes/salary_range.route");
 const work_typeRoutes = require("./routes/work_type.route");
+const experience_levelRoutes = require("./routes/experience_level.route");
+const education_levelRoutes = require("./routes/education_level.route");
+const job_post_skills_requirementRoutes = require("./routes/job_post_skills_requirement.route");
+const job_post_work_addressRoutes = require("./routes/job_post_work_address.route");
+const provinceRoutes = require("./routes/province.route");
+const work_addressRoutes = require("./routes/work_address.route");
+const skills_requirementRoutes = require("./routes/skills_requirement.route");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -48,6 +55,13 @@ app.use("/api/resume-analysis", resume_analysisRoutes);
 app.use("/api/resume-file", resume_fileRoutes);
 app.use("/api/salary-range", salary_rangeRoutes);
 app.use("/api/work-type", work_typeRoutes);
+app.use("/api/experience-level", experience_levelRoutes);
+app.use("/api/education-level", education_levelRoutes);
+app.use("/api/job-post-skills-requirement", job_post_skills_requirementRoutes);
+app.use("/api/job-post-work-address", job_post_work_addressRoutes);
+app.use("/api/province", provinceRoutes);
+app.use("/api/work-address", work_addressRoutes);
+app.use("/api/skills-requirement", skills_requirementRoutes);
 
 // Middleware xử lý lỗi
 app.use(errorHandler);
