@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require("path");
 const {
   signup,
+  signupEmployer,
   signin,
   refreshToken,
   requestPasswordReset,
@@ -16,8 +17,10 @@ const {
 } = require("../controllers/user.controller");
 const upload = require("../middleware/uploadAvaUser");
 
-// Đăng ký người dùng (ứng viên hoặc nhà tuyển dụng)
+// Đăng ký người dùng (ứng viên hoặc admin)
 router.post("/signup", signup);
+// Đăng ký người dùng nhà tuyển dụng
+router.post("/signupEmployer", signupEmployer);
 // Đăng nhập
 router.post("/signin", signin);
 // Làm mới access token

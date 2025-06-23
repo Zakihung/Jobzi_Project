@@ -1,5 +1,6 @@
 const {
   signupService,
+  signupEmployerService,
   signinService,
   uploadAvatarUserService,
   refreshAccessTokenService,
@@ -35,11 +36,50 @@ const signup = async (req, res) => {
     let message;
     if (role === "candidate") {
       message = "Đăng ký ứng viên thành công";
-    } else if (role === "employer") {
-      message = "Đăng ký nhà tuyển dụng thành công";
     } else if (role === "admin") {
       message = "Đăng ký quản trị viên thành công";
     }
+    res.status(201).json({
+      message,
+      ...result,
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    const message = error.message || "Đã xảy ra lỗi máy chủ";
+    res.status(statusCode).json({ message });
+  }
+};
+
+const signupEmployer = async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      full_name,
+      role,
+      gender,
+      phone_number,
+      date_of_birth,
+      company_name,
+      address,
+      company_industry_id,
+      position,
+    } = req.body;
+    const result = await signupEmployerService({
+      email,
+      password,
+      full_name,
+      gender,
+      phone_number,
+      date_of_birth,
+      role,
+      company_name,
+      address,
+      company_industry_id,
+      position,
+    });
+    let message = "Đăng ký nhà tuyển dụng thành công";
+
     res.status(201).json({
       message,
       ...result,
@@ -185,6 +225,7 @@ const uploadAvatarUser = async (req, res) => {
 
 module.exports = {
   signup,
+  signupEmployer,
   signin,
   refreshToken,
   requestPasswordReset,

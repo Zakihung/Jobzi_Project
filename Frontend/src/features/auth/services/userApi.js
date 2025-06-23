@@ -11,4 +11,10 @@ const signupUser = (data) => {
   return axios.post(URL_API, data);
 };
 
-export { signinUser, signupUser };
+//api đăng kí employer
+const signupEmployerUser = (data) => {
+  const URL_API = "/api/user/signupEmployer";
+  return axios.post(URL_API, data);
+};
+
+export { signinUser, signupUser, signupEmployerUser };

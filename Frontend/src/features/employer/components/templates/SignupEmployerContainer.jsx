@@ -1,45 +1,17 @@
-import { Form, Typography } from "antd";
-import { useSignup } from "../../../auth/hooks/useSignup";
+import { Typography } from "antd";
 import styles from "../../styles/SignupEmployerContainer.module.css";
 import { useState } from "react";
-import moment from "moment";
 import RoleSelectionModal from "../templates/RoleSelectionModal";
 import { useLocation } from "react-router-dom";
-import SignupEmployerForm from "../organisms/SignupEmployerForm";
-import Stepcard from "./StepCard";
+import Stepcard from "../organisms/StepCard";
 
 const { Title, Text } = Typography;
 
 const SignupEmployerContainer = () => {
-  const [form] = Form.useForm();
-  const { mutate: signupMutation, isLoading } = useSignup(form);
   const location = useLocation();
   const [modalVisible, setModalVisible] = useState(
     location.state?.showRoleModal || false
   );
-  const [selectedGender, setSelectedGender] = useState("male");
-
-  const onFinish = (values) => {
-    const formattedValues = {
-      full_name: values.full_name,
-      email: values.email,
-      gender: values.gender,
-      phone_number: values.phone_number,
-      password: values.password,
-      role: "employer",
-      date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
-    };
-    signupMutation(formattedValues);
-  };
-
-  const today = moment();
-  const maxDate = today.clone().subtract(15, "years");
-  const minDate = today.clone().subtract(60, "years");
-
-  const handleGenderSelect = (gender) => {
-    setSelectedGender(gender);
-    form.setFieldsValue({ gender: gender });
-  };
 
   const handleModalClose = () => {
     setModalVisible(false);
@@ -53,7 +25,7 @@ const SignupEmployerContainer = () => {
         <div className={styles.imageContent}>
           <div className={styles.illustrationWrapper}>
             <img
-              src="/src/assets/logo/logo_ngang.png"
+              src="src/assets/logo/logo_ngang.png"
               alt="Signup Illustration"
               className={styles.signupIllustration}
             />
@@ -77,7 +49,7 @@ const SignupEmployerContainer = () => {
           {/* Logo */}
           <div className={styles.logoSignupSection}>
             <img
-              src="/src/assets/logo/logo.png"
+              src="/src/assets/logo/logo_ngang.png"
               alt="Logo"
               className={styles.logoSignup}
             />
@@ -93,25 +65,9 @@ const SignupEmployerContainer = () => {
             </Text>
           </div>
 
-          {/* Signup Form */}
-          {/* <SignupEmployerForm
-            form={form}
-            onFinish={onFinish}
-            isLoading={isLoading}
-            selectedGender={selectedGender}
-            handleGenderSelect={handleGenderSelect}
-            minDate={minDate}
-            maxDate={maxDate}
-          /> */}
-          <Stepcard
-            form={form}
-            onFinish={onFinish}
-            isLoading={isLoading}
-            selectedGender={selectedGender}
-            handleGenderSelect={handleGenderSelect}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
+          {/* Stepcard Component */}
+          <Stepcard />
+
           {/* Signin link */}
           <div className={styles.signinSection}>
             <Text className={styles.signinText}>

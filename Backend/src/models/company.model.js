@@ -22,7 +22,8 @@ const companySchema = new mongoose.Schema(
     },
     logo: {
       type: String,
-      default: "",
+      default:
+        "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
     },
     website_url: {
       type: String,

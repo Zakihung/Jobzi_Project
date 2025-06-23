@@ -10,19 +10,12 @@ const {
 
 const createCompany = async (req, res, next) => {
   try {
-    const {
+    const { company_industry_id, name, address } = req.body;
+    const data = await createCompanyService({
       company_industry_id,
       name,
-      description,
-      size,
-      website_url,
       address,
-    } = req.body;
-    const file = req.file;
-    const data = await createCompanyService(
-      { company_industry_id, name, description, size, website_url, address },
-      file
-    );
+    });
     res.status(201).json(data);
   } catch (error) {
     next(error);

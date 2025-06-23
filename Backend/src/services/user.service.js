@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const Candidate = require("../models/candidate.model");
 const Employer = require("../models/employer.model");
+const Company = require("../models/company.model");
 const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
@@ -32,9 +33,9 @@ const signupService = async ({
   }
 
   // Kiểm tra role hợp lệ
-  if (!["candidate", "employer", "admin"].includes(role)) {
+  if (!["candidate", "admin"].includes(role)) {
     throw new AppError(
-      "Vai trò không hợp lệ: chỉ chấp nhận 'candidate' hoặc 'employer' hoặc 'admin'",
+      "Vai trò không hợp lệ: chỉ chấp nhận 'candidate' hoặc 'admin'",
       400
     );
   }
@@ -75,8 +76,8 @@ const signupService = async ({
   // Kiểm tra ngày tháng năm sinh
   const dob = new Date(date_of_birth);
   const today = new Date();
-  const minAge = 16;
-  const maxAge = 120;
+  const minAge = 15;
+  const maxAge = 60;
   const minDate = new Date(
     today.getFullYear() - maxAge,
     today.getMonth(),
@@ -147,17 +148,179 @@ const signupService = async ({
     });
     await candidate.save();
     return { user, candidate, accessToken, refreshToken };
-  } else if (role === "employer") {
-    const employer = new Employer({
-      user_id: user._id,
-      position: "",
-    });
-    await employer.save();
-    return { user, employer, accessToken, refreshToken };
   } else {
     // Nếu là admin, không cần tạo bản ghi khác
     return { user, accessToken, refreshToken };
   }
+};
+
+const signupEmployerService = async ({
+  email,
+  password,
+  full_name,
+  role,
+  gender,
+  date_of_birth,
+  phone_number,
+  company_name,
+  address,
+  company_industry_id,
+  position,
+}) => {
+  // Kiểm tra dữ liệu đầu vào
+  if (
+    !email ||
+    !password ||
+    !full_name ||
+    !role ||
+    !gender ||
+    !date_of_birth ||
+    !phone_number ||
+    !company_name ||
+    !address ||
+    !company_industry_id ||
+    !position
+  ) {
+    throw new AppError("Dữ liệu trống", 400);
+  }
+
+  // Kiểm tra role hợp lệ
+  if (role !== "employer") {
+    throw new AppError("Vai trò không hợp lệ!", 400);
+  }
+
+  // Kiểm tra định dạng email
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    throw new AppError("Email không hợp lệ", 400);
+  }
+
+  // Kiểm tra định dạng mật khẩu
+  if (
+    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
+      password
+    )
+  ) {
+    throw new AppError(
+      "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
+      400
+    );
+  }
+
+  // Kiểm tra định dạng họ tên
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+    throw new AppError(
+      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+
+  // Kiểm tra giới tính
+  if (!["male", "female"].includes(gender)) {
+    throw new AppError(
+      "Giới tính không hợp lệ: chỉ chấp nhận 'male', 'female'",
+      400
+    );
+  }
+
+  // Kiểm tra ngày tháng năm sinh
+  const dob = new Date(date_of_birth);
+  const today = new Date();
+  const minAge = 15;
+  const maxAge = 60;
+  const minDate = new Date(
+    today.getFullYear() - maxAge,
+    today.getMonth(),
+    today.getDate()
+  );
+  const maxDate = new Date(
+    today.getFullYear() - minAge,
+    today.getMonth(),
+    today.getDate()
+  );
+
+  if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
+    throw new AppError(
+      `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
+      400
+    );
+  }
+
+  // Kiểm tra định dạng số điện thoại
+  if (!/^\+?[0-9]{10}$/.test(phone_number)) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải chứa đúng 10 chữ số",
+      400
+    );
+  }
+
+  // Kiểm tra tên công ty
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(company_name)) {
+    throw new AppError(
+      "Tên công ty không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+
+  // Kiểm tra định dạng vị trí
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(position)) {
+    throw new AppError(
+      "Vị trí không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+
+  // Kiểm tra tồn tại email
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new AppError("Email đã tồn tại", 409);
+  }
+
+  // Băm mật khẩu
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Tạo user mới
+  const user = new User({
+    email,
+    password: hashedPassword,
+    role,
+    full_name,
+    gender,
+    date_of_birth: dob,
+    phone_number,
+  });
+
+  // Tạo accessToken và refreshToken
+  const accessToken = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  // Lưu refreshToken vào user
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  //Tạo company
+  const company = new Company({
+    name: company_name,
+    address,
+    company_industry_id,
+  });
+  await company.save();
+
+  const employer = new Employer({
+    user_id: user._id,
+    company_id: company._id,
+    position,
+  });
+  await employer.save();
+
+  return { user, company, employer, accessToken, refreshToken };
 };
 
 const signinService = async ({ email, password }) => {
@@ -373,6 +536,7 @@ const deleteUserByIdService = async (user_id) => {
 
 module.exports = {
   signupService,
+  signupEmployerService,
   signinService,
   uploadAvatarUserService,
   refreshAccessTokenService,

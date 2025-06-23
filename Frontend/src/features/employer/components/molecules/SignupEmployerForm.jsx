@@ -8,18 +8,30 @@ import {
   WomanOutlined,
 } from "@ant-design/icons";
 import styles from "../../styles/SignupEmployerForm.module.css";
+import { useEffect, useState } from "react";
+import moment from "moment";
 
 const { Text } = Typography;
 
-const SignupEmployerForm = ({
-  form,
-  onFinish,
-  isLoading,
-  selectedGender,
-  handleGenderSelect,
-  minDate,
-  maxDate,
-}) => {
+const SignupEmployerForm = ({ onFinish, isLoading, setFormRef }) => {
+  const [form] = Form.useForm();
+  const [selectedGender, setSelectedGender] = useState("male");
+  const today = moment();
+  const maxDate = today.clone().subtract(15, "years");
+  const minDate = today.clone().subtract(60, "years");
+
+  const handleGenderSelect = (gender) => {
+    setSelectedGender(gender);
+    form.setFieldsValue({ gender: gender });
+  };
+
+  // Gửi tham chiếu form ra ngoài
+  useEffect(() => {
+    if (setFormRef) {
+      setFormRef(form);
+    }
+  }, [form, setFormRef]);
+
   return (
     <Form
       form={form}

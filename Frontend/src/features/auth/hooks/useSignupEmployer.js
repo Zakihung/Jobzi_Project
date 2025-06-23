@@ -1,17 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
-import { signupUser } from "../services/userApi";
+import { signupEmployerUser } from "../services/userApi";
 import { useNavigate } from "react-router-dom";
 import { App } from "antd";
 
-export const useSignup = (form) => {
+export const useSignupEmployer = (form) => {
   const { notification } = App.useApp();
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (data) => signupUser(data),
+    mutationFn: (data) => signupEmployerUser(data),
     onSuccess: (data) => {
       if (!data?.user || !data?.accessToken) {
         notification.error({
@@ -56,11 +56,7 @@ export const useSignup = (form) => {
       });
 
       setTimeout(() => {
-        if (userData.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+        navigate("/employer");
       }, 1000);
     },
     onError: (error) => {

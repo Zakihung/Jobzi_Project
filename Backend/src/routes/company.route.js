@@ -13,7 +13,7 @@ const upload = require("../middleware/uploadAvaCompany");
 const router = express.Router();
 
 // Public routes
-router.post("/create", upload.single("logo"), createCompany);
+router.post("/create", createCompany);
 router.get("/", getListCompany);
 router.get("/:id", getCompanyById);
 router.get("/industry/:company_industry_id", getCompanyByIndustryId);

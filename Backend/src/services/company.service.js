@@ -3,29 +3,17 @@ const AppError = require("../utils/AppError");
 const Company = require("../models/company.model");
 const cloudinary = require("../configs/cloudinary");
 
-const createCompanyService = async (companyData, file) => {
-  const { company_industry_id, name, description, size, website_url, address } =
-    companyData;
-  if (!company_industry_id || !name) {
+const createCompanyService = async (companyData) => {
+  const { company_industry_id, name, address } = companyData;
+  if (!company_industry_id || !name || !address) {
     throw new AppError(
-      "Thiếu các trường bắt buộc: company_industry_id và name là bắt buộc",
+      "Thiếu các trường bắt buộc: company_industry_id, name và address là bắt buộc",
       400
     );
   }
 
-  let logoUrl = "";
-  if (file) {
-    logoUrl = file.path; // Lấy URL từ Cloudinary sau khi upload
-  }
-
   let result = await Company.create({
-    company_industry_id,
-    name,
-    description: description || "",
-    size: size || "",
-    website_url: website_url || "",
-    address: address || "",
-    logo: logoUrl,
+    ...companyData,
   });
 
   return result;
