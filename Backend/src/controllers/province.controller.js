@@ -1,6 +1,7 @@
 const {
   createProvinceService,
   getAllProvinceService,
+  getAllProvinceAlphabetService,
   getProvinceByIdService,
   updateProvinceService,
   deleteProvinceService,
@@ -19,6 +20,15 @@ const createProvince = async (req, res, next) => {
 const getAllProvince = async (req, res, next) => {
   try {
     const data = await getAllProvinceService();
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllProvinceAlphabet = async (req, res, next) => {
+  try {
+    const data = await getAllProvinceAlphabetService();
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -59,6 +69,7 @@ const deleteProvince = async (req, res, next) => {
 module.exports = {
   createProvince,
   getAllProvince,
+  getAllProvinceAlphabet,
   getProvinceById,
   updateProvince,
   deleteProvince,

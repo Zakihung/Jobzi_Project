@@ -29,6 +29,7 @@ const job_post_work_addressRoutes = require("./routes/job_post_work_address.rout
 const provinceRoutes = require("./routes/province.route");
 const work_addressRoutes = require("./routes/work_address.route");
 const skills_requirementRoutes = require("./routes/skills_requirement.route");
+const role_organizationRoutes = require("./routes/role_organization.route");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -62,6 +63,7 @@ app.use("/api/job-post-work-address", job_post_work_addressRoutes);
 app.use("/api/province", provinceRoutes);
 app.use("/api/work-address", work_addressRoutes);
 app.use("/api/skills-requirement", skills_requirementRoutes);
+app.use("/api/role-organization", role_organizationRoutes);
 
 // Middleware xử lý lỗi
 app.use(errorHandler);

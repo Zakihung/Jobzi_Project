@@ -16,7 +16,32 @@ const createProvinceService = async (provinceData) => {
 };
 
 const getAllProvinceService = async () => {
-  let result = await Province.find();
+  let result = await Province.find().sort({ name: 1 });
+  return result;
+};
+
+const getAllProvinceAlphabetService = async () => {
+  // Lấy tất cả tỉnh và sắp xếp theo name
+  const provinces = await Province.find().sort({ name: 1 });
+
+  // Nhóm tỉnh theo chữ cái đầu
+  const groupedProvinces = provinces.reduce((acc, province) => {
+    const firstLetter = province.name.charAt(0).toUpperCase(); // Lấy chữ cái đầu và chuyển thành in hoa
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(province);
+    return acc;
+  }, {});
+
+  // Chuyển đổi thành mảng các đối tượng { letter, provinces }
+  const result = Object.keys(groupedProvinces)
+    .sort() // Sắp xếp các chữ cái theo thứ tự bảng chữ cái
+    .map((letter) => ({
+      letter,
+      provinces: groupedProvinces[letter],
+    }));
+
   return result;
 };
 
@@ -55,6 +80,7 @@ const deleteProvinceService = async (province_id) => {
 module.exports = {
   createProvinceService,
   getAllProvinceService,
+  getAllProvinceAlphabetService,
   getProvinceByIdService,
   updateProvinceService,
   deleteProvinceService,
