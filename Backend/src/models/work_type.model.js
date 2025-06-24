@@ -17,6 +17,6 @@ work_typeSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const WorkType = mongoose.model("WorkType", work_typeSchema);
+const WorkType = mongoose.model("WorkType", work_typeSchema, "WorkType");
 
 module.exports = WorkType;

@@ -17,6 +17,6 @@ provinceSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Province = mongoose.model("Province", provinceSchema);
+const Province = mongoose.model("Province", provinceSchema, "Province");
 
 module.exports = Province;

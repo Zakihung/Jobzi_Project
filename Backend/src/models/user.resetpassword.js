@@ -6,4 +6,4 @@ const resetTokenSchema = new mongoose.Schema({
   expiresAt: { type: Date, required: true },
 });
 
-module.exports = mongoose.model("ResetToken", resetTokenSchema);
+module.exports = mongoose.model("ResetToken", resetTokenSchema, "ResetToken");

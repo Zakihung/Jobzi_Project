@@ -41,6 +41,10 @@ resume_analysisSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const ResumeAnalysis = mongoose.model("ResumeAnalysis", resume_analysisSchema);
+const ResumeAnalysis = mongoose.model(
+  "ResumeAnalysis",
+  resume_analysisSchema,
+  "ResumeAnalysis"
+);
 
 module.exports = ResumeAnalysis;

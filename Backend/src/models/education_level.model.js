@@ -17,6 +17,10 @@ educationLevelSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const EducationLevel = mongoose.model("EducationLevel", educationLevelSchema);
+const EducationLevel = mongoose.model(
+  "EducationLevel",
+  educationLevelSchema,
+  "EducationLevel"
+);
 
 module.exports = EducationLevel;

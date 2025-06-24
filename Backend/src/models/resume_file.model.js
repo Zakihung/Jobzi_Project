@@ -27,6 +27,10 @@ resume_fileSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const ResumeFile = mongoose.model("ResumeFile", resume_fileSchema);
+const ResumeFile = mongoose.model(
+  "ResumeFile",
+  resume_fileSchema,
+  "ResumeFile"
+);
 
 module.exports = ResumeFile;

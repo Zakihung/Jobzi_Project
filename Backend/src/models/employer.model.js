@@ -28,6 +28,6 @@ employerSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Employer = mongoose.model("Employer", employerSchema);
+const Employer = mongoose.model("Employer", employerSchema, "Employer");
 
 module.exports = Employer;

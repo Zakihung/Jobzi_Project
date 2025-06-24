@@ -26,7 +26,8 @@ jobPostSkillsRequirementSchema.plugin(mongooseDelete, {
 
 const JobPostSkillsRequirement = mongoose.model(
   "JobPostSkillsRequirement",
-  jobPostSkillsRequirementSchema
+  jobPostSkillsRequirementSchema,
+  "JobPostSkillsRequirement"
 );
 
 module.exports = JobPostSkillsRequirement;

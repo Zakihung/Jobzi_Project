@@ -23,6 +23,10 @@ industry_groupSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const IndustryGroup = mongoose.model("IndustryGroup", industry_groupSchema);
+const IndustryGroup = mongoose.model(
+  "IndustryGroup",
+  industry_groupSchema,
+  "IndustryGroup"
+);
 
 module.exports = IndustryGroup;

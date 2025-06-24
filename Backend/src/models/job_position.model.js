@@ -28,6 +28,10 @@ job_positionSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const JobPosition = mongoose.model("JobPosition", job_positionSchema);
+const JobPosition = mongoose.model(
+  "JobPosition",
+  job_positionSchema,
+  "JobPosition"
+);
 
 module.exports = JobPosition;

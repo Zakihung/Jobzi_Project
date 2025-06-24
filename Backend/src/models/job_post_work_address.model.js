@@ -26,7 +26,8 @@ jobPostWorkAddressSchema.plugin(mongooseDelete, {
 
 const JobPostWorkAddress = mongoose.model(
   "JobPostWorkAddress",
-  jobPostWorkAddressSchema
+  jobPostWorkAddressSchema,
+  "JobPostWorkAddress"
 );
 
 module.exports = JobPostWorkAddress;

@@ -19,7 +19,8 @@ experienceLevelSchema.plugin(mongooseDelete, {
 
 const ExperienceLevel = mongoose.model(
   "ExperienceLevel",
-  experienceLevelSchema
+  experienceLevelSchema,
+  "ExperienceLevel"
 );
 
 module.exports = ExperienceLevel;

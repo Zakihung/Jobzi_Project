@@ -30,6 +30,10 @@ salary_rangeSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const SalaryRange = mongoose.model("SalaryRange", salary_rangeSchema);
+const SalaryRange = mongoose.model(
+  "SalaryRange",
+  salary_rangeSchema,
+  "SalaryRange"
+);
 
 module.exports = SalaryRange;

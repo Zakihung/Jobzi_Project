@@ -53,6 +53,10 @@ online_resumeSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const OnlineResume = mongoose.model("OnlineResume", online_resumeSchema);
+const OnlineResume = mongoose.model(
+  "Online_Resume",
+  online_resumeSchema,
+  "OnlineResume"
+);
 
 module.exports = OnlineResume;

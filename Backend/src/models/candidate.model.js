@@ -24,6 +24,6 @@ candidateSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Candidate = mongoose.model("Candidate", candidateSchema);
+const Candidate = mongoose.model("Candidate", candidateSchema, "Candidate");
 
 module.exports = Candidate;

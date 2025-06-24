@@ -19,7 +19,8 @@ skillsRequirementSchema.plugin(mongooseDelete, {
 
 const SkillsRequirement = mongoose.model(
   "SkillsRequirement",
-  skillsRequirementSchema
+  skillsRequirementSchema,
+  "SkillsRequirement"
 );
 
 module.exports = SkillsRequirement;

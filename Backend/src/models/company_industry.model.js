@@ -25,7 +25,8 @@ company_industrySchema.plugin(mongooseDelete, {
 
 const CompanyIndustry = mongoose.model(
   "CompanyIndustry",
-  company_industrySchema
+  company_industrySchema,
+  "CompanyIndustry"
 );
 
 module.exports = CompanyIndustry;

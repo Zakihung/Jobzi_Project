@@ -69,6 +69,6 @@ job_postSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const JobPost = mongoose.model("JobPost", job_postSchema);
+const JobPost = mongoose.model("JobPost", job_postSchema, "JobPost");
 
 module.exports = JobPost;

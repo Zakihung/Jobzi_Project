@@ -39,6 +39,10 @@ applicationSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Application = mongoose.model("Application", applicationSchema);
+const Application = mongoose.model(
+  "Application",
+  applicationSchema,
+  "Application"
+);
 
 module.exports = Application;

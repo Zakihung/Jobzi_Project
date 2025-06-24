@@ -20,7 +20,8 @@ candidate_save_job_postSchema.index({ candidate_id: 1, job_post_id: 1 });
 
 const Candidate_Save_Job_Post = mongoose.model(
   "Candidate_Save_Job_Post",
-  candidate_save_job_postSchema
+  candidate_save_job_postSchema,
+  "CandidateSaveJobPost"
 );
 
 module.exports = Candidate_Save_Job_Post;

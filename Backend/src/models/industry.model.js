@@ -28,6 +28,6 @@ industrySchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Industry = mongoose.model("Industry", industrySchema);
+const Industry = mongoose.model("Industry", industrySchema, "Industry");
 
 module.exports = Industry;

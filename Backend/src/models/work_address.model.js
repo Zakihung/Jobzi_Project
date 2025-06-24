@@ -22,6 +22,10 @@ workAddressSchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const WorkAddress = mongoose.model("WorkAddress", workAddressSchema);
+const WorkAddress = mongoose.model(
+  "WorkAddress",
+  workAddressSchema,
+  "WorkAddress"
+);
 
 module.exports = WorkAddress;

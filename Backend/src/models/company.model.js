@@ -44,6 +44,6 @@ companySchema.plugin(mongooseDelete, {
   deleted: true,
 });
 
-const Company = mongoose.model("Company", companySchema);
+const Company = mongoose.model("Company", companySchema, "Company");
 
 module.exports = Company;
