@@ -13,31 +13,6 @@ const job_postSchema = new mongoose.Schema(
       ref: "JobPosition",
       required: true,
     },
-    salary_range_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SalaryRange",
-      required: true,
-    },
-    work_type_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "WorkType",
-      required: true,
-    },
-    experience_level_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ExperienceLevel",
-      required: true,
-    },
-    education_level_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "EducationLevel",
-      required: true,
-    },
-    role_organization_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "RoleOrganization",
-      required: true,
-    },
     title: {
       type: String,
       require: true,
@@ -45,6 +20,10 @@ const job_postSchema = new mongoose.Schema(
     gender: {
       type: String,
       default: "",
+    },
+    number: {
+      type: Number,
+      default: 1,
     },
     description: {
       type: String,
@@ -59,8 +38,39 @@ const job_postSchema = new mongoose.Schema(
       default: "",
     },
     min_years_experience: {
+      type: Number,
+      default: 0,
+    },
+    education_level: {
       type: String,
       default: "",
+    },
+    experience_level: {
+      type: String,
+      default: "",
+    },
+    role_organization: {
+      type: String,
+      default: "",
+    },
+    work_type: {
+      type: String,
+      default: "",
+    },
+    salary_type: {
+      type: String,
+      default: "negotiable",
+      enum: ["negotiable", "range"],
+    },
+    min_salary_range: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    max_salary_range: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     recipient_email: {
       type: String,

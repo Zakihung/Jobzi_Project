@@ -1,221 +1,135 @@
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const JobPost = require("../models/job_post.model");
+const SkillsRequirement = require("../models/skills_requirement.model");
+const JobPostSkillsRequirement = require("../models/job_post_skills_requirement.model");
+const WorkAddress = require("../models/work_address.model");
+const JobPostWorkAddress = require("../models/job_post_work_address.model");
+const Province = require("../models/province.model");
 
 const createJobPostService = async (jobPostData) => {
   const {
     employer_id,
     job_position_id,
-    salary_range_id,
-    work_type_id,
     title,
-    description,
-    requirement,
-    work_address,
-    working_time,
-    benefit,
-    expire_time,
-    status,
+    skills,
+    locations,
+    ...otherData
   } = jobPostData;
-  if (
-    !employer_id ||
-    !job_position_id ||
-    !salary_range_id ||
-    !work_type_id ||
-    !title
-  ) {
+  if (!employer_id || !job_position_id || !title) {
     throw new AppError(
-      "Thiếu các trường bắt buộc: employer_id, job_position_id, salary_range_id, work_type_id, title là bắt buộc",
-      400
-    );
-  }
-  if (status && !["open", "closed", "expired"].includes(status)) {
-    throw new AppError(
-      "Trạng thái không hợp lệ: chỉ chấp nhận 'open', 'closed', hoặc 'expired'",
+      "Thiếu các trường bắt buộc: employer_id, job_position_id và title là bắt buộc",
       400
     );
   }
 
-  // Gán expire_time mặc định là 30 ngày nếu không cung cấp
-  const finalExpireTime = expire_time || 30;
-  // Tính expired_date: ngày hiện tại + expire_time ngày
-  const currentDate = new Date();
-  currentDate.setHours(currentDate.getHours() + 7); // Điều chỉnh múi giờ +07
-  const expiredDate = new Date(
-    currentDate.getTime() + finalExpireTime * 24 * 60 * 60 * 1000
-  );
-
-  let result = await JobPost.create({
+  // Tạo job post
+  let jobPost = await JobPost.create({
     employer_id,
     job_position_id,
-    salary_range_id,
-    work_type_id,
     title,
-    description: description || "",
-    requirement: requirement || "",
-    work_address: work_address || "",
-    working_time: working_time || "",
-    benefit: benefit || "",
-    expire_time: finalExpireTime,
-    expired_date: expiredDate,
-    status: status || "open",
+    ...otherData,
   });
 
-  return result;
+  // Xử lý skills
+  if (skills && Array.isArray(skills) && skills.length > 0) {
+    const skillDocs = await Promise.all(
+      skills.map(async (skill) => {
+        let skillDoc = await SkillsRequirement.findOne({ name: skill });
+        if (!skillDoc) {
+          skillDoc = await SkillsRequirement.create({ name: skill });
+        }
+        return skillDoc;
+      })
+    );
+
+    const jobPostSkills = skillDocs.map((skillDoc) => ({
+      job_post_id: jobPost._id,
+      skills_requirement_id: skillDoc._id,
+    }));
+
+    await JobPostSkillsRequirement.insertMany(jobPostSkills);
+  }
+
+  // Xử lý locations
+  if (locations && Array.isArray(locations) && locations.length > 0) {
+    const locationDocs = await Promise.all(
+      locations.map(async (location) => {
+        if (!location.address || !location.province) {
+          throw new AppError("Mỗi địa điểm phải có address và province", 400);
+        }
+
+        // Tìm Province có name khớp với location.province
+        const provinceDoc = await Province.findOne({ name: location.province });
+        if (!provinceDoc) {
+          throw new AppError(
+            `Không tìm thấy tỉnh/thành phố: ${location.province}`,
+            400
+          );
+        }
+
+        // Tạo WorkAddress với province_id là _id của Province
+        return await WorkAddress.create({
+          address: location.address,
+          province_id: provinceDoc._id,
+        });
+      })
+    );
+
+    const jobPostLocations = locationDocs.map((locationDoc) => ({
+      job_post_id: jobPost._id,
+      work_address_id: locationDoc._id,
+    }));
+
+    await JobPostWorkAddress.insertMany(jobPostLocations);
+  }
+
+  // Lấy lại job post với populate
+  jobPost = await JobPost.findById(jobPost._id)
+    .populate("employer_id")
+    .populate("job_position_id");
+
+  return jobPost;
 };
 
-const getListJobPostService = async () => {
+const getAllJobPostsService = async () => {
   let result = await JobPost.find()
     .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
+    .populate("job_position_id");
   return result;
 };
 
 const getJobPostByIdService = async (job_post_id) => {
   let jobPost = await JobPost.findById(job_post_id)
     .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
+    .populate("job_position_id");
   if (!jobPost) {
     throw new AppError("Không tìm thấy bài đăng tuyển dụng", 404);
   }
   return jobPost;
 };
 
-const getJobPostByEmployerIdService = async (employer_id) => {
-  if (!mongoose.Types.ObjectId.isValid(employer_id)) {
-    throw new AppError("ID nhà tuyển dụng không hợp lệ", 400);
-  }
-  let result = await JobPost.find({ employer_id })
+const getJobPostsByEmployerIdService = async (employer_id) => {
+  let jobPosts = await JobPost.find({ employer_id })
     .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
-  return result;
+    .populate("job_position_id");
+  return jobPosts;
 };
 
-const getJobPostByJobPositionIdService = async (job_position_id) => {
-  if (!mongoose.Types.ObjectId.isValid(job_position_id)) {
-    throw new AppError("ID vị trí công việc không hợp lệ", 400);
-  }
-  let result = await JobPost.find({ job_position_id })
+const getJobPostsByJobPositionIdService = async (job_position_id) => {
+  let jobPosts = await JobPost.find({ job_position_id })
     .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
-  return result;
-};
-
-const getJobPostBySalaryRangeIdService = async (salary_range_id) => {
-  if (!mongoose.Types.ObjectId.isValid(salary_range_id)) {
-    throw new AppError("ID khoảng lương không hợp lệ", 400);
-  }
-  let result = await JobPost.find({ salary_range_id })
-    .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
-  return result;
-};
-
-const getJobPostByWorkTypeIdService = async (work_type_id) => {
-  if (!mongoose.Types.ObjectId.isValid(work_type_id)) {
-    throw new AppError("ID loại hình công việc không hợp lệ", 400);
-  }
-  let result = await JobPost.find({ work_type_id })
-    .populate("employer_id")
-    .populate("job_position_id")
-    .populate("salary_range_id")
-    .populate("work_type_id");
-  return result;
+    .populate("job_position_id");
+  return jobPosts;
 };
 
 const updateJobPostService = async (job_post_id, updateData) => {
-  const {
-    employer_id,
-    job_position_id,
-    salary_range_id,
-    work_type_id,
-    title,
-    description,
-    requirement,
-    work_address,
-    working_time,
-    benefit,
-    expire_time,
-    status,
-  } = updateData;
   let jobPost = await JobPost.findById(job_post_id);
   if (!jobPost) {
     throw new AppError("Không tìm thấy bài đăng tuyển dụng", 404);
   }
 
-  if (title !== undefined && !title) {
-    throw new AppError("Tiêu đề không được để trống", 400);
-  }
-  if (status !== undefined && !["open", "closed", "expired"].includes(status)) {
-    throw new AppError(
-      "Trạng thái không hợp lệ: chỉ chấp nhận 'open', 'closed', hoặc 'expired'",
-      400
-    );
-  }
-
-  // Cập nhật expire_time và expired_date nếu expire_time được cung cấp
-  let finalExpireTime = jobPost.expire_time;
-  let expiredDate = jobPost.expired_date;
-  if (expire_time !== undefined) {
-    finalExpireTime = expire_time || 30; // Mặc định 30 ngày nếu expire_time là null
-    const currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() + 7); // Điều chỉnh múi giờ +07
-    expiredDate = new Date(
-      currentDate.getTime() + finalExpireTime * 24 * 60 * 60 * 1000
-    );
-  }
-
-  jobPost.employer_id =
-    employer_id !== undefined ? employer_id : jobPost.employer_id;
-  jobPost.job_position_id =
-    job_position_id !== undefined ? job_position_id : jobPost.job_position_id;
-  jobPost.salary_range_id =
-    salary_range_id !== undefined ? salary_range_id : jobPost.salary_range_id;
-  jobPost.work_type_id =
-    work_type_id !== undefined ? work_type_id : jobPost.work_type_id;
-  jobPost.title = title !== undefined ? title : jobPost.title;
-  jobPost.description =
-    description !== undefined ? description : jobPost.description;
-  jobPost.requirement =
-    requirement !== undefined ? requirement : jobPost.requirement;
-  jobPost.work_address =
-    work_address !== undefined ? work_address : jobPost.work_address;
-  jobPost.working_time =
-    working_time !== undefined ? working_time : jobPost.working_time;
-  jobPost.benefit = benefit !== undefined ? benefit : jobPost.benefit;
-  jobPost.expire_time =
-    expire_time !== undefined ? finalExpireTime : jobPost.expire_time;
-  jobPost.expired_date =
-    expire_time !== undefined ? expiredDate : jobPost.expired_date;
-  jobPost.status = status !== undefined ? status : jobPost.status;
-
-  let result = await jobPost.save();
-  return result;
-};
-
-const updateJobPostStatusService = async (job_post_id, status) => {
-  let jobPost = await JobPost.findById(job_post_id);
-  if (!jobPost) {
-    throw new AppError("Không tìm thấy bài đăng tuyển dụng", 404);
-  }
-  if (!["open", "closed", "expired"].includes(status)) {
-    throw new AppError(
-      "Trạng thái không hợp lệ: chỉ chấp nhận 'open', 'closed', hoặc 'expired'",
-      400
-    );
-  }
-
-  jobPost.status = status;
+  Object.assign(jobPost, updateData);
   let result = await jobPost.save();
   return result;
 };
@@ -225,19 +139,22 @@ const deleteJobPostService = async (job_post_id) => {
   if (!jobPost) {
     throw new AppError("Không tìm thấy bài đăng tuyển dụng", 404);
   }
-  let result = await jobPost.delete(); // Xóa mềm với mongoose-delete
+  let result = await JobPost.deleteOne({ _id: job_post_id }); // Xóa cứng
+  return result;
+};
+
+const deleteAllJobPostsService = async () => {
+  let result = await JobPost.deleteMany({}); // Xóa cứng toàn bộ
   return result;
 };
 
 module.exports = {
   createJobPostService,
-  getListJobPostService,
+  getAllJobPostsService,
   getJobPostByIdService,
-  getJobPostByEmployerIdService,
-  getJobPostByJobPositionIdService,
-  getJobPostBySalaryRangeIdService,
-  getJobPostByWorkTypeIdService,
+  getJobPostsByEmployerIdService,
+  getJobPostsByJobPositionIdService,
   updateJobPostService,
-  updateJobPostStatusService,
   deleteJobPostService,
+  deleteAllJobPostsService,
 };

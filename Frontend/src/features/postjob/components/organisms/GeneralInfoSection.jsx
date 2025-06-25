@@ -71,55 +71,53 @@ const NumberInputGroup = styled(Space.Compact)`
 
 // Dữ liệu cho các Select
 const workTypeData = {
-  "Toàn thời gian": "Toàn thời gian",
-  "Bán thời gian": "Bán thời gian",
-  "Thực tập": "Thực tập",
+  full_time: "Toàn thời gian",
+  part_time: "Bán thời gian",
+  internship: "Thực tập",
 };
 
 const genderData = {
-  "Không yêu cầu": "Không yêu cầu",
-  Nam: "Nam",
-  Nữ: "Nữ",
+  unspecified: "Không yêu cầu",
+  male: "Nam",
+  female: "Nữ",
 };
 
 const roleOrganizationData = {
-  "Không quy định": "Không quy định",
-  "Thực tập sinh": "Thực tập sinh",
-  "Nhân viên": "Nhân viên",
-  "Tổ trưởng": "Tổ trưởng",
-  "Trưởng nhóm": "Trưởng nhóm",
-  "Trưởng phòng": "Trưởng phòng",
-  "Phó giám đốc bộ phận": "Phó giám đốc bộ phận",
-  "Giám đốc bộ phận": "Giám đốc bộ phận",
-  "Giám đốc điều hành (CEO)": "Giám đốc điều hành (CEO)",
-  "Giám đốc kỹ thuật (CTO)": "Giám đốc kỹ thuật (CTO)",
-  "Giám đốc tài chính (CFO)": "Giám đốc tài chính (CFO)",
+  intern: "Thực tập sinh",
+  staff: "Nhân viên",
+  leader: "Tổ trưởng",
+  manager: "Trưởng nhóm",
+  head: "Trưởng phòng",
+  deputy_director: "Phó giám đốc bộ phận",
+  director: "Giám đốc bộ phận",
+  ceo: "Giám đốc điều hành (CEO)",
+  cto: "Giám đốc kỹ thuật (CTO)",
+  cfo: "Giám đốc tài chính (CFO)",
+  unspecified: "Không quy định",
 };
 
 const experienceLevelData = {
-  "Không yêu cầu": "Không yêu cầu",
-  "Thực tập sinh": "Thực tập sinh",
-  "Mới tốt nghiệp (Fresher)": "Mới tốt nghiệp (Fresher)",
-  "Nhân viên mới (Junior)": "Nhân viên mới (Junior)",
-  "Trung cấp (Mid-level)": "Trung cấp (Mid-level)",
-  "Nhân viên cao cấp (Senior)": "Nhân viên cao cấp (Senior)",
-  "Trưởng nhóm kỹ thuật (Team Lead / Technical Lead)":
-    "Trưởng nhóm kỹ thuật (Team Lead / Technical Lead)",
-  "Kiến trúc sư hệ thống (Architect / Solution Architect)":
-    "Kiến trúc sư hệ thống (Architect / Solution Architect)",
-  "Chuyên gia cao cấp (Principal / Expert)":
-    "Chuyên gia cao cấp (Principal / Expert)",
+  none: "Không yêu cầu",
+  intern: "Thực tập sinh",
+  fresher: "Mới tốt nghiệp (Fresher)",
+  junior: "Nhân viên mới (Junior)",
+  mid: "Trung cấp (Mid-level)",
+  senior: "Nhân viên cao cấp (Senior)",
+  lead: "Trưởng nhóm kỹ thuật (Team Lead / Technical Lead)",
+  architect: "Kiến trúc sư hệ thống (Architect / Solution Architect)",
+  expert: "Chuyên gia cao cấp (Principal / Expert)",
 };
 
 const provinceData = {
   "Hồ Chí Minh": "Hồ Chí Minh",
   "Hà Nội": "Hà Nội",
   "Đà Nẵng": "Đà Nẵng",
+  "Cần Thơ": "Cần Thơ",
 };
 
 const salaryTypeData = {
-  "Thỏa thuận": "Thỏa thuận",
-  "Khoảng lương": "Khoảng lương",
+  negotiable: "Thỏa thuận",
+  range: "Khoảng lương",
 };
 
 const GeneralInfoSection = ({
@@ -134,6 +132,7 @@ const GeneralInfoSection = ({
   removeLocation,
   salary_type,
   watch,
+  setValue,
 }) => {
   // Theo dõi tất cả các trường cần thiết
   const watchedFields = watch([
@@ -151,6 +150,13 @@ const GeneralInfoSection = ({
   // Sử dụng ref để lưu trạng thái trước đó của isLocationValid
   const prevIsLocationValidRef = useRef(null);
 
+  useEffect(() => {
+    if (salary_type === "negotiable") {
+      setValue("min_salary_range", "");
+      setValue("max_salary_range", "");
+    }
+  }, [salary_type, setValue]);
+
   // Kiểm tra xem tất cả các trường đã được điền đầy đủ chưa
   useEffect(() => {
     const [
@@ -166,8 +172,15 @@ const GeneralInfoSection = ({
     ] = watchedFields;
 
     const isSalaryValid =
-      salary_type === "Thỏa thuận" ||
-      (salary_type === "Khoảng lương" && min_salary_range && max_salary_range);
+      salary_type === "negotiable" ||
+      (salary_type === "range" &&
+        min_salary_range !== undefined &&
+        min_salary_range !== null &&
+        min_salary_range !== "" &&
+        max_salary_range !== undefined &&
+        max_salary_range !== null &&
+        max_salary_range !== "" &&
+        max_salary_range > min_salary_range);
 
     // Chỉ kiểm tra locations có dữ liệu hợp lệ, bỏ qua các location rỗng mới thêm
     const isLocationValid = locations.every(
@@ -272,10 +285,10 @@ const GeneralInfoSection = ({
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
               >
-                {Object.keys(workTypeData).map((type) => (
-                  <Option key={type} value={type}>
-                    {workTypeData[type]}
-                  </Option>
+                {Object.entries(workTypeData).map(([value, label]) => (
+                  <Select.Option key={value} value={value}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -296,10 +309,10 @@ const GeneralInfoSection = ({
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
               >
-                {Object.keys(genderData).map((gender) => (
-                  <Option key={gender} value={gender}>
-                    {genderData[gender]}
-                  </Option>
+                {Object.entries(genderData).map(([value, label]) => (
+                  <Select.Option key={value} value={value}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -321,10 +334,10 @@ const GeneralInfoSection = ({
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
               >
-                {Object.keys(roleOrganizationData).map((role_organization) => (
-                  <Option key={role_organization} value={role_organization}>
-                    {[role_organization]}
-                  </Option>
+                {Object.entries(roleOrganizationData).map(([value, label]) => (
+                  <Select.Option key={value} value={value}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -334,22 +347,22 @@ const GeneralInfoSection = ({
           )}
         </Col>
         <Col span={8}>
-          <StyledSubTitle>Trình độ chuyên môn</StyledSubTitle>
+          <StyledSubTitle>Cấp độ chuyên môn</StyledSubTitle>
           <Controller
             name="experience_level"
             control={control}
-            rules={{ required: "Vui lòng chọn trình độ" }}
+            rules={{ required: "Vui lòng chọn cấp độ" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn trình độ"
+                placeholder="Chọn cấp độ"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
               >
-                {Object.keys(experienceLevelData).map((experience_level) => (
-                  <Option key={experience_level} value={experience_level}>
-                    {experienceLevelData[experience_level]}
-                  </Option>
+                {Object.entries(experienceLevelData).map(([value, label]) => (
+                  <Select.Option key={value} value={value}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -429,10 +442,10 @@ const GeneralInfoSection = ({
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
               >
-                {Object.keys(salaryTypeData).map((type) => (
-                  <Option key={type} value={type}>
-                    {salaryTypeData[type]}
-                  </Option>
+                {Object.entries(salaryTypeData).map(([value, label]) => (
+                  <Select.Option key={value} value={value}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -448,7 +461,7 @@ const GeneralInfoSection = ({
             control={control}
             rules={{
               validate: (value) =>
-                salary_type !== "Khoảng lương" || value
+                salary_type !== "range" || value
                   ? true
                   : "Vui lòng nhập lương tối thiểu",
             }}
@@ -457,8 +470,15 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Lương tối thiểu (triệu)"
                 size="large"
-                disabled={salary_type !== "Khoảng lương"}
+                disabled={salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    field.onChange(value ? parseInt(value) : 0);
+                  }
+                }}
+                value={field.value ?? ""}
               />
             )}
           />
@@ -472,18 +492,36 @@ const GeneralInfoSection = ({
             name="max_salary_range"
             control={control}
             rules={{
-              validate: (value) =>
-                salary_type !== "Khoảng lương" || value
-                  ? true
-                  : "Vui lòng nhập lương tối đa",
+              validate: (value, formValues) => {
+                if (salary_type !== "range") return true;
+                if (value === undefined || value === null || value === "") {
+                  return "Vui lòng nhập lương tối đa";
+                }
+                // Sửa: Kiểm tra max_salary_range > min_salary_range
+                if (
+                  formValues.min_salary_range !== undefined &&
+                  formValues.min_salary_range !== null &&
+                  value <= formValues.min_salary_range
+                ) {
+                  return "Lương tối đa phải lớn hơn lương tối thiểu";
+                }
+                return true;
+              },
             }}
             render={({ field }) => (
               <Input
                 {...field}
                 placeholder="Lương tối đa (triệu)"
                 size="large"
-                disabled={salary_type !== "Khoảng lương"}
+                disabled={salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    field.onChange(value ? parseInt(value) : 0);
+                  }
+                }}
+                value={field.value ?? ""}
               />
             )}
           />

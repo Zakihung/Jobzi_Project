@@ -10,6 +10,10 @@ import DescriptionSection from "../organisms/DescriptionSection";
 import RequirementsSection from "../organisms/RequirementsSection";
 import BenefitsSection from "../organisms/BenefitsSection";
 import CvInfoSection from "../organisms/CvInfoSection";
+import useCreateJobPost from "../../hooks/Job_Post/useCreateJobPost";
+import { useContext } from "react";
+import { AuthContext } from "../../../../contexts/auth.context";
+import { formatDateToISO } from "../../../../constants/formatDateToISO";
 
 const PostJobForm = ({
   sectionRefs,
@@ -55,6 +59,9 @@ const PostJobForm = ({
   });
 
   const salary_type = watch("salary_type");
+  const { auth } = useContext(AuthContext);
+  const employer_id = auth?.user?.id;
+  const { mutate } = useCreateJobPost();
 
   const descriptionEditor = useEditor({
     extensions: [
@@ -191,14 +198,54 @@ const PostJobForm = ({
       completedSections.length === allSections.length &&
       locations.every((loc) => loc.province && loc.address)
     ) {
+      // Gán lại dữ liệu theo schema của backend
       const jobPostingData = {
-        ...data,
-        locations,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        employer_id: employer_id, // Giả định employer_id, cần thay bằng giá trị thực tế (ví dụ: từ context hoặc auth)
+        job_position_id: data.position || null,
+        title: data.title,
+        gender: data.gender || "",
+        description: data.description,
+        requirements: data.requirements,
+        benefits: data.benefits,
+        min_years_experience: data.min_years_experience || 0,
+        education_level: data.education_level || "",
+        experience_level: data.experience_level || "",
+        role_organization: data.role_organization || "",
+        work_type: data.work_type || "",
+        salary_type: data.salary_type || "negotiable",
+        min_salary_range:
+          data.salary_type === "negotiable" ? 0 : data.min_salary_range,
+        max_salary_range:
+          data.salary_type === "negotiable" ? 0 : data.max_salary_range,
+        recipient_email: data.recipient_email || "",
+        recipient_name: data.recipient_name || "",
+        recipient_phone_number: data.recipient_phone_number || "",
+        expired_date: formatDateToISO(data.expiredAt) || null,
+        status: "open",
+        skills: data.skills.map((skill) => skill.value || skill), // Chuyển skills thành mảng chuỗi
+        locations: locations.map((loc) => ({
+          address: loc.address,
+          province: loc.province,
+        })),
       };
+
+      // Console.log dữ liệu trước khi gửi
       console.log("Dữ liệu gửi đến backend MongoDB:", jobPostingData);
-      message.success("Đăng tin thành công");
+
+      // Gửi dữ liệu bằng useCreateJobPost
+      mutate(jobPostingData, {
+        onSuccess: () => {
+          message.success("Đăng tin tuyển dụng thành công!");
+        },
+        onError: (error) => {
+          message.error(
+            `Lỗi khi đăng tin: ${
+              error.response?.data?.message || error.message
+            }`
+          );
+          console.error("Lỗi khi gửi dữ liệu:", error);
+        },
+      });
     } else {
       message.warning("Vui lòng hoàn thành tất cả các mục trước khi đăng!");
       console.log("Vui lòng hoàn thành tất cả các mục trước khi đăng!");
@@ -234,6 +281,7 @@ const PostJobForm = ({
         removeLocation={removeLocation}
         salary_type={salary_type}
         watch={watch}
+        setValue={setValue}
       />
       <DescriptionSection
         editor={descriptionEditor}

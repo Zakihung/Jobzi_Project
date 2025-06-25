@@ -1,14 +1,12 @@
 const {
   createJobPostService,
-  getListJobPostService,
+  getAllJobPostsService,
   getJobPostByIdService,
-  getJobPostByEmployerIdService,
-  getJobPostByJobPositionIdService,
-  getJobPostBySalaryRangeIdService,
-  getJobPostByWorkTypeIdService,
+  getJobPostsByEmployerIdService,
+  getJobPostsByJobPositionIdService,
   updateJobPostService,
-  updateJobPostStatusService,
   deleteJobPostService,
+  deleteAllJobPostsService,
 } = require("../services/job_post.service");
 
 const createJobPost = async (req, res, next) => {
@@ -16,40 +14,28 @@ const createJobPost = async (req, res, next) => {
     const {
       employer_id,
       job_position_id,
-      salary_range_id,
-      work_type_id,
       title,
-      description,
-      requirement,
-      work_address,
-      working_time,
-      benefit,
-      expire_time,
-      status,
+      skills,
+      locations,
+      ...otherData
     } = req.body;
     const data = await createJobPostService({
       employer_id,
       job_position_id,
-      salary_range_id,
-      work_type_id,
       title,
-      description,
-      requirement,
-      work_address,
-      working_time,
-      benefit,
-      expire_time,
-      status,
+      skills,
+      locations,
+      ...otherData,
     });
-    res.status(201).json(data);
+    res.status(200).json(data);
   } catch (error) {
     next(error);
   }
 };
 
-const getListJobPost = async (req, res, next) => {
+const getAllJobPosts = async (req, res, next) => {
   try {
-    const data = await getListJobPostService();
+    const data = await getAllJobPostsService();
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -66,40 +52,20 @@ const getJobPostById = async (req, res, next) => {
   }
 };
 
-const getJobPostByEmployerId = async (req, res, next) => {
+const getJobPostsByEmployerId = async (req, res, next) => {
   try {
-    const { employer_id } = req.params;
-    const data = await getJobPostByEmployerIdService(employer_id);
+    const { employerId } = req.params;
+    const data = await getJobPostsByEmployerIdService(employerId);
     res.status(200).json(data);
   } catch (error) {
     next(error);
   }
 };
 
-const getJobPostByJobPositionId = async (req, res, next) => {
+const getJobPostsByJobPositionId = async (req, res, next) => {
   try {
-    const { job_position_id } = req.params;
-    const data = await getJobPostByJobPositionIdService(job_position_id);
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getJobPostBySalaryRangeId = async (req, res, next) => {
-  try {
-    const { salary_range_id } = req.params;
-    const data = await getJobPostBySalaryRangeIdService(salary_range_id);
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getJobPostByWorkTypeId = async (req, res, next) => {
-  try {
-    const { work_type_id } = req.params;
-    const data = await getJobPostByWorkTypeIdService(work_type_id);
+    const { jobPositionId } = req.params;
+    const data = await getJobPostsByJobPositionIdService(jobPositionId);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -109,45 +75,7 @@ const getJobPostByWorkTypeId = async (req, res, next) => {
 const updateJobPost = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const {
-      employer_id,
-      job_position_id,
-      salary_range_id,
-      work_type_id,
-      title,
-      description,
-      requirement,
-      work_address,
-      working_time,
-      benefit,
-      expire_time,
-      status,
-    } = req.body;
-    const data = await updateJobPostService(id, {
-      employer_id,
-      job_position_id,
-      salary_range_id,
-      work_type_id,
-      title,
-      description,
-      requirement,
-      work_address,
-      working_time,
-      benefit,
-      expire_time,
-      status,
-    });
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateJobPostStatus = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const data = await updateJobPostStatusService(id, status);
+    const data = await updateJobPostService(id, req.body);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -164,15 +92,24 @@ const deleteJobPost = async (req, res, next) => {
   }
 };
 
+const deleteAllJobPosts = async (req, res, next) => {
+  try {
+    const data = await deleteAllJobPostsService();
+    res
+      .status(200)
+      .json({ message: "Đã xóa toàn bộ bài đăng tuyển dụng", data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createJobPost,
-  getListJobPost,
+  getAllJobPosts,
   getJobPostById,
-  getJobPostByEmployerId,
-  getJobPostByJobPositionId,
-  getJobPostBySalaryRangeId,
-  getJobPostByWorkTypeId,
+  getJobPostsByEmployerId,
+  getJobPostsByJobPositionId,
   updateJobPost,
-  updateJobPostStatus,
   deleteJobPost,
+  deleteAllJobPosts,
 };
