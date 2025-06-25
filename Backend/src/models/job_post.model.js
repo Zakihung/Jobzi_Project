@@ -23,32 +23,56 @@ const job_postSchema = new mongoose.Schema(
       ref: "WorkType",
       required: true,
     },
+    experience_level_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ExperienceLevel",
+      required: true,
+    },
+    education_level_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "EducationLevel",
+      required: true,
+    },
+    role_organization_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RoleOrganization",
+      required: true,
+    },
     title: {
       type: String,
       require: true,
+    },
+    gender: {
+      type: String,
+      default: "",
     },
     description: {
       type: String,
       default: "",
     },
-    requirement: {
+    requirements: {
       type: String,
       default: "",
     },
-    work_address: {
+    benefits: {
       type: String,
       default: "",
     },
-    working_time: {
+    min_years_experience: {
       type: String,
       default: "",
     },
-    benefit: {
+    recipient_email: {
       type: String,
       default: "",
     },
-    expire_time: {
-      type: Number,
+    recipient_name: {
+      type: String,
+      default: "",
+    },
+    recipient_phone_number: {
+      type: String,
+      default: "",
     },
     expired_date: {
       type: Date,

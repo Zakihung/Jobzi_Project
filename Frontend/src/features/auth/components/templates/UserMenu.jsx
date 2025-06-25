@@ -96,9 +96,9 @@ const UserMenu = ({ onSignin, onSignup }) => {
 
   const handleLogout = () => {
     if (role === "candidate") {
-      window.location.href = "/signin";
+      window.location.href = "/";
     } else if (role === "employer") {
-      window.location.href = "/employer-signin";
+      window.location.href = "/";
     }
     logout();
     message.success("Đăng xuất thành công!");

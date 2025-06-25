@@ -34,16 +34,19 @@ const PostJobForm = ({
       title: "",
       position: null,
       number: 1,
-      jobType: null,
+      work_type: null,
       gender: null,
-      level: null,
-      experience: null,
-      salaryType: null,
-      salaryRange: { min: "", max: "" },
+      experience_level: null,
+      role_organization: null,
+      min_years_experience: 0,
+      salary_type: null,
+      min_salary_range: null,
+      max_salary_range: null,
+      education_level: null,
       description: "",
       requirements: "",
       benefits: "",
-      deadline: "",
+      expiredAt: "",
       recipient_name: "",
       recipient_phone_number: "",
       recipient_email: "",
@@ -51,7 +54,7 @@ const PostJobForm = ({
     },
   });
 
-  const salaryType = watch("salaryType");
+  const salary_type = watch("salary_type");
 
   const descriptionEditor = useEditor({
     extensions: [
@@ -88,7 +91,12 @@ const PostJobForm = ({
       setValue("requirements", content);
       const sectionName = "Yêu cầu ứng viên";
       const skills = watch("skills") || [];
-      if (editor.getText().length > 0 && skills.length > 0) {
+      const educationLevel = watch("education_level") || "";
+      if (
+        editor.getText().length > 0 &&
+        skills.length > 0 &&
+        educationLevel !== ""
+      ) {
         if (!completedSections.includes(sectionName)) {
           setCompletedSections([...completedSections, sectionName]);
         }
@@ -181,7 +189,7 @@ const PostJobForm = ({
     if (
       isValid &&
       completedSections.length === allSections.length &&
-      locations.every((loc) => loc.city && loc.address)
+      locations.every((loc) => loc.province && loc.address)
     ) {
       const jobPostingData = {
         ...data,
@@ -211,6 +219,7 @@ const PostJobForm = ({
         errors={errors}
         sectionRefs={sectionRefs}
         completedSections={completedSections}
+        setValue={setValue}
         setCompletedSections={setCompletedSections}
       />
       <GeneralInfoSection
@@ -223,7 +232,7 @@ const PostJobForm = ({
         handleLocationChange={handleLocationChange}
         addLocation={addLocation}
         removeLocation={removeLocation}
-        salaryType={salaryType}
+        salary_type={salary_type}
         watch={watch}
       />
       <DescriptionSection

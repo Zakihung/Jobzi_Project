@@ -16,7 +16,7 @@ const ContentContainer = styled(Layout.Content)`
 `;
 
 const PostJobPage = () => {
-  const [locations, setLocations] = useState([{ city: "", address: "" }]);
+  const [locations, setLocations] = useState([{ province: "", address: "" }]);
   const [completedSections, setCompletedSections] = useState([]);
   const sectionRefs = {
     title: useRef(null),
@@ -44,7 +44,7 @@ const PostJobPage = () => {
     newLocations[index] = { ...newLocations[index], [field]: value };
     setLocations(newLocations);
     if (
-      newLocations[index].city &&
+      newLocations[index].province &&
       newLocations[index].address &&
       !completedSections.includes("Thông tin chung")
     ) {
@@ -53,7 +53,7 @@ const PostJobPage = () => {
   };
 
   const addLocation = () => {
-    setLocations([...locations, { city: "", address: "" }]);
+    setLocations([...locations, { province: "", address: "" }]);
   };
 
   const removeLocation = (index) => {

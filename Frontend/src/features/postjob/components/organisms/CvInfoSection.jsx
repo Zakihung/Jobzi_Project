@@ -53,7 +53,7 @@ const CvInfoSection = ({
 }) => {
   const checkCompletion = (values) => {
     const requiredFields = [
-      values.deadline,
+      values.expiredAt,
       values.recipient_name,
       values.recipient_phone_number,
       values.recipient_email,
@@ -63,13 +63,13 @@ const CvInfoSection = ({
       (field) => field && field.trim() !== ""
     );
 
-    const isDeadlineValid = validateDate(values.deadline) === true;
+    const isExpiredAtValid = validateDate(values.expiredAt) === true;
     const isNameValid = validateName(values.recipient_name) === true;
     const isPhoneValid = validatePhone(values.recipient_phone_number) === true;
     const isEmailValid = validateEmail(values.recipient_email) === true;
 
     const isSectionValid =
-      isDeadlineValid && isNameValid && isPhoneValid && isEmailValid;
+      isExpiredAtValid && isNameValid && isPhoneValid && isEmailValid;
     const isComplete = areFieldsFilled && isSectionValid;
 
     if (isComplete && !completedSections.includes("Thông tin nhận CV")) {
@@ -149,7 +149,7 @@ const CvInfoSection = ({
       <Row gutter={[12, 8]}>
         <Col span={8}>
           <Controller
-            name="deadline"
+            name="expiredAt"
             control={control}
             rules={{
               required: "Vui lòng nhập hạn chót nhận hồ sơ",
@@ -161,13 +161,13 @@ const CvInfoSection = ({
                 {...field}
                 placeholder="dd/mm/yyyy"
                 size="large"
-                status={errors.deadline ? "error" : ""}
+                status={errors.expiredAt ? "error" : ""}
                 style={{ width: "100%", marginBottom: 16 }}
               />
             )}
           />
-          {errors.deadline && (
-            <Text type="danger">{errors.deadline.message}</Text>
+          {errors.expiredAt && (
+            <Text type="danger">{errors.expiredAt.message}</Text>
           )}
         </Col>
       </Row>
