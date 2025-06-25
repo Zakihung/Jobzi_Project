@@ -1,4 +1,4 @@
-import axios from "../../services/axios.customize";
+import axios from "../../../services/axios.customize";
 
 // API để tạo job position
 const createJobPositionApi = (data) => {

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteAllIndustryGroupsApi } from "../../services/IndustryGroupApi";
+import { deleteAllIndustryGroupsApi } from "../../services/Industry_GroupApi";
 
 const useDeleteAllIndustryGroups = () => {
   const queryClient = useQueryClient();

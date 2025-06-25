@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getListJobPositionApi } from "../../services/JobPositionApi";
+import { getListJobPositionApi } from "../../services/Job_PositionApi";
 
 const useGetJobPositions = () => {
   return useQuery({

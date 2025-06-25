@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteAllJobPositionsApi } from "../../services/JobPositionApi";
+import { deleteAllJobPositionsApi } from "../../services/Job_PositionApi";
 
 const useDeleteAllJobPositions = () => {
   const queryClient = useQueryClient();

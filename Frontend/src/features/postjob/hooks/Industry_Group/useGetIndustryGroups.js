@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getListIndustryGroupApi } from "../../services/IndustryGroupApi";
+import { getListIndustryGroupApi } from "../../services/Industry_GroupApi";
 
 const useGetIndustryGroups = () => {
   return useQuery({

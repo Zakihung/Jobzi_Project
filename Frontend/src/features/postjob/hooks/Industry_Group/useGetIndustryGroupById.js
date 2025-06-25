@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getIndustryGroupByIdApi } from "../../services/IndustryGroupApi";
+import { getIndustryGroupByIdApi } from "../../services/Industry_GroupApi";
 
 const useGetIndustryGroupById = (id) => {
   return useQuery({

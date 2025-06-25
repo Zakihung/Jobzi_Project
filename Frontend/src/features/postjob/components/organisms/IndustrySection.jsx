@@ -3,6 +3,9 @@ import { Card, Typography, Select, Row, Col } from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
 import { useEffect } from "react";
+import useGetIndustryGroups from "../../hooks/Industry_Group/useGetIndustryGroups";
+import useGetIndustries from "../../hooks/Industry/useGetIndustries";
+import useGetJobPositions from "../../hooks/Job_Position/useGetJobPositions";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -45,73 +48,6 @@ const StyledSubTitle = styled(Title)`
   }
 `;
 
-const industryData = {
-  "Công nghệ thông tin": {
-    detailedIndustries: ["Software Engineer", "Data Science", "Cybersecurity"],
-    positions: {
-      "Software Engineer": [
-        "Fullstack Developer",
-        "Frontend Developer",
-        "Backend Developer",
-      ],
-      "Data Science": [
-        "Data Analyst",
-        "Machine Learning Engineer",
-        "Data Engineer",
-      ],
-      Cybersecurity: [
-        "Security Analyst",
-        "Penetration Tester",
-        "Security Engineer",
-      ],
-    },
-  },
-  Marketing: {
-    detailedIndustries: [
-      "Digital Marketing",
-      "Content Marketing",
-      "Brand Management",
-    ],
-    positions: {
-      "Digital Marketing": [
-        "SEO Specialist",
-        "PPC Specialist",
-        "Social Media Manager",
-      ],
-      "Content Marketing": [
-        "Content Writer",
-        "Content Strategist",
-        "Copywriter",
-      ],
-      "Brand Management": [
-        "Brand Manager",
-        "Marketing Coordinator",
-        "Brand Strategist",
-      ],
-    },
-  },
-  "Kinh doanh": {
-    detailedIndustries: [
-      "Sales",
-      "Business Development",
-      "Operations Management",
-    ],
-    positions: {
-      Sales: ["Sales Manager", "Account Executive", "Sales Representative"],
-      "Business Development": [
-        "Business Development Manager",
-        "Partnership Manager",
-        "Market Research Analyst",
-      ],
-      "Operations Management": [
-        "Operations Manager",
-        "Supply Chain Manager",
-        "Logistics Coordinator",
-      ],
-    },
-  },
-};
-
 const IndustrySection = ({
   control,
   errors,
@@ -123,15 +59,34 @@ const IndustrySection = ({
   const [selectedIndustryGroup, setSelectedIndustryGroup] = useState(null);
   const [selectedIndustry, setSelectedIndustry] = useState(null);
 
-  useEffect(() => {
-    // Reset position nếu industry group thay đổi
-    setValue("position", null);
-  }, [selectedIndustryGroup]);
+  // Lấy danh sách nhóm ngành
+  const { data: industryGroups, isLoading: isLoadingIndustryGroups } =
+    useGetIndustryGroups();
+
+  // Lấy danh sách ngành dựa trên industry_group_id
+  const { data: industries, isLoading: isLoadingIndustries } = useGetIndustries(
+    {
+      enabled: !!selectedIndustryGroup,
+    }
+  );
+
+  // Lấy danh sách vị trí công việc dựa trên industry_id
+  const { data: jobPositions, isLoading: isLoadingJobPositions } =
+    useGetJobPositions({
+      enabled: !!selectedIndustry,
+    });
 
   useEffect(() => {
-    // Reset position nếu industry (ngành nghề) thay đổi
+    // Reset ngành và vị trí khi nhóm ngành thay đổi
+    setValue("industry", null);
     setValue("position", null);
-  }, [selectedIndustry]);
+    setSelectedIndustry(null);
+  }, [selectedIndustryGroup, setValue]);
+
+  useEffect(() => {
+    // Reset vị trí khi ngành thay đổi
+    setValue("position", null);
+  }, [selectedIndustry, setValue]);
 
   return (
     <StyledCard ref={sectionRefs.industry}>
@@ -147,6 +102,7 @@ const IndustrySection = ({
             onChange={(value) => {
               setSelectedIndustryGroup(value);
               setSelectedIndustry(null);
+              setValue("industry", null);
               setValue("position", null);
 
               if (completedSections.includes("Ngành nghề và vị trí")) {
@@ -157,10 +113,11 @@ const IndustrySection = ({
                 );
               }
             }}
+            loading={isLoadingIndustryGroups}
           >
-            {Object.keys(industryData).map((industry) => (
-              <Option key={industry} value={industry}>
-                {industry}
+            {industryGroups?.map((group) => (
+              <Option key={group._id} value={group._id}>
+                {group.name}
               </Option>
             ))}
           </Select>
@@ -177,6 +134,7 @@ const IndustrySection = ({
             value={selectedIndustry}
             onChange={(value) => {
               setSelectedIndustry(value);
+              setValue("industry", value);
               setValue("position", null);
 
               if (completedSections.includes("Ngành nghề và vị trí")) {
@@ -187,18 +145,24 @@ const IndustrySection = ({
                 );
               }
             }}
-            disabled={!selectedIndustryGroup}
+            disabled={!selectedIndustryGroup || isLoadingIndustries}
+            loading={isLoadingIndustries}
           >
-            {selectedIndustryGroup &&
-              industryData[selectedIndustryGroup].detailedIndustries.map(
-                (detailed) => (
-                  <Option key={detailed} value={detailed}>
-                    {detailed}
-                  </Option>
-                )
-              )}
+            {industries
+              ?.filter(
+                (industry) =>
+                  industry.industry_group_id._id === selectedIndustryGroup
+              )
+              .map((industry) => (
+                <Option key={industry._id} value={industry._id}>
+                  {industry.name}
+                </Option>
+              ))}
           </Select>
         </Col>
+        <Col span={12}></Col>
+      </Row>
+      <Row>
         <Col span={12}>
           <StyledSubTitle>Vị trí tuyển</StyledSubTitle>
           <Controller
@@ -210,8 +174,9 @@ const IndustrySection = ({
                 {...field}
                 placeholder="Chọn vị trí cần tuyển"
                 size="large"
-                style={{ width: "100%" }}
-                disabled={!selectedIndustry}
+                style={{ width: "100%", marginBottom: 16 }}
+                disabled={!selectedIndustry || isLoadingJobPositions}
+                loading={isLoadingJobPositions}
                 onChange={(value) => {
                   field.onChange(value);
                   if (
@@ -225,13 +190,13 @@ const IndustrySection = ({
                   }
                 }}
               >
-                {selectedIndustryGroup &&
-                  selectedIndustry &&
-                  industryData[selectedIndustryGroup].positions[
-                    selectedIndustry
-                  ].map((position) => (
-                    <Option key={position} value={position}>
-                      {position}
+                {jobPositions
+                  ?.filter(
+                    (position) => position.industry_id._id === selectedIndustry
+                  )
+                  .map((position) => (
+                    <Option key={position._id} value={position._id}>
+                      {position.name}
                     </Option>
                   ))}
               </Select>
@@ -241,6 +206,7 @@ const IndustrySection = ({
             <Text type="danger">{errors.position.message}</Text>
           )}
         </Col>
+        <Col span={12}></Col>
       </Row>
     </StyledCard>
   );
