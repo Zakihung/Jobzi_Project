@@ -12,9 +12,9 @@ const router = express.Router();
 // Public routes
 router.post("/create", createCompanyIndustry);
 router.get("/", getListCompanyIndustry);
+router.delete("/", deleteAllCompanyIndustries);
 router.get("/:id", getCompanyIndustryById);
 router.put("/:id", updateCompanyIndustry);
 router.delete("/:id", deleteCompanyIndustry);
-router.delete("/all", deleteAllCompanyIndustries);
 
 module.exports = router;
