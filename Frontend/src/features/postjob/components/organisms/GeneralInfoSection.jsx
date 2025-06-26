@@ -83,6 +83,7 @@ const genderData = {
 };
 
 const roleOrganizationData = {
+  unspecified: "Không quy định",
   intern: "Thực tập sinh",
   staff: "Nhân viên",
   leader: "Tổ trưởng",
@@ -93,7 +94,6 @@ const roleOrganizationData = {
   ceo: "Giám đốc điều hành (CEO)",
   cto: "Giám đốc kỹ thuật (CTO)",
   cfo: "Giám đốc tài chính (CFO)",
-  unspecified: "Không quy định",
 };
 
 const experienceLevelData = {

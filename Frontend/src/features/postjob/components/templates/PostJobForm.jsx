@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import { message } from "antd";
+import { App } from "antd";
 import JobTitleSection from "../organisms/JobTitleSection";
 import IndustrySection from "../organisms/IndustrySection";
 import GeneralInfoSection from "../organisms/GeneralInfoSection";
@@ -14,6 +14,7 @@ import useCreateJobPost from "../../hooks/Job_Post/useCreateJobPost";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/auth.context";
 import { formatDateToISO } from "../../../../constants/formatDateToISO";
+import useGetEmployerByUserId from "../../../employer/hooks/useGetEmployerByUserId";
 
 const PostJobForm = ({
   sectionRefs,
@@ -57,10 +58,10 @@ const PostJobForm = ({
       skills: [],
     },
   });
-
+  const { message } = App.useApp();
   const salary_type = watch("salary_type");
   const { auth } = useContext(AuthContext);
-  const employer_id = auth?.user?.id;
+  const { data: employer } = useGetEmployerByUserId(auth?.user?.id);
   const { mutate } = useCreateJobPost();
 
   const descriptionEditor = useEditor({
@@ -193,6 +194,12 @@ const PostJobForm = ({
       }
     }
 
+    if (auth?.user?.role !== "employer") {
+      message.error("Lỗi id");
+      return;
+    }
+    const employer_id = employer?.data?._id;
+
     if (
       isValid &&
       completedSections.length === allSections.length &&
@@ -221,7 +228,7 @@ const PostJobForm = ({
         recipient_name: data.recipient_name || "",
         recipient_phone_number: data.recipient_phone_number || "",
         expired_date: formatDateToISO(data.expiredAt) || null,
-        status: "open",
+        status: "active",
         skills: data.skills.map((skill) => skill.value || skill), // Chuyển skills thành mảng chuỗi
         locations: locations.map((loc) => ({
           address: loc.address,
@@ -236,6 +243,7 @@ const PostJobForm = ({
       mutate(jobPostingData, {
         onSuccess: () => {
           message.success("Đăng tin tuyển dụng thành công!");
+          console.log("Đăng tin thành công");
         },
         onError: (error) => {
           message.error(

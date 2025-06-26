@@ -53,12 +53,12 @@ const NavSection = () => {
 
   const menuEmployerItems = [
     { key: "dashboard", label: "Tổng quan", path: "/employer" },
-    { key: "cadidate", label: "Ứng viên", path: "/employer/cadidate" },
     {
       key: "jobs",
       label: "Việc làm",
       path: "/employer/jobs",
     },
+    { key: "cadidate", label: "Ứng viên", path: "/employer/cadidate" },
     { key: "reports", label: "Báo cáo", path: "/employer/reports" },
     { key: "company", label: "Công ty", path: "/employer/company" },
   ];

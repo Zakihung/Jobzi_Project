@@ -150,6 +150,61 @@ const EditorWrapper = styled.div`
 const TextEditor = ({ editor }) => {
   if (!editor) return null;
 
+  // Hàm xử lý nội dung dán vào
+  const handlePaste = (editor, event, slice) => {
+    const pastedContent = slice.content;
+
+    // Chuyển đổi nội dung dán thành HTML
+    const html = editor.storage.markdown.getMarkdown(pastedContent);
+
+    // Tạo một DOM ảo để xử lý nội dung HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    // Loại bỏ các style inline liên quan đến font
+    const elementsWithStyle = doc.querySelectorAll("[style]");
+    elementsWithStyle.forEach((element) => {
+      const style = element.getAttribute("style");
+      if (style) {
+        // Loại bỏ font-family, font-size và các thuộc tính liên quan
+        const newStyle = style
+          .split(";")
+          .filter(
+            (s) =>
+              !s.includes("font-family") &&
+              !s.includes("font-size") &&
+              !s.includes("color")
+          )
+          .join(";");
+        if (newStyle.trim() === "") {
+          element.removeAttribute("style");
+        } else {
+          element.setAttribute("style", newStyle);
+        }
+      }
+    });
+
+    // Áp dụng font chữ mặc định của Tiptap
+    const elements = doc.querySelectorAll("p, span, div, li, strong, em, u");
+    elements.forEach((element) => {
+      element.style.fontFamily =
+        '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+      element.style.fontSize = "15px";
+      element.style.lineHeight = "1.3";
+    });
+
+    // Chuyển đổi lại nội dung đã xử lý thành HTML
+    const cleanedHtml = doc.body.innerHTML;
+
+    // Chèn nội dung đã được làm sạch vào editor
+    editor.commands.setContent(cleanedHtml, false, {
+      preserveWhitespace: true,
+    });
+
+    // Ngăn chặn hành vi dán mặc định
+    return true;
+  };
+
   const toolbarButtons = [
     {
       group: "format",
@@ -241,7 +296,7 @@ const TextEditor = ({ editor }) => {
     <EditorWrapper>
       {renderToolbar()}
       <EditorContainer>
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} editorProps={{ handlePaste }} />
       </EditorContainer>
     </EditorWrapper>
   );

@@ -52,9 +52,8 @@ const Header = () => {
   };
 
   return (
-    <HeaderRow className="headerRow">
-      <Col span={2} />
-      <Col span={20}>
+    <HeaderRow className="headerRow" justify={"center"}>
+      <Col span={21}>
         <JobziHeader>
           <HeaderContainer>
             <LogoSection setCurrent={setCurrent} />
@@ -64,7 +63,6 @@ const Header = () => {
           </HeaderContainer>
         </JobziHeader>
       </Col>
-      <Col span={2} />
     </HeaderRow>
   );
 };
