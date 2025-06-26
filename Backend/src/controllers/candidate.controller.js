@@ -1,6 +1,7 @@
 const {
   getListCandidateService,
   getCandidateByIdService,
+  getCandidateByUserIdService,
   updateStatusService,
   deleteCandidateService,
 } = require("../services/candidate.service");
@@ -11,6 +12,19 @@ const getListCandidate = async (req, res, next) => {
     res.status(200).json(data);
   } catch (error) {
     next(error);
+  }
+};
+
+const getCandidateByUserId = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const candidate = await getCandidateByUserIdService(user_id);
+    res.status(200).json({
+      status: "success",
+      data: candidate,
+    });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -48,6 +62,7 @@ const deleteCandidate = async (req, res, next) => {
 module.exports = {
   getListCandidate,
   getCandidateById,
+  getCandidateByUserId,
   updateStatusCandidate,
   deleteCandidate,
 };

@@ -1,6 +1,7 @@
 const {
   getListEmployerService,
   getEmployerByIdService,
+  getEmployerByUserIdService,
   updatePositionService,
   deleteEmployerService,
 } = require("../services/employer.service");
@@ -11,6 +12,19 @@ const getListEmployer = async (req, res, next) => {
     res.status(200).json(data);
   } catch (error) {
     next(error);
+  }
+};
+
+const getEmployerByUserId = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const employer = await getEmployerByUserIdService(user_id);
+    res.status(200).json({
+      status: "success",
+      data: employer,
+    });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -48,6 +62,7 @@ const deleteEmployer = async (req, res, next) => {
 module.exports = {
   getListEmployer,
   getEmployerById,
+  getEmployerByUserId,
   updatePositionEmployer,
   deleteEmployer,
 };

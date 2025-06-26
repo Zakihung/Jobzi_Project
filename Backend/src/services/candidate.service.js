@@ -6,6 +6,14 @@ const getListCandidateService = async () => {
   return result;
 };
 
+const getCandidateByUserIdService = async (candidate_id) => {
+  let candidate = await Candidate.findOne({ candidate_id }).populate("user_id");
+  if (!candidate) {
+    throw new AppError("Không tìm thấy ứng viên", 404);
+  }
+  return candidate;
+};
+
 const getCandidateByIdService = async (candidate_id) => {
   let candidate = await Candidate.findById(candidate_id).populate("user_id");
   if (!candidate) {
@@ -44,6 +52,7 @@ const deleteCandidateService = async (candidate_id) => {
 module.exports = {
   getListCandidateService,
   getCandidateByIdService,
+  getCandidateByUserIdService,
   updateStatusService,
   deleteCandidateService,
 };

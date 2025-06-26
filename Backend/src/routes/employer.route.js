@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getListEmployer,
   getEmployerById,
+  getEmployerByUserId,
   updatePositionEmployer,
   deleteEmployer,
 } = require("../controllers/employer.controller");
@@ -10,6 +11,7 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getListEmployer);
+router.get("/user/:user_id", getEmployerByUserId);
 router.get("/:id", getEmployerById);
 router.put("/:id", updatePositionEmployer);
 router.delete("/:id", deleteEmployer);
