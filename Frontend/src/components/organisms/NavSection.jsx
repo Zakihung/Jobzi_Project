@@ -52,16 +52,15 @@ const NavSection = () => {
   ];
 
   const menuEmployerItems = [
-    { key: "dashboard", label: "Dashboard", path: "/employer" },
+    { key: "dashboard", label: "Tổng quan", path: "/employer" },
     { key: "cadidate", label: "Ứng viên", path: "/employer/cadidate" },
     {
-      key: "postjobmanagement",
-      label: "Quản lý tuyển dụng",
-      path: "/employer/postjob-management",
+      key: "jobs",
+      label: "Việc làm",
+      path: "/employer/jobs",
     },
     { key: "reports", label: "Báo cáo", path: "/employer/reports" },
     { key: "company", label: "Công ty", path: "/employer/company" },
-    { key: "postjob", label: "Đăng tuyển dụng", path: "/employer/postjob" },
   ];
 
   const handleClick = (path) => {

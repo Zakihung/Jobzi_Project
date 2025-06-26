@@ -5,7 +5,6 @@ import {
   Col,
   Card,
   Button,
-  Space,
   Typography,
   Checkbox,
   Pagination,
@@ -112,9 +111,8 @@ const CompanyPage = () => {
     <Layout className={styles.companypageLayout}>
       <Content className={styles.companypageContent}>
         {/* Banner Section */}
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <section className={styles.bannerSection}>
               <div className={styles.bannerBackground} />
               <div className={styles.bannerContainer}>
@@ -129,13 +127,11 @@ const CompanyPage = () => {
               </div>
             </section>
           </Col>
-          <Col span={2} />
         </Row>
 
         {/* Filters Section */}
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <section className={styles.filtersSection}>
               <div className={styles.sectionContainer}>
                 <div className={styles.sectionHeader}>
@@ -213,13 +209,11 @@ const CompanyPage = () => {
               </div>
             </section>
           </Col>
-          <Col span={2} />
         </Row>
 
         {/* All Companies Section */}
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <section className={styles.allCompaniesSection}>
               <div className={styles.sectionContainer}>
                 <div className={styles.sectionHeader}>
@@ -322,7 +316,6 @@ const CompanyPage = () => {
               </div>
             </section>
           </Col>
-          <Col span={2} />
         </Row>
       </Content>
     </Layout>

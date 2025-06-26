@@ -128,8 +128,11 @@ const JobPostDetailPage = () => {
   return (
     <Layout className={styles.jobDetailLayout}>
       <Content className={styles.jobDetailContent}>
-        <Row gutter={[24, 24]} className={styles.jobDetailRow}>
-          <Col span={2} />
+        <Row
+          gutter={[24, 24]}
+          className={styles.jobDetailRow}
+          justify={"center"}
+        >
           {/* Left Section: Job Details */}
           <Col span={14}>
             <Card className={styles.jobDetailCard}>
@@ -290,7 +293,6 @@ const JobPostDetailPage = () => {
               </Button>
             </Card>
           </Col>
-          <Col span={2} />
         </Row>
         <SigninRequiredModal
           visible={modalVisible}

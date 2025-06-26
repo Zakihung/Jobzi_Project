@@ -22,26 +22,20 @@ const HomePage = () => {
   return (
     <HomepageLayout>
       <HomepageContent>
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <HeroSection />
           </Col>
-          <Col span={2} />
         </Row>
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <FeaturedJobsSection />
           </Col>
-          <Col span={2} />
         </Row>
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <TopCompaniesSection />
           </Col>
-          <Col span={2} />
         </Row>
         <FeaturesSection />
       </HomepageContent>

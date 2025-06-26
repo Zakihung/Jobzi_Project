@@ -39,10 +39,9 @@ const Footer = () => {
   return (
     <AntFooter className={styles.footer}>
       <div className={styles.footerContainer}>
-        <Row gutter={[32, 32]}>
-          <Col span={2} />
+        <Row gutter={[32, 32]} justify={"center"}>
           {/* Column 1: Logo and Description */}
-          <Col xs={24} sm={12} lg={4}>
+          <Col xs={24} sm={12} lg={5}>
             <div className={styles.footerLogoSection}>
               <div className={styles.logoContainer}>
                 <img
@@ -101,7 +100,7 @@ const Footer = () => {
           </Col>
 
           {/* Column 4: Contact */}
-          <Col xs={24} sm={12} lg={6}>
+          <Col xs={24} sm={12} lg={7}>
             <div className={styles.footerSection}>
               <Title level={5} className={styles.footerTitle}>
                 Liên hệ
@@ -177,7 +176,6 @@ const Footer = () => {
               />
             </div>
           </Col>
-          <Col span={2} />
         </Row>
         <Divider className={styles.footerDivider} />
 

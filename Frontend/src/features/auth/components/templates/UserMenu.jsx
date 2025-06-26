@@ -5,8 +5,6 @@ import {
   SettingOutlined,
   LogoutOutlined,
   BellOutlined,
-  HeartOutlined,
-  DashboardOutlined,
   ProfileOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
@@ -17,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 const UserMenuContainer = styled.div`
   display: flex;
   align-items: center;
-  height: 100%;
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -26,6 +23,34 @@ const UserAvatar = styled(Avatar)`
 
   &:hover {
     border-color: #577cf6;
+  }
+`;
+
+const PostJobButton = styled(Button)`
+  color: #333333;
+  border-radius: 16px;
+  padding: 8px 16px;
+  margin-right: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid #577cf6;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f9ff !important;
+    color: #577cf6 !important;
+    border: 1px solid #577cf6;
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+    font-size: 14px;
+    padding: 0 16px;
   }
 `;
 
@@ -122,6 +147,10 @@ const UserMenu = ({ onSignin, onSignup }) => {
     }
   };
 
+  const handlePostJobClick = () => {
+    navigate("/employer/postjob");
+  };
+
   // Menu items với styled label
   const menuItems = [
     ...(role !== "employer"
@@ -191,6 +220,11 @@ const UserMenu = ({ onSignin, onSignup }) => {
   // Nếu đã đăng nhập, hiển thị menu người dùng
   return (
     <UserMenuContainer>
+      {role === "employer" && (
+        <PostJobButton onClick={handlePostJobClick}>
+          Đăng tuyển dụng
+        </PostJobButton>
+      )}
       <NotificationButton
         icon={
           <Badge

@@ -114,9 +114,8 @@ const CompanyDetailPage = () => {
     <Layout className={styles.companyDetailLayout}>
       <Content className={styles.companyDetailContent}>
         {/* Row 1: Basic Company Info */}
-        <Row className={styles.companyInfoRow}>
-          <Col span={2} />
-          <Col span={20}>
+        <Row className={styles.companyInfoRow} justify={"center"}>
+          <Col span={21}>
             <Card className={styles.companyInfoCard}>
               <div className={styles.companyHeader}>
                 <Avatar
@@ -157,13 +156,15 @@ const CompanyDetailPage = () => {
               </div>
             </Card>
           </Col>
-          <Col span={2} />
         </Row>
 
         {/* Row 2: Tabs and Content */}
-        <Row gutter={[24, 24]} className={styles.companyContentRow}>
-          <Col span={2} />
-          <Col span={20}>
+        <Row
+          gutter={[24, 24]}
+          className={styles.companyContentRow}
+          justify={"center"}
+        >
+          <Col span={21}>
             <Tabs
               defaultActiveKey="introduction"
               className={styles.companyTabs}
@@ -294,7 +295,6 @@ const CompanyDetailPage = () => {
               </TabPane>
             </Tabs>
           </Col>
-          <Col span={2} />
         </Row>
       </Content>
     </Layout>

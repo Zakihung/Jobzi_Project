@@ -39,9 +39,7 @@ const SearchPage = () => {
         logo: `https://via.placeholder.com/60/${Math.floor(
           Math.random() * 16777215
         ).toString(16)}/ffffff?text=C${index % 10}`,
-        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Remote", "Cần Thơ"][
-          index % 5
-        ],
+        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"][index % 5],
         salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`, // Ví dụ: "10-20 triệu"
         type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
         tags: [
@@ -146,9 +144,8 @@ const SearchPage = () => {
   return (
     <SearchpageLayout>
       <SearchpageContent>
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <BannerSection
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
@@ -157,11 +154,9 @@ const SearchPage = () => {
               handleSearch={handleSearch}
             />
           </Col>
-          <Col span={2} />
         </Row>
-        <Row>
-          <Col span={2} />
-          <Col span={20}>
+        <Row justify={"center"}>
+          <Col span={21}>
             <AllJobsSection
               filters={filters}
               handleFilterChange={handleFilterChange}
@@ -172,7 +167,6 @@ const SearchPage = () => {
               handlePageChange={handlePageChange}
             />
           </Col>
-          <Col span={2} />
         </Row>
       </SearchpageContent>
     </SearchpageLayout>
