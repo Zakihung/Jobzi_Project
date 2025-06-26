@@ -15,6 +15,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/auth.context";
 import { formatDateToISO } from "../../../../constants/formatDateToISO";
 import useGetEmployerByUserId from "../../../employer/hooks/useGetEmployerByUserId";
+import { useNavigate } from "react-router-dom";
 
 const PostJobForm = ({
   sectionRefs,
@@ -58,6 +59,7 @@ const PostJobForm = ({
       skills: [],
     },
   });
+  const navigate = useNavigate();
   const { message } = App.useApp();
   const salary_type = watch("salary_type");
   const { auth } = useContext(AuthContext);
@@ -244,6 +246,7 @@ const PostJobForm = ({
         onSuccess: () => {
           message.success("Đăng tin tuyển dụng thành công!");
           console.log("Đăng tin thành công");
+          navigate("/employer/jobs");
         },
         onError: (error) => {
           message.error(

@@ -89,8 +89,8 @@ const job_postSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: "open",
-      enum: ["open", "closed", "expired"],
+      default: "active",
+      enum: ["active", "inactive"],
     },
   },
   { timestamps: true }

@@ -1,0 +1,317 @@
+/* CSS Variables */
+:root {
+  --primary: #577cf6;
+  --primary-dark: #4c6ef5;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --success: #52c41a;
+  --warning: #faad14;
+  --danger: #ff4d4f;
+  --border-radius: 12px;
+  --border-radius-lg: 16px;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Job Card */
+.jobCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  padding: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.pageTitle {
+  color: var(--text-primary) !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.jobCount {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* Job Table */
+.jobTable {
+  background: var(--white);
+}
+
+.jobTable :global(.ant-table-thead > tr > th) {
+  background: var(--gray-100);
+  border-bottom: 2px solid var(--gray-200);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  padding: 16px 20px;
+}
+
+.jobTable :global(.ant-table-tbody > tr > td) {
+  padding: 20px;
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top;
+}
+
+.jobTable :global(.ant-table-tbody > tr:hover > td) {
+  background: #f0f7ff;
+}
+
+/* Job Info */
+.jobInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jobTitle {
+  color: var(--text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  line-height: 1.4;
+}
+
+.jobLocation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.locationIcon {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+/* Expiry Info */
+.expiryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expiryTag {
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--border-radius);
+  padding: 4px 12px;
+  margin: 0;
+  width: fit-content;
+}
+
+.dateInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dateItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateIcon {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Status Control */
+.statusControl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.statusSwitch {
+  background: var(--gray-200);
+}
+
+.statusSwitch:global(.ant-switch-checked) {
+  background: var(--success);
+}
+
+.statusText {
+  font-size: 14px;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.editButton {
+  background: var(--primary);
+  border-color: var(--primary);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  width: 100%;
+}
+
+.editButton:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.deleteButton {
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  width: 100%;
+}
+
+/* Table Pagination */
+.jobTable :global(.ant-pagination) {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.jobTable :global(.ant-pagination-options-quick-jumper input) {
+  border-radius: var(--border-radius);
+}
+
+.jobTable :global(.ant-pagination-item) {
+  border-radius: var(--border-radius);
+}
+
+.jobTable :global(.ant-pagination-item-active) {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.jobTable :global(.ant-pagination-prev),
+.jobTable :global(.ant-pagination-next) {
+  border-radius: var(--border-radius);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .actionButtons {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .editButton,
+  .deleteButton {
+    width: auto;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .pageTitle {
+    font-size: 24px !important;
+  }
+
+  .jobTitle {
+    font-size: 16px !important;
+  }
+
+  .jobTable :global(.ant-table-thead > tr > th) {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .jobTable :global(.ant-table-tbody > tr > td) {
+    padding: 16px;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .editButton,
+  .deleteButton {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .statusControl {
+    align-items: center;
+  }
+
+  .expiryTag {
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .jobCard {
+    padding: 16px;
+    margin: 0 8px;
+  }
+
+  .pageTitle {
+    font-size: 20px !important;
+  }
+
+  .jobTitle {
+    font-size: 14px !important;
+  }
+
+  .jobTable :global(.ant-table-thead > tr > th) {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .jobTable :global(.ant-table-tbody > tr > td) {
+    padding: 12px;
+  }
+
+  .actionButtons {
+    gap: 4px;
+  }
+
+  .editButton,
+  .deleteButton {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* Custom Scrollbar for Table */
+.jobTable :global(.ant-table-body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-200) transparent;
+}
+
+.jobTable :global(.ant-table-body::-webkit-scrollbar) {
+  height: 6px;
+}
+
+.jobTable :global(.ant-table-body::-webkit-scrollbar-track) {
+  background: transparent;
+}
+
+.jobTable :global(.ant-table-body::-webkit-scrollbar-thumb) {
+  background: var(--gray-200);
+  border-radius: 3px;
+}
+
+.jobTable :global(.ant-table-body::-webkit-scrollbar-thumb:hover) {
+  background: var(--text-secondary);
+}

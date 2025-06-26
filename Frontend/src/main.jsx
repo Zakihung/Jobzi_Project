@@ -27,6 +27,7 @@ import SignupEmployerPage from "./pages/employer/SignupEmployerPage.jsx";
 import SigninEmployerPage from "./pages/employer/SigninEmployerPage.jsx";
 import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
+import JobPage from "./pages/employer/JobPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
@@ -108,6 +109,10 @@ const router = createBrowserRouter([
       {
         path: "postjob",
         element: <PostJobPage />,
+      },
+      {
+        path: "jobs",
+        element: <JobPage />,
       },
     ],
   },

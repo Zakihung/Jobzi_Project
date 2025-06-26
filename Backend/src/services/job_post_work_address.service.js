@@ -40,9 +40,13 @@ const getJobPostByWorkAddressIdService = async (work_address_id) => {
 };
 
 const getWorkAddressByJobPostIdService = async (job_post_id) => {
-  let result = await JobPostWorkAddress.find({ job_post_id }).populate(
-    "work_address_id"
-  );
+  let result = await JobPostWorkAddress.find({ job_post_id }).populate({
+    path: "work_address_id",
+    populate: {
+      path: "province_id",
+      model: "Province",
+    },
+  });
   if (!result.length) {
     throw new AppError(
       "Không tìm thấy địa chỉ làm việc cho bài đăng công việc này",

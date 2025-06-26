@@ -6,6 +6,12 @@ const JobPostSkillsRequirement = require("../models/job_post_skills_requirement.
 const WorkAddress = require("../models/work_address.model");
 const JobPostWorkAddress = require("../models/job_post_work_address.model");
 const Province = require("../models/province.model");
+const {
+  getSkillsRequirementByJobPostIdService,
+} = require("./job_post_skills_requirement.service");
+const {
+  getWorkAddressByJobPostIdService,
+} = require("./job_post_work_address.service");
 
 const createJobPostService = async (jobPostData) => {
   const {
@@ -96,6 +102,33 @@ const getAllJobPostsService = async () => {
   let result = await JobPost.find()
     .populate("employer_id")
     .populate("job_position_id");
+
+  // Lấy skills và locations cho từng job post
+  result = await Promise.all(
+    result.map(async (jobPost) => {
+      const jobPostObj = jobPost.toObject();
+
+      // Lấy skills
+      const skills = await getSkillsRequirementByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.skills = skills.map(
+        (skill) => skill.skills_requirement_id.name
+      );
+
+      // Lấy locations
+      const locations = await getWorkAddressByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.locations = locations.map((location) => ({
+        address: location.work_address_id.address,
+        province: location.work_address_id.province_id.name,
+      }));
+
+      return jobPostObj;
+    })
+  );
+
   return result;
 };
 
@@ -103,16 +136,62 @@ const getJobPostByIdService = async (job_post_id) => {
   let jobPost = await JobPost.findById(job_post_id)
     .populate("employer_id")
     .populate("job_position_id");
+
   if (!jobPost) {
     throw new AppError("Không tìm thấy bài đăng tuyển dụng", 404);
   }
-  return jobPost;
+
+  const jobPostObj = jobPost.toObject();
+
+  // Lấy skills
+  const skills = await getSkillsRequirementByJobPostIdService(
+    job_post_id
+  ).catch(() => []);
+  jobPostObj.skills = skills.map((skill) => skill.skills_requirement_id.name);
+
+  // Lấy locations
+  const locations = await getWorkAddressByJobPostIdService(job_post_id).catch(
+    () => []
+  );
+  jobPostObj.locations = locations.map((location) => ({
+    address: location.work_address_id.address,
+    province: location.work_address_id.province_id.name,
+  }));
+
+  return jobPostObj;
 };
 
 const getJobPostsByEmployerIdService = async (employer_id) => {
   let jobPosts = await JobPost.find({ employer_id })
     .populate("employer_id")
     .populate("job_position_id");
+
+  // Lấy skills và locations cho từng job post
+  jobPosts = await Promise.all(
+    jobPosts.map(async (jobPost) => {
+      const jobPostObj = jobPost.toObject();
+
+      // Lấy skills
+      const skills = await getSkillsRequirementByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.skills = skills.map(
+        (skill) => skill.skills_requirement_id.name
+      );
+
+      // Lấy locations
+      const locations = await getWorkAddressByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.locations = locations.map((location) => ({
+        address: location.work_address_id.address,
+        province: location.work_address_id.province_id.name,
+      }));
+
+      return jobPostObj;
+    })
+  );
+
   return jobPosts;
 };
 
@@ -120,6 +199,33 @@ const getJobPostsByJobPositionIdService = async (job_position_id) => {
   let jobPosts = await JobPost.find({ job_position_id })
     .populate("employer_id")
     .populate("job_position_id");
+
+  // Lấy skills và locations cho từng job post
+  jobPosts = await Promise.all(
+    jobPosts.map(async (jobPost) => {
+      const jobPostObj = jobPost.toObject();
+
+      // Lấy skills
+      const skills = await getSkillsRequirementByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.skills = skills.map(
+        (skill) => skill.skills_requirement_id.name
+      );
+
+      // Lấy locations
+      const locations = await getWorkAddressByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.locations = locations.map((location) => ({
+        address: location.work_address_id.address,
+        province: location.work_address_id.province_id.name,
+      }));
+
+      return jobPostObj;
+    })
+  );
+
   return jobPosts;
 };
 
