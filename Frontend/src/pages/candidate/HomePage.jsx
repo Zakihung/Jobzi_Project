@@ -32,11 +32,11 @@ const HomePage = () => {
             <FeaturedJobsSection />
           </Col>
         </Row>
-        <Row justify={"center"}>
+        {/* <Row justify={"center"}>
           <Col span={21}>
             <TopCompaniesSection />
           </Col>
-        </Row>
+        </Row> */}
         <FeaturesSection />
       </HomepageContent>
     </HomepageLayout>

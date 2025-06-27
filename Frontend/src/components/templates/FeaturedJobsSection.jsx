@@ -3,6 +3,7 @@ import { Row, Col, Typography, Button } from "antd";
 import { FireOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import JobCard from "../../features/job/components/organisms/JobCard";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -78,6 +79,7 @@ const ViewAllBtn = styled(Button)`
 `;
 
 const FeaturedJobsSection = () => {
+  const navigate = useNavigate();
   const featuredJobs = [
     {
       id: 1,
@@ -168,11 +170,11 @@ const FeaturedJobsSection = () => {
               <SectionIcon />
               Việc làm nổi bật
             </SectionTitle>
-            <SectionSubtitle>
+            {/* <SectionSubtitle>
               Những cơ hội việc làm tốt nhất được cập nhật hàng ngày
-            </SectionSubtitle>
+            </SectionSubtitle> */}
           </SectionTitleGroup>
-          <ViewAllBtn type="primary" ghost>
+          <ViewAllBtn type="primary" ghost onClick={() => navigate("/search")}>
             Xem tất cả <RightOutlined />
           </ViewAllBtn>
         </SectionHeader>

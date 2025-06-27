@@ -24,7 +24,7 @@ const CarouselItemStartup = styled(CarouselItem)`
   background: linear-gradient(135deg, #36cfc9 0%, #4ecdc4 100%);
 `;
 
-const CarouselItemRemote = styled(CarouselItem)`
+const CarouselItemAI = styled(CarouselItem)`
   background: linear-gradient(135deg, #95e1d3 0%, #36cfc9 100%);
 `;
 
@@ -61,21 +61,21 @@ const HeroCarousel = () => {
   const carouselItems = [
     {
       title: "Tìm việc làm IT tốt nhất",
-      subtitle: "Hơn 10,000 cơ hội việc làm đang chờ bạn",
+      subtitle: "Nhiều cơ hội việc làm đang chờ bạn",
       icon: "💻",
       className: "it",
+    },
+    {
+      title: "AI thông minh",
+      subtitle: "Tăng đáng kể cơ hội trúng tuyển cho ứng viên",
+      icon: "💡",
+      className: "ai",
     },
     {
       title: "Khởi nghiệp cùng Startup",
       subtitle: "Gia nhập các công ty startup đầy tiềm năng",
       icon: "🚀",
       className: "startup",
-    },
-    {
-      title: "Remote Work - Tương lai của công việc",
-      subtitle: "Làm việc từ xa với mức lương hấp dẫn",
-      icon: "🏠",
-      className: "remote",
     },
   ];
 
@@ -85,8 +85,8 @@ const HeroCarousel = () => {
         return CarouselItemIt;
       case "startup":
         return CarouselItemStartup;
-      case "remote":
-        return CarouselItemRemote;
+      case "ai":
+        return CarouselItemAI;
       default:
         return CarouselItem;
     }
@@ -94,7 +94,7 @@ const HeroCarousel = () => {
 
   return (
     <HeroCarouselWrapper>
-      <Carousel autoplay autoplaySpeed={4000} effect="fade">
+      <Carousel autoplay autoplaySpeed={2000} effect="fade">
         {carouselItems.map((item, index) => {
           const StyledCarouselItem = getCarouselItem(item.className);
           return (
