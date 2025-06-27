@@ -77,10 +77,10 @@ const PostJobPage = () => {
           style={{
             background: "#ffffff",
           }}
+          justify={"center"}
         >
-          <Col span={2} />
           <Col
-            span={20}
+            span={21}
             style={{
               background: "#f8f9fa",
               borderRadius: "24px",
@@ -113,7 +113,6 @@ const PostJobPage = () => {
               </Col>
             </Row>
           </Col>
-          <Col span={2} />
         </Row>
       </ContentContainer>
     </PostJobContainer>
