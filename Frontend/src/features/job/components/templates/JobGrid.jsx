@@ -1,0 +1,34 @@
+import React from "react";
+import { Row, Col } from "antd";
+import JobCard from "../organisms/JobCard";
+
+const JobGrid = ({ jobs }) => {
+  return (
+    <Row gutter={[24, 24]}>
+      {jobs.map((job) => (
+        <Col xs={24} md={12} xl={8} key={job._id}>
+          <JobCard
+            job={{
+              id: job._id,
+              title: job.title,
+              company: job.employer_id?.company_id || "Unknown Company",
+              location: `${job.locations[0]?.province}`,
+              salary: `${(job.min_salary_range / 1000000).toFixed(0)}-${(
+                job.max_salary_range / 1000000
+              ).toFixed(0)} triệu`,
+              tags: job.skills,
+              saved: false,
+              posted: new Date(job.createdAt).toLocaleString("vi-VN", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+              }),
+            }}
+          />
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
+export default JobGrid;

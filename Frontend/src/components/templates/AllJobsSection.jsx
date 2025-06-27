@@ -1,12 +1,12 @@
 import React from "react";
 import { Row, Col } from "antd";
 import styled from "styled-components";
-// import SalaryFilter from "../organisms/SalaryFilter";
 import ResetFilterButton from "../organisms/ResetFilterButton";
-import JobCard from "../../features/job/components/organisms/JobCard";
 import PaginationSection from "../organisms/PaginationSection";
 import NoResults from "../organisms/NoResults";
 import FilterPopover from "../organisms/FilterPopover";
+import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
+import JobGrid from "../../features/job/components/templates/JobGrid";
 
 const AllJobsSectionWrapper = styled.section`
   padding: 1.5rem 0;
@@ -29,21 +29,57 @@ const AllJobsSection = ({
   pageSize,
   handlePageChange,
 }) => {
+  const { data: jobs, isLoading } = useGetAllJobPosts();
+
+  // Sắp xếp jobs theo ngày đăng (createdAt) mới nhất
+  const sortedJobs = jobs
+    ? [...jobs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    : [];
+
+  if (isLoading) {
+    return <div>Đang tải...</div>;
+  }
+
+  // Áp dụng bộ lọc cho jobs
+  const filteredAndSortedJobs = sortedJobs.filter((job) => {
+    const matchesJobType = filters.jobType.length
+      ? filters.jobType.includes(job.type.toLowerCase())
+      : true;
+    const matchesSalary = filters.salary.length
+      ? filters.salary.some((range) => {
+          const [min, max] = job.salary
+            .split("-")
+            .map((val) => parseFloat(val.replace(" triệu", "")));
+          if (range === "negotiable") return job.salary === "Thỏa thuận";
+          if (range === "under-5m") return max <= 5;
+          if (range === "over-50m") return min >= 50;
+          const [filterMin, filterMax] = range
+            .split("-")
+            .map((val) => parseFloat(val.replace("m", "")));
+          return min <= filterMax && max >= filterMin;
+        })
+      : true;
+    return matchesJobType && matchesSalary;
+  });
+
   const startIndex = (currentPage - 1) * pageSize;
-  const currentJobs = filteredJobs.slice(startIndex, startIndex + pageSize);
+  const currentJobs = filteredAndSortedJobs.slice(
+    startIndex,
+    startIndex + pageSize
+  );
 
   const filterOptions = {
     jobType: [
-      { label: "Full-time", value: "full-time" },
-      { label: "Part-time", value: "part-time" },
-      { label: "Remote", value: "remote" },
-      { label: "Freelance", value: "freelance" },
+      { label: "Toàn thời gian", value: "full-time" },
+      { label: "Bán thời gian", value: "part-time" },
+      { label: "Thực tập", value: "intern" },
     ],
     experience: [
       { label: "Không yêu cầu", value: "none" },
-      { label: "Dưới 1 năm", value: "under-1-year" },
-      { label: "1-3 năm", value: "1-3-years" },
-      { label: "3-5 năm", value: "3-5-years" },
+      { label: "1-2 năm", value: "1-2-years" },
+      { label: "2-3 năm", value: "2-3-years" },
+      { label: "3-4 năm", value: "3-4-years" },
+      { label: "4-5 năm", value: "4-5-years" },
       { label: "Trên 5 năm", value: "over-5-years" },
     ],
     education: [
@@ -81,8 +117,6 @@ const AllJobsSection = ({
       { label: "Trên 50 triệu", value: "over-50m" },
     ],
   };
-
-  console.log("filters.salary:", filters.salary);
 
   return (
     <AllJobsSectionWrapper>
@@ -142,23 +176,15 @@ const AllJobsSection = ({
             <ResetFilterButton onClick={handleResetFilters} />
           </Col>
         </Row>
-        <Row gutter={[24, 24]}>
-          {currentJobs.length > 0 ? (
-            currentJobs.map((job) => (
-              <Col xs={24} sm={12} md={8} key={job.id}>
-                <JobCard job={job} />
-              </Col>
-            ))
-          ) : (
-            <Col span={24}>
-              <NoResults />
-            </Col>
-          )}
-        </Row>
+        {currentJobs.length > 0 ? (
+          <JobGrid jobs={currentJobs} />
+        ) : (
+          <NoResults />
+        )}
         <PaginationSection
           currentPage={currentPage}
           pageSize={pageSize}
-          totalJobs={filteredJobs.length}
+          totalJobs={filteredAndSortedJobs.length}
           onChange={handlePageChange}
         />
       </SectionContainer>
