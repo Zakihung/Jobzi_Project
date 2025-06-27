@@ -154,9 +154,8 @@ const OnlineResumePage = () => {
 
   return (
     <Layout className={styles.resumeLayout}>
-      <Row gutter={[24, 24]}>
-        <Col span={2} />
-        <Col span={20}>
+      <Row gutter={[24, 24]} justify={"center"}>
+        <Col span={21}>
           <Row
             gutter={[24, 24]}
             style={{
@@ -499,7 +498,6 @@ const OnlineResumePage = () => {
             </Col>
           </Row>
         </Col>
-        <Col span={2} />
       </Row>
     </Layout>
   );

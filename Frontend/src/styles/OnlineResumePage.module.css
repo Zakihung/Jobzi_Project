@@ -110,19 +110,15 @@
 .editButton,
 .statusButton {
   background: var(--primary);
-  border-color: var(--primary);
   border-radius: var(--border-radius);
   font-weight: 600;
   height: 40px;
   padding: 0 20px;
-  transition: all 0.3s ease;
 }
 
 .editButton:hover,
 .statusButton:hover {
   background: var(--primary-dark);
-  border-color: var(--primary-dark);
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
 }
 

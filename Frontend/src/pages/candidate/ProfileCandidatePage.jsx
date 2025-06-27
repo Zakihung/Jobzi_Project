@@ -36,18 +36,18 @@ const ProfileCandidatePage = () => {
   const [selectedMenu, setSelectedMenu] = useState("applied");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [cvFiles, setCvFiles] = useState([
-    {
-      id: 1,
-      name: "CV_JohnDoe_v1.pdf",
-      size: "1.2 MB",
-      uploadDate: "2025-06-01",
-    },
-    {
-      id: 2,
-      name: "CV_JohnDoe_v2.pdf",
-      size: "1.5 MB",
-      uploadDate: "2025-06-05",
-    },
+    // {
+    //   id: 1,
+    //   name: "CV_JohnDoe_v1.pdf",
+    //   size: "1.2 MB",
+    //   uploadDate: "2025-06-01",
+    // },
+    // {
+    //   id: 2,
+    //   name: "CV_JohnDoe_v2.pdf",
+    //   size: "1.5 MB",
+    //   uploadDate: "2025-06-05",
+    // },
   ]);
   const [candidateStatus, setCandidateStatus] = useState("Sẵn sàng tìm việc");
 
@@ -55,44 +55,44 @@ const ProfileCandidatePage = () => {
   const candidate = {
     name: "Nguyễn Phước Hưng",
     avatar: "https://via.placeholder.com/100",
-    age: 23,
-    experience: "1 năm",
-    education: "Kỹ sư Công nghệ phần mềm",
+    age: 22,
+    experience: "Chưa có",
+    education: "Đại học",
   };
 
   // Sample data for menu content
   const appliedJobs = [
-    {
-      id: 1,
-      title: "Senior React Developer",
-      company: "Công ty ABC",
-      date: "2025-06-03",
-    },
-    {
-      id: 2,
-      title: "UI/UX Designer",
-      company: "Công ty XYZ",
-      date: "2025-06-01",
-    },
+    // {
+    //   id: 1,
+    //   title: "Senior React Developer",
+    //   company: "Công ty ABC",
+    //   date: "2025-06-03",
+    // },
+    // {
+    //   id: 2,
+    //   title: "UI/UX Designer",
+    //   company: "Công ty XYZ",
+    //   date: "2025-06-01",
+    // },
   ];
 
   const interviews = [
-    {
-      id: 1,
-      title: "Senior React Developer",
-      company: "Công ty ABC",
-      date: "2025-06-10",
-      time: "10:00 AM",
-    },
+    // {
+    //   id: 1,
+    //   title: "Senior React Developer",
+    //   company: "Công ty ABC",
+    //   date: "2025-06-10",
+    //   time: "10:00 AM",
+    // },
   ];
 
   const followedJobs = [
-    {
-      id: 1,
-      title: "Backend Developer",
-      company: "Công ty DEF",
-      date: "2025-06-02",
-    },
+    // {
+    //   id: 1,
+    //   title: "Backend Developer",
+    //   company: "Công ty DEF",
+    //   date: "2025-06-02",
+    // },
   ];
 
   // Status options
@@ -231,10 +231,9 @@ const ProfileCandidatePage = () => {
   return (
     <Layout className={styles.profileLayout}>
       <Content className={styles.profileContent}>
-        <Row gutter={[24, 24]} className={styles.profileRow}>
+        <Row gutter={[24, 24]} className={styles.profileRow} justify={"center"}>
           {/* Left Section: Menu and Content */}
-          <Col span={2} />
-          <Col xs={24} lg={13}>
+          <Col xs={24} lg={14}>
             <Card className={styles.menuCard}>
               <Menu
                 mode="horizontal"
@@ -261,9 +260,12 @@ const ProfileCandidatePage = () => {
             <Card className={styles.profileCard}>
               <div className={styles.profileHeader}>
                 <Avatar
-                  src={candidate.avatar}
+                  src={
+                    candidate.avatar ||
+                    "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750090817/avaMacDinh_toiqej.jpg"
+                  }
                   size={100}
-                  icon={<UserOutlined />}
+                  // icon={<UserOutlined />}
                 />
                 <Title level={4} className={styles.profileName}>
                   {candidate.name}
@@ -339,16 +341,16 @@ const ProfileCandidatePage = () => {
               </Button>
             </Card>
           </Col>
-          <Col span={2} />
         </Row>
 
         {/* Upload CV Modal */}
         <Modal
-          title="Đăng tải tệp CV"
+          title="Đăng tải CV"
           visible={isModalVisible}
+          // onOk={handleUploadOk}
           onCancel={handleModalCancel}
-          footer={null}
-          className={styles.uploadModal}
+          okText="Hoàn tất"
+          cancelText="Hủy"
         >
           <Upload.Dragger
             name="cvFile"
@@ -356,15 +358,13 @@ const ProfileCandidatePage = () => {
             maxCount={1}
             action="/api/upload-cv" // Thay bằng API thực tế
             onChange={handleUploadChange}
-            className={styles.uploadDragger}
+            // className={styles.uploadDragger}
           >
-            <p className={styles.uploadIcon}>
+            <p className="ant-upload-drag-icon">
               <UploadOutlined />
             </p>
-            <p className={styles.uploadText}>Kéo và thả tệp CV tại đây</p>
-            <p className={styles.uploadHint}>
-              Hoặc nhấn để chọn tệp (chỉ chấp nhận .pdf)
-            </p>
+            <p className="ant-upload-text">Kéo và thả tệp CV tại đây</p>
+            <p className="ant-upload-hint">Hỗ trợ định dạng .pdf</p>
           </Upload.Dragger>
         </Modal>
       </Content>
