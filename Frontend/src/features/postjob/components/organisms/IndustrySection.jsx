@@ -163,7 +163,7 @@ const IndustrySection = ({
         <Col span={12}></Col>
       </Row>
       <Row>
-        <Col span={12}>
+        <Col span={12} style={{ paddingRight: "6px" }}>
           <StyledSubTitle>Vị trí tuyển</StyledSubTitle>
           <Controller
             name="position"
