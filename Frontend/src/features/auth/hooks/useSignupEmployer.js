@@ -50,13 +50,13 @@ export const useSignupEmployer = (form) => {
       // Hiển thị thông báo thành công ở góc trên bên phải
       notification.success({
         message: "Thành công",
-        description: "Đăng ký tài khoản thành công!",
+        description: "Đăng ký tài khoản thành công! Vui lòng đăng nhập!",
         placement: "topRight",
         duration: 2,
       });
 
       setTimeout(() => {
-        navigate("/employer");
+        navigate("/employer-signin");
       }, 1000);
     },
     onError: (error) => {
