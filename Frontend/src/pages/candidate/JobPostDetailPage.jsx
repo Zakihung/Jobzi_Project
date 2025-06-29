@@ -1,46 +1,58 @@
 import React, { useState } from "react";
-import {
-  Layout,
-  Row,
-  Col,
-  Typography,
-  Button,
-  Tag,
-  Card,
-  Space,
-  Avatar,
-  Divider,
-  Rate,
-  Spin,
-} from "antd";
-import {
-  HeartOutlined,
-  HeartFilled,
-  EnvironmentOutlined,
-  DollarOutlined,
-  ClockCircleOutlined,
-  UserOutlined,
-  StarOutlined,
-} from "@ant-design/icons";
+import { Layout, Row, Col, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
 import { useAuth } from "../../contexts/auth.context";
-import styles from "../../styles/JobPostDetailPage.module.css";
+import JobPostTitle from "../../features/job/components/templates/JobPostTitle";
+import JobPostDetail from "../../features/job/components/templates/JobPostDetail";
+import JobPostCompany from "../../features/job/components/templates/JobPostCompany";
+import JobPostGeneralInfo from "../../features/job/components/templates/JobPostGeneralInfo";
+import styled from "styled-components";
 
 const { Content } = Layout;
-const { Title, Text, Paragraph } = Typography;
+
+const StyledLayout = styled(Layout)`
+  background: #ffffff;
+  padding: 0;
+`;
+
+const StyledContent = styled(Content)`
+  padding: 0;
+  background: #ffffff;
+`;
+
+const StyledRow = styled(Row)`
+  margin: 0 auto;
+  padding: 1.5rem;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+`;
+
+const NoResults = styled.div`
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  margin: 40px 0;
+`;
 
 const JobPostDetailPage = () => {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
   const { isLoggedIn } = useAuth();
-  const [loading, setLoading] = useState(false); // Giả lập loading state
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   // Sample job post data
   const job = {
     id: 1,
-    title: "Senior React Developer",
+    title:
+      "Senior React Developer Senior React Developer Senior React Developer Senior React Developer",
     company: "Công ty ABC",
     logo: "https://via.placeholder.com/80/577cf6/ffffff?text=ABC",
     location: "Hồ Chí Minh",
@@ -48,6 +60,7 @@ const JobPostDetailPage = () => {
     type: "Full-time",
     experience: "3-5 năm",
     posted: "2 ngày trước",
+    deadline: "30/12/2024",
     description:
       "Chúng tôi đang tìm kiếm một lập trình viên React có kinh nghiệm để tham gia đội ngũ phát triển sản phẩm công nghệ cao. Bạn sẽ làm việc với các công nghệ hiện đại và đóng góp vào việc xây dựng các ứng dụng web tiên tiến.",
     requirements: [
@@ -65,11 +78,17 @@ const JobPostDetailPage = () => {
     detailedLocation: "Tòa nhà ABC, Quận 1, TP. Hồ Chí Minh",
     workingHours: "Thứ Hai - Thứ Sáu, 9:00 - 18:00",
     tags: ["React", "JavaScript", "Frontend", "Web Development"],
+    level: "Nhân viên",
+    number: 1,
+    gender: "unspecified",
+    expertise: "Senior",
+    education: "Đại học",
+    workType: "Toàn thời gian",
   };
 
   // Sample company data
   const company = {
-    name: "Công ty ABC",
+    name: "Công ty ABC Công ty ABC Công ty ABC Công ty ABC Công ty ABC Công ty ABC",
     industry: "Công nghệ thông tin",
     size: "100-500 nhân viên",
     location: "Tòa nhà ABC, Quận 1, TP. Hồ Chí Minh",
@@ -103,203 +122,71 @@ const JobPostDetailPage = () => {
 
   if (loading) {
     return (
-      <Layout className={styles.jobDetailLayout}>
-        <Content className={styles.jobDetailContent}>
-          <div className={styles.loadingContainer}>
+      <StyledLayout>
+        <StyledContent>
+          <LoadingContainer>
             <Spin size="large" />
-          </div>
-        </Content>
-      </Layout>
+          </LoadingContainer>
+        </StyledContent>
+      </StyledLayout>
     );
   }
 
   if (!job) {
     return (
-      <Layout className={styles.jobDetailLayout}>
-        <Content className={styles.jobDetailContent}>
-          <Text className={styles.noResults}>
-            Không tìm thấy thông tin công việc
-          </Text>
-        </Content>
-      </Layout>
+      <StyledLayout>
+        <StyledContent>
+          <NoResults>Không tìm thấy thông tin công việc</NoResults>
+        </StyledContent>
+      </StyledLayout>
     );
   }
 
   return (
-    <Layout className={styles.jobDetailLayout}>
-      <Content className={styles.jobDetailContent}>
-        <Row
-          gutter={[24, 24]}
-          className={styles.jobDetailRow}
-          justify={"center"}
-        >
-          {/* Left Section: Job Details */}
-          <Col span={14}>
-            <Card className={styles.jobDetailCard}>
-              <div className={styles.jobHeader}>
-                <Title level={2} className={styles.jobTitle}>
-                  {job.title}
-                </Title>
-                <Space className={styles.jobActions}>
-                  <Button
-                    type="text"
-                    icon={
-                      isSaved ? (
-                        <HeartFilled style={{ color: "#ff4d4f" }} />
-                      ) : (
-                        <HeartOutlined />
-                      )
-                    }
-                    onClick={handleSaveJob}
-                    className={styles.saveButton}
-                  >
-                    {isSaved ? "Đã lưu" : "Lưu việc làm"}
-                  </Button>
-                  <Button
-                    type="primary"
-                    size="large"
-                    className={styles.applyButton}
-                    onClick={handleApply}
-                  >
-                    Ứng tuyển ngay
-                  </Button>
-                </Space>
-              </div>
-
-              <Space className={styles.jobTags} wrap>
-                <Tag icon={<DollarOutlined />} className={styles.jobTag}>
-                  {job.salary}
-                </Tag>
-                <Tag icon={<EnvironmentOutlined />} className={styles.jobTag}>
-                  {job.location}
-                </Tag>
-                <Tag icon={<ClockCircleOutlined />} className={styles.jobTag}>
-                  {job.type}
-                </Tag>
-                <Tag icon={<UserOutlined />} className={styles.jobTag}>
-                  {job.experience}
-                </Tag>
-                <Text className={styles.postedTime}>Đăng {job.posted}</Text>
-              </Space>
-
-              <Divider />
-
-              <div className={styles.jobSection}>
-                <Title level={4} className={styles.sectionTitle}>
-                  Mô tả công việc
-                </Title>
-                <Paragraph className={styles.sectionContent}>
-                  {job.description}
-                </Paragraph>
-              </div>
-
-              <div className={styles.jobSection}>
-                <Title level={4} className={styles.sectionTitle}>
-                  Yêu cầu ứng viên
-                </Title>
-                <ul className={styles.sectionList}>
-                  {job.requirements.map((req, index) => (
-                    <li key={index}>{req}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={styles.jobSection}>
-                <Title level={4} className={styles.sectionTitle}>
-                  Phúc lợi
-                </Title>
-                <ul className={styles.sectionList}>
-                  {job.benefits.map((benefit, index) => (
-                    <li key={index}>{benefit}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={styles.jobSection}>
-                <Title level={4} className={styles.sectionTitle}>
-                  Thông tin thêm
-                </Title>
-                <Space direction="vertical" className={styles.additionalInfo}>
-                  <div className={styles.infoItem}>
-                    <EnvironmentOutlined className={styles.infoIcon} />
-                    <Text>Địa điểm: {job.detailedLocation}</Text>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <ClockCircleOutlined className={styles.infoIcon} />
-                    <Text>Thời gian làm việc: {job.workingHours}</Text>
-                  </div>
-                </Space>
-              </div>
-
-              <div className={styles.jobFooter}>
-                <Space className={styles.skillTags} wrap>
-                  {job.tags.map((tag) => (
-                    <Tag key={tag} className={styles.skillTag}>
-                      {tag}
-                    </Tag>
-                  ))}
-                </Space>
-              </div>
-            </Card>
-          </Col>
-
-          {/* Right Section: Company Info */}
-          <Col span={6}>
-            <Card className={styles.companyInfoCard}>
-              <div className={styles.companyHeader}>
-                <Avatar
-                  src={job.logo}
-                  size={80}
-                  className={styles.companyLogo}
+    <StyledLayout>
+      <StyledContent>
+        <Row justify={"center"}>
+          <Col
+            span={21}
+            style={{ backgroundColor: "#f8f9fa", borderRadius: 24 }}
+          >
+            <StyledRow gutter={[24, 24]} justify="center">
+              {/* Left Section */}
+              <Col span={17}>
+                {/* Row 1 Col 1: Job Title */}
+                <JobPostTitle
+                  job={job}
+                  isSaved={isSaved}
+                  onSaveJob={handleSaveJob}
+                  onApply={handleApply}
                 />
-                <Title level={4} className={styles.companyName}>
-                  {company.name}
-                </Title>
-                <Rate
-                  disabled
-                  allowHalf
-                  value={company.rating}
-                  className={styles.companyRating}
+
+                {/* Row 2 Col 1: Job Detail */}
+                <JobPostDetail job={job} />
+              </Col>
+
+              {/* Right Section */}
+              <Col span={7}>
+                {/* Row 1 Col 2: Company Info */}
+                <JobPostCompany
+                  job={job}
+                  company={company}
+                  onViewCompany={handleViewCompany}
                 />
-                <Text className={styles.companyReviews}>
-                  {company.rating} ({company.reviews} đánh giá)
-                </Text>
-              </div>
 
-              <Divider />
+                {/* Row 2 Col 2: General Info */}
+                <JobPostGeneralInfo job={job} />
+              </Col>
+            </StyledRow>
 
-              <Space direction="vertical" className={styles.companyDetails}>
-                <div className={styles.detailItem}>
-                  <StarOutlined className={styles.detailIcon} />
-                  <Text>Lĩnh vực: {company.industry}</Text>
-                </div>
-                <div className={styles.detailItem}>
-                  <UserOutlined className={styles.detailIcon} />
-                  <Text>Quy mô: {company.size}</Text>
-                </div>
-                <div className={styles.detailItem}>
-                  <EnvironmentOutlined className={styles.detailIcon} />
-                  <Text>Địa điểm: {company.location}</Text>
-                </div>
-              </Space>
-
-              <Button
-                type="primary"
-                block
-                className={styles.viewCompanyButton}
-                onClick={handleViewCompany}
-              >
-                Xem thêm về công ty
-              </Button>
-            </Card>
+            <SigninRequiredModal
+              visible={modalVisible}
+              onCancel={handleModalCancel}
+            />
           </Col>
         </Row>
-        <SigninRequiredModal
-          visible={modalVisible}
-          onCancel={handleModalCancel}
-        />
-      </Content>
-    </Layout>
+      </StyledContent>
+    </StyledLayout>
   );
 };
 

@@ -1,0 +1,166 @@
+import React from "react";
+import { Typography, Button, Card, Space, Avatar, Divider, Rate } from "antd";
+import {
+  StarOutlined,
+  UserOutlined,
+  EnvironmentOutlined,
+  ExportOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import styled from "styled-components";
+import { Box, ExternalLink } from "lucide-react";
+
+const { Title, Text } = Typography;
+
+const StyledCard = styled(Card)`
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  padding: 24px;
+  margin-bottom: 24px;
+
+  @media (max-width: 992px) {
+    position: static;
+  }
+`;
+
+const CompanyHeader = styled.div`
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+`;
+
+const CompanyLogo = styled(Avatar)`
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+`;
+
+const CompanyNameSpace = styled.div`
+  flex: 1;
+  height: 80px;
+  overlow: hidden;
+`;
+
+const CompanyName = styled(Text)`
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4em;
+  max-height: calc(1.4em * 3);
+`;
+
+const CompanyDetails = styled(Space)`
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const DetailItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 15px;
+  margin-bottom: 8px;
+`;
+
+const DetailIcon = styled.span`
+  color: #577cf6;
+  font-size: 16px;
+  margin-top: -2px;
+`;
+
+const DetailLabel = styled(Text)`
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
+  line-height: 1.4em;
+  height: 1.4em; /* cố định chiều cao để luôn 1 dòng */
+  align-self: flex-start;
+`;
+
+const DetailValue = styled(Text)`
+  font-size: 14px;
+  font-weight: 450;
+  color: #000;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4em;
+  max-height: calc(1.4em * 3);
+  flex: 1; /* giúp chiếm hết phần còn lại */
+`;
+
+const ViewCompanyButton = styled(Button)`
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 40px;
+
+  &:hover {
+    background: #4c6ef5 !important;
+    border-color: #4c6ef5 !important;
+    box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+  }
+`;
+
+const JobPostCompany = ({ job, company, onViewCompany }) => {
+  return (
+    <StyledCard>
+      <CompanyHeader>
+        <CompanyLogo src={job.logo} size={80} />
+        <CompanyNameSpace>
+          <CompanyName>{company.name}</CompanyName>
+        </CompanyNameSpace>
+      </CompanyHeader>
+
+      <CompanyDetails direction="vertical">
+        <DetailItem>
+          <DetailIcon>
+            <TeamOutlined />
+          </DetailIcon>
+          <DetailLabel>Quy mô:</DetailLabel>
+          <DetailValue>{company.size}</DetailValue>
+        </DetailItem>
+
+        <DetailItem>
+          <DetailIcon>
+            <Box size={18} strokeWidth={1.75} />
+          </DetailIcon>
+          <DetailLabel>Lĩnh vực:</DetailLabel>
+          <DetailValue>{company.industry}</DetailValue>
+        </DetailItem>
+
+        <DetailItem>
+          <DetailIcon>
+            <EnvironmentOutlined />
+          </DetailIcon>
+          <DetailLabel>Địa điểm:</DetailLabel>
+          <DetailValue>{company.location}</DetailValue>
+        </DetailItem>
+      </CompanyDetails>
+
+      <ViewCompanyButton
+        type="primary"
+        block
+        icon={<ExternalLink size={18} />}
+        iconPosition="end"
+        onClick={onViewCompany}
+      >
+        Xem chi tiết công ty
+      </ViewCompanyButton>
+    </StyledCard>
+  );
+};
+
+export default JobPostCompany;

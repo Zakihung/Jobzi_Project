@@ -25,7 +25,7 @@ import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 //Employer
 import SignupEmployerPage from "./pages/employer/SignupEmployerPage.jsx";
 import SigninEmployerPage from "./pages/employer/SigninEmployerPage.jsx";
-import DashboardEmployer from "./pages/employer/DashboardEmployer.jsx";
+import DashboardEmployerPage from "./pages/employer/DashboardEmployerPage.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
 import JobPage from "./pages/employer/JobPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
@@ -104,7 +104,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardEmployer />,
+        element: <DashboardEmployerPage />,
       },
       {
         path: "postjob",
