@@ -18,11 +18,7 @@ const JobGrid = ({ jobs }) => {
               ).toFixed(0)} triệu`,
               tags: job.skills,
               saved: false,
-              posted: new Date(job.createdAt).toLocaleString("vi-VN", {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-              }),
+              posted: job.createdAt,
             }}
           />
         </Col>
