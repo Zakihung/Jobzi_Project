@@ -6,19 +6,20 @@ import AllJobsSection from "../../features/job/components/templates/AllJobsSecti
 
 const { Content } = Layout;
 
-const SearchpageLayout = styled(Layout)`
+const JobpageLayout = styled(Layout)`
   min-height: 100vh;
   background: #ffffff;
   padding: 0;
 `;
 
-const SearchpageContent = styled(Content)`
+const JobpageContent = styled(Content)`
   background: #ffffff;
 `;
 
 const JobCadidatePage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
+  const page = "jobs";
   const [filters, setFilters] = useState({
     jobType: [],
     salary: [], // Mảng rỗng để chứa các chuỗi như ["negotiable", "5-10m"]
@@ -142,8 +143,8 @@ const JobCadidatePage = () => {
   };
 
   return (
-    <SearchpageLayout>
-      <SearchpageContent>
+    <JobpageLayout>
+      <JobpageContent>
         <Row justify={"center"}>
           <Col span={21}>
             <BannerSection
@@ -152,6 +153,7 @@ const JobCadidatePage = () => {
               selectedLocation={selectedLocation}
               setSelectedLocation={setSelectedLocation}
               handleSearch={handleSearch}
+              page={page}
             />
           </Col>
         </Row>
@@ -168,8 +170,8 @@ const JobCadidatePage = () => {
             />
           </Col>
         </Row>
-      </SearchpageContent>
-    </SearchpageLayout>
+      </JobpageContent>
+    </JobpageLayout>
   );
 };
 
