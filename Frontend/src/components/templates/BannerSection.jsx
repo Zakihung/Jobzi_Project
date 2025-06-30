@@ -88,17 +88,32 @@ const BannerSection = ({
   selectedLocation,
   setSelectedLocation,
   handleSearch,
+  page,
 }) => {
   return (
     <BannerSectionWrapper>
       <BannerBackground />
       <BannerContainer>
-        <BannerTitle level={1}>
-          Tìm kiếm việc làm <Highlight>phù hợp</Highlight>
-        </BannerTitle>
-        <BannerDescription>
-          Khám phá nhiều cơ hội việc làm với bộ lọc chi tiết
-        </BannerDescription>
+        {page === "jobs" ? (
+          <>
+            <BannerTitle level={1}>
+              Tìm kiếm việc làm <Highlight>phù hợp</Highlight>
+            </BannerTitle>
+            <BannerDescription>
+              Khám phá nhiều cơ hội việc làm với bộ lọc chi tiết
+            </BannerDescription>
+          </>
+        ) : (
+          <>
+            <BannerTitle level={1}>
+              Khám phá công ty <Highlight>hàng đầu</Highlight>
+            </BannerTitle>
+            <BannerDescription>
+              Tìm hiểu về các công ty uy tín với môi trường làm việc chuyên
+              nghiệp
+            </BannerDescription>
+          </>
+        )}
         <SearchBar
           searchKeyword={searchKeyword}
           setSearchKeyword={setSearchKeyword}

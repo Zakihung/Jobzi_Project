@@ -1,324 +1,134 @@
-import React, { useState, useMemo, useCallback } from "react";
-import {
-  Layout,
-  Row,
-  Col,
-  Card,
-  Button,
-  Typography,
-  Checkbox,
-  Pagination,
-  Avatar,
-  Rate,
-  Spin,
-} from "antd";
-import {
-  FilterOutlined,
-  ReloadOutlined,
-  StarOutlined,
-  TeamOutlined,
-  CheckCircleOutlined,
-} from "@ant-design/icons";
-import styles from "../../styles/CompanyPage.module.css";
+import React, { useState, useMemo } from "react";
+import { Layout, Row, Col } from "antd";
+import styled from "styled-components";
+import BannerSection from "../../components/templates/BannerSection";
+import AllCompaniesSection from "../../features/company/components/templates/AllCompaniesSection";
 
 const { Content } = Layout;
-const { Title, Text, Paragraph } = Typography;
+
+const CompanypageLayout = styled(Layout)`
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 0;
+`;
+
+const CompanypageContent = styled(Content)`
+  background: #ffffff;
+`;
 
 const CompanyPage = () => {
-  // State cho filters, pagination và loading
+  const page = "companies";
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [filters, setFilters] = useState({
     industry: [],
     companySize: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false); // Giả lập loading state
   const pageSize = 16;
 
-  // Dữ liệu mẫu cho companies
   const allCompanies = useMemo(
     () =>
       Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,
-        name: `Công ty ${String.fromCharCode(65 + (index % 26))}${index + 1}`,
-        logo: `https://via.placeholder.com/80/${Math.floor(
+        title: `Vị trí công việc ${index + 1}`,
+        company: `Công ty ${String.fromCharCode(65 + (index % 26))}`,
+        logo: `https://via.placeholder.com/60/${Math.floor(
           Math.random() * 16777215
         ).toString(16)}/ffffff?text=C${index % 10}`,
-        rating: 3.5 + (index % 10) * 0.1,
-        reviews: 100 + (index % 1000),
-        jobs: 10 + (index % 50),
-        description: `Mô tả ngắn về công ty ${String.fromCharCode(
-          65 + (index % 26)
-        )}${
-          index + 1
-        }, hoạt động trong lĩnh vực công nghệ và giải pháp sáng tạo.`,
-        employees: ["under-50", "50-100", "100-500", "1000+"][index % 4],
-        industry: [
-          "công-nghệ-thông-tin",
-          "tài-chính",
-          "marketing",
-          "sản-xuất",
-          "y-tế",
+        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"][index % 5],
+        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`, // Ví dụ: "10-20 triệu"
+        type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
+        tags: [
+          ["React", "Node.js", "JavaScript"],
+          ["Python", "Django", "Flask"],
+          ["Java", "Spring", "Hibernate"],
+          ["Marketing", "SEO", "Analytics"],
+          ["Design", "Figma", "Sketch"],
         ][index % 5],
+        urgent: index % 3 === 0,
+        saved: index % 4 === 0,
+        posted: `${index % 24} giờ trước`,
       })),
     []
   );
 
-  // Logic lọc companies dựa trên filters
   const filteredCompanies = useMemo(() => {
-    return allCompanies.filter((company) => {
-      const matchesIndustry =
-        filters.industry.length > 0
-          ? filters.industry.includes(company.industry)
-          : true;
+    return allCompanies.filter((job) => {
+      const matchesKeyword = searchKeyword
+        ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+          job.tags.some((tag) =>
+            tag.toLowerCase().includes(searchKeyword.toLowerCase())
+          )
+        : true;
 
-      const matchesCompanySize =
-        filters.companySize.length > 0
-          ? filters.companySize.includes(company.employees)
-          : true;
+      const matchesLocation = selectedLocation
+        ? job.location.toLowerCase() ===
+          selectedLocation
+            .replace("ho-chi-minh", "Hồ Chí Minh")
+            .replace("ha-noi", "Hà Nội")
+            .replace("da-nang", "Đà Nẵng")
+            .replace("can-tho", "Cần Thơ")
+            .toLowerCase()
+        : true;
 
-      return matchesIndustry && matchesCompanySize;
+      return matchesKeyword && matchesLocation;
     });
-  }, [allCompanies, filters]);
+  }, [allCompanies, searchKeyword, selectedLocation, filters]);
 
-  // Reset filters
-  const handleResetFilters = useCallback(() => {
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
+
+  const handleResetFilters = () => {
     setFilters({
       industry: [],
       companySize: [],
     });
+    setSearchKeyword("");
+    setSelectedLocation("");
     setCurrentPage(1);
-  }, []);
+  };
 
-  // Xử lý thay đổi filter
-  const handleFilterChange = useCallback((key, value) => {
+  const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
-  }, []);
+  };
 
-  // Xử lý thay đổi trang
-  const handlePageChange = useCallback((page) => {
+  const handlePageChange = (page) => {
     setCurrentPage(page);
-  }, []);
-
-  // Tính toán companies hiển thị dựa trên trang hiện tại
-  const startIndex = (currentPage - 1) * pageSize;
-  const currentCompanies = filteredCompanies.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  };
 
   return (
-    <Layout className={styles.companypageLayout}>
-      <Content className={styles.companypageContent}>
-        {/* Banner Section */}
+    <CompanypageLayout>
+      <CompanypageContent>
         <Row justify={"center"}>
           <Col span={21}>
-            <section className={styles.bannerSection}>
-              <div className={styles.bannerBackground} />
-              <div className={styles.bannerContainer}>
-                <Title level={1} className={styles.bannerTitle}>
-                  Khám phá{" "}
-                  <span className={styles.highlight}>công ty hàng đầu</span>
-                </Title>
-                <Text className={styles.bannerDescription}>
-                  Tìm hiểu về các công ty uy tín với môi trường làm việc chuyên
-                  nghiệp
-                </Text>
-              </div>
-            </section>
+            <BannerSection
+              searchKeyword={searchKeyword}
+              setSearchKeyword={setSearchKeyword}
+              selectedLocation={selectedLocation}
+              setSelectedLocation={setSelectedLocation}
+              handleSearch={handleSearch}
+              page={page}
+            />
           </Col>
         </Row>
-
-        {/* Filters Section */}
         <Row justify={"center"}>
           <Col span={21}>
-            <section className={styles.filtersSection}>
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeader}>
-                  <div className={styles.sectionTitleGroup}>
-                    <Title level={2} className={styles.sectionTitle}>
-                      <FilterOutlined className={styles.sectionIcon} />
-                      Bộ lọc công ty
-                    </Title>
-                    <Text className={styles.sectionSubtitle}>
-                      Lọc công ty theo lĩnh vực và quy mô để tìm lựa chọn phù
-                      hợp
-                    </Text>
-                  </div>
-                  <Button
-                    type="primary"
-                    ghost
-                    className={styles.resetFilterBtn}
-                    onClick={handleResetFilters}
-                  >
-                    <ReloadOutlined /> Đặt lại bộ lọc
-                  </Button>
-                </div>
-
-                <Card className={styles.filterCard}>
-                  <Row gutter={[24, 24]}>
-                    {/* Industry Filter */}
-                    <Col xs={24} md={12}>
-                      <div className={styles.filterGroup}>
-                        <Title level={5} className={styles.filterTitle}>
-                          Lĩnh vực kinh doanh
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            {
-                              label: "Công nghệ thông tin",
-                              value: "công-nghệ-thông-tin",
-                            },
-                            { label: "Tài chính", value: "tài-chính" },
-                            { label: "Marketing", value: "marketing" },
-                            { label: "Sản xuất", value: "sản-xuất" },
-                            { label: "Y tế", value: "y-tế" },
-                          ]}
-                          value={filters.industry}
-                          onChange={(values) =>
-                            handleFilterChange("industry", values)
-                          }
-                          className={styles.checkboxGroup}
-                        />
-                      </div>
-                    </Col>
-
-                    {/* Company Size Filter */}
-                    <Col xs={24} md={12}>
-                      <div className={styles.filterGroup}>
-                        <Title level={5} className={styles.filterTitle}>
-                          Quy mô công ty
-                        </Title>
-                        <Checkbox.Group
-                          options={[
-                            { label: "Dưới 50 nhân viên", value: "under-50" },
-                            { label: "50-100 nhân viên", value: "50-100" },
-                            { label: "100-500 nhân viên", value: "100-500" },
-                            { label: "Trên 1000 nhân viên", value: "1000+" },
-                          ]}
-                          value={filters.companySize}
-                          onChange={(values) =>
-                            handleFilterChange("companySize", values)
-                          }
-                          className={styles.checkboxGroup}
-                        />
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
-              </div>
-            </section>
+            <AllCompaniesSection
+              filters={filters}
+              handleFilterChange={handleFilterChange}
+              handleResetFilters={handleResetFilters}
+              filteredCompanies={filteredCompanies}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              handlePageChange={handlePageChange}
+            />
           </Col>
         </Row>
-
-        {/* All Companies Section */}
-        <Row justify={"center"}>
-          <Col span={21}>
-            <section className={styles.allCompaniesSection}>
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeader}>
-                  <div className={styles.sectionTitleGroup}>
-                    <Title level={2} className={styles.sectionTitle}>
-                      <StarOutlined className={styles.sectionIcon} />
-                      Tất cả công ty
-                    </Title>
-                    <Text className={styles.sectionSubtitle}>
-                      {filteredCompanies.length} công ty đang tìm kiếm nhân tài
-                    </Text>
-                  </div>
-                </div>
-
-                {loading ? (
-                  <div className={styles.loadingContainer}>
-                    <Spin size="large" />
-                  </div>
-                ) : (
-                  <Row gutter={[16, 16]}>
-                    {currentCompanies.length > 0 ? (
-                      currentCompanies.map((company) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={company.id}>
-                          <Card className={styles.companyCard} hoverable>
-                            <div className={styles.companyHeader}>
-                              <Avatar
-                                src={company.logo}
-                                size={72}
-                                className={styles.companyLogo}
-                              />
-                              <div className={styles.companyRating}>
-                                <Rate
-                                  disabled
-                                  defaultValue={company.rating}
-                                  allowHalf
-                                  className={styles.ratingStars}
-                                />
-                                <Text className={styles.ratingText}>
-                                  {company.rating} ({company.reviews})
-                                </Text>
-                              </div>
-                            </div>
-                            <div className={styles.companyInfo}>
-                              <Title level={4} className={styles.companyName}>
-                                {company.name}
-                              </Title>
-                              <Paragraph className={styles.companyDescription}>
-                                {company.description}
-                              </Paragraph>
-                            </div>
-                            <div className={styles.companyStats}>
-                              <div className={styles.companyStat}>
-                                <TeamOutlined className={styles.statIcon} />
-                                <Text>
-                                  {company.employees
-                                    .replace("under-50", "Dưới 50")
-                                    .replace("1000+", "Trên 1000")}{" "}
-                                  nhân viên
-                                </Text>
-                              </div>
-                              <div className={styles.companyStat}>
-                                <CheckCircleOutlined
-                                  className={styles.statIcon}
-                                />
-                                <Text>{company.jobs} việc làm</Text>
-                              </div>
-                            </div>
-                            <div className={styles.companyFooter}>
-                              <Button
-                                type="primary"
-                                className={styles.viewCompanyBtn}
-                                block
-                              >
-                                Xem công ty
-                              </Button>
-                            </div>
-                          </Card>
-                        </Col>
-                      ))
-                    ) : (
-                      <Col span={24}>
-                        <Text className={styles.noResults}>
-                          Không tìm thấy công ty phù hợp
-                        </Text>
-                      </Col>
-                    )}
-                  </Row>
-                )}
-
-                <div className={styles.paginationContainer}>
-                  <Pagination
-                    current={currentPage}
-                    pageSize={pageSize}
-                    total={filteredCompanies.length}
-                    onChange={handlePageChange}
-                    showSizeChanger={false}
-                    className={styles.companiesPagination}
-                  />
-                </div>
-              </div>
-            </section>
-          </Col>
-        </Row>
-      </Content>
-    </Layout>
+      </CompanypageContent>
+    </CompanypageLayout>
   );
 };
 
