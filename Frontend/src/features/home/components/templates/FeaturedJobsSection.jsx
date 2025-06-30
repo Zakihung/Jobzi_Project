@@ -2,10 +2,10 @@ import React from "react";
 import { Row, Col, Typography, Button } from "antd";
 import { FireOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import JobCard from "../../features/job/components/organisms/JobCard";
+import JobCard from "../../../job/components/organisms/JobCard";
 import { useNavigate } from "react-router-dom";
-import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
-import JobGrid from "../../features/job/components/templates/JobGrid";
+import useGetAllJobPosts from "../../../postjob/hooks/Job_Post/useGetAllJobPosts";
+import JobGrid from "../../../job/components/templates/JobGrid";
 
 const { Title, Text } = Typography;
 

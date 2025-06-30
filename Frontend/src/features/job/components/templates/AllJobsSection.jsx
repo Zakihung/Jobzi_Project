@@ -1,12 +1,12 @@
 import React from "react";
 import { Row, Col } from "antd";
 import styled from "styled-components";
-import ResetFilterButton from "../organisms/ResetFilterButton";
-import PaginationSection from "../organisms/PaginationSection";
-import NoResults from "../organisms/NoResults";
-import FilterPopover from "../organisms/FilterPopover";
-import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
-import JobGrid from "../../features/job/components/templates/JobGrid";
+import ResetFilterButton from "../../../../components/organisms/ResetFilterButton";
+import PaginationSection from "../../../../components/organisms/PaginationSection";
+import NoResults from "../../../../components/organisms/NoResults";
+import FilterPopover from "../../../../components/organisms/FilterPopover";
+import useGetAllJobPosts from "../../../postjob/hooks/Job_Post/useGetAllJobPosts";
+import JobGrid from "./JobGrid";
 
 const AllJobsSectionWrapper = styled.section`
   padding: 1.5rem 0;

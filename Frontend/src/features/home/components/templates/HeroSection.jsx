@@ -3,7 +3,7 @@ import { Row, Col, Typography, Space, Tag, Button } from "antd";
 import { TrophyOutlined, SearchOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import HeroCarousel from "../organisms/HeroCarousel";
-import SearchBar from "../organisms/SearchBar";
+import SearchBar from "../../../../components/organisms/SearchBar";
 
 const { Title, Text, Paragraph } = Typography;
 

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
-import AllJobsSection from "../../components/templates/AllJobsSection";
+import AllJobsSection from "../../features/job/components/templates/AllJobsSection";
 
 const { Content } = Layout;
 
@@ -16,7 +16,7 @@ const SearchpageContent = styled(Content)`
   background: #ffffff;
 `;
 
-const SearchPage = () => {
+const JobCadidatePage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [filters, setFilters] = useState({
@@ -173,4 +173,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage;
+export default JobCadidatePage;

@@ -46,7 +46,7 @@ const NavSection = () => {
 
   const menuCandidateItems = [
     { key: "home", label: "Trang chủ", path: "/" },
-    { key: "search", label: "Tìm kiếm", path: "/search" },
+    { key: "jobs", label: "Tìm kiếm", path: "/jobs" },
     { key: "companies", label: "Công ty", path: "/companies" },
     { key: "about", label: "Về chúng tôi", path: "/about" },
   ];
@@ -58,7 +58,7 @@ const NavSection = () => {
       label: "Việc làm",
       path: "/employer/jobs",
     },
-    { key: "cadidate", label: "Ứng viên", path: "/employer/cadidate" },
+    { key: "cadidates", label: "Ứng viên", path: "/employer/cadidates" },
     { key: "reports", label: "Báo cáo", path: "/employer/reports" },
     { key: "company", label: "Công ty", path: "/employer/company" },
   ];

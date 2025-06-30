@@ -18,7 +18,7 @@ import {
   EnvironmentOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import styles from "../../styles/JobPage.module.css";
+import styles from "../../styles/JobEmployerPage.module.css";
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/auth.context";
 import useGetEmployerByUserId from "../../features/employer/hooks/useGetEmployerByUserId";
@@ -27,7 +27,7 @@ import useGetJobPostsByEmployerId from "../../features/postjob/hooks/Job_Post/us
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-const JobPage = () => {
+const JobEmployerPage = () => {
   const { auth } = useContext(AuthContext);
   const { data: employer } = useGetEmployerByUserId(auth?.user?.id);
   const employerId = employer?.data?._id;
@@ -277,4 +277,4 @@ const JobPage = () => {
   );
 };
 
-export default JobPage;
+export default JobEmployerPage;

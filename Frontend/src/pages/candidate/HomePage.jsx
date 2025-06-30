@@ -1,10 +1,9 @@
 import React from "react";
 import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
-import HeroSection from "../../components/templates/HeroSection";
-import FeaturedJobsSection from "../../components/templates/FeaturedJobsSection";
-import TopCompaniesSection from "../../components/templates/TopCompaniesSection";
-import FeaturesSection from "../../components/templates/FeaturesSection";
+import HeroSection from "../../features/home/components/templates/HeroSection";
+import FeaturedJobsSection from "../../features/home/components/templates/FeaturedJobsSection";
+import FeaturesSection from "../../features/home/components/templates/FeaturesSection";
 
 const { Content } = Layout;
 

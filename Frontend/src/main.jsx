@@ -14,21 +14,21 @@ import HomePage from "./pages/candidate/HomePage.jsx";
 // import AccountPage from "./pages/candidate/AccountPage";
 import SignupCandidatePage from "./pages/candidate/SignupCandidatePage";
 import SigninCandidatePage from "./pages/candidate/SigninCandidatePage";
-import SearchPage from "./pages/candidate/SearchPage.jsx";
 import CompanyPage from "./pages/candidate/CompanyPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import JobPostDetailPage from "./pages/candidate/JobPostDetailPage.jsx";
 import CompanyDetailPage from "./pages/candidate/CompanyDetailPage.jsx";
 import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
+import JobCadidatePage from "./pages/candidate/JobCandidatePage.jsx";
 
 //Employer
 import SignupEmployerPage from "./pages/employer/SignupEmployerPage.jsx";
 import SigninEmployerPage from "./pages/employer/SigninEmployerPage.jsx";
 import DashboardEmployerPage from "./pages/employer/DashboardEmployerPage.jsx";
-import PostJobPage from "./pages/employer/PostJobPage.jsx";
-import JobPage from "./pages/employer/JobPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
+import JobEmployerPage from "./pages/employer/JobEmployerPage.jsx";
+import PostJobPage from "./pages/employer/PostJobPage.jsx";
 // import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
 // import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
 // import EmployerAccountPage from "./pages/employer/EmployerAccountPage";
@@ -55,8 +55,8 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "search",
-        element: <SearchPage />,
+        path: "jobs",
+        element: <JobCadidatePage />,
       },
       {
         path: "profile",
@@ -122,7 +122,7 @@ const router = createBrowserRouter([
       },
       {
         path: "jobs",
-        element: <JobPage />,
+        element: <JobEmployerPage />,
       },
     ],
   },
