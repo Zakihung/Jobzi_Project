@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Send } from "lucide-react";
 import styled from "styled-components";
+import { formatDate } from "../../../../constants/formatDate";
 
 const { Title, Text } = Typography;
 
@@ -159,6 +160,9 @@ const TagContent = styled.div`
 `;
 
 const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
+  const salary = `${(job.min_salary_range / 1000000).toFixed(0)}-${(
+    job.max_salary_range / 1000000
+  ).toFixed(0)} triệu`;
   return (
     <StyledCard>
       <Row>
@@ -173,7 +177,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           </IconWrapper>
           <TagContent>
             <Text>Thu nhập</Text>
-            <Text strong>{job.salary}</Text>
+            <Text strong>{salary === "0-0 triệu" ? "Thỏa thuận" : salary}</Text>
           </TagContent>
         </JobTag>
         <JobTag>
@@ -182,7 +186,9 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           </IconWrapper>
           <TagContent>
             <Text>Địa điểm</Text>
-            <Text strong>{job.location}</Text>
+            <Text strong>
+              {job.locations?.map((loc) => loc.province).join(", ")}
+            </Text>
           </TagContent>
         </JobTag>
         <JobTag>
@@ -190,8 +196,12 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
             <HourglassOutlined />
           </IconWrapper>
           <TagContent>
-            <Text>Kinh nghiệm</Text>
-            <Text strong>{job.experience}</Text>
+            <Text>Kinh nghiệm tối thiểu</Text>
+            <Text strong>
+              {job.min_years_experience === 0
+                ? "Không yêu cầu"
+                : job.min_years_experience + " năm"}
+            </Text>
           </TagContent>
         </JobTag>
         <JobTag>
@@ -200,7 +210,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           </IconWrapper>
           <TagContent>
             <Text>Hạn nộp</Text>
-            <Text strong>{job.deadline}</Text>
+            <Text strong>{formatDate(job.createdAt)}</Text>
           </TagContent>
         </JobTag>
       </Row>

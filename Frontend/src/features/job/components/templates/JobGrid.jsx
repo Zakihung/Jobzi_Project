@@ -11,7 +11,7 @@ const JobGrid = ({ jobs }) => {
             job={{
               id: job._id,
               title: job.title,
-              company: job.employer_id?.company_id || "Unknown Company",
+              company: job.employer_id?.company_id,
               location: `${job.locations[0]?.province}`,
               salary: `${(job.min_salary_range / 1000000).toFixed(0)}-${(
                 job.max_salary_range / 1000000

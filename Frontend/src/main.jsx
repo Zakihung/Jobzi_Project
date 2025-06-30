@@ -71,12 +71,22 @@ const router = createBrowserRouter([
         element: <CompanyPage />,
       },
       {
-        path: "companydetail",
-        element: <CompanyDetailPage />,
+        path: "company",
+        children: [
+          {
+            path: ":companyId",
+            element: <CompanyDetailPage />,
+          },
+        ],
       },
       {
-        path: "jobpostdetail",
-        element: <JobPostDetailPage />,
+        path: "jobpost",
+        children: [
+          {
+            path: ":jobPostId",
+            element: <JobPostDetailPage />,
+          },
+        ],
       },
       {
         path: "online-resume",

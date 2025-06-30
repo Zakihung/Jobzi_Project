@@ -80,13 +80,26 @@ const SectionTitle = styled(Title)`
   }
 `;
 
-const SectionContent = styled(Paragraph)`
+const HtmlContent = styled.div`
   color: #666;
   font-size: 15px;
   line-height: 1.6;
 
   @media (max-width: 576px) {
     font-size: 14px;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin-bottom: 8px;
   }
 `;
 
@@ -129,6 +142,12 @@ const InfoIcon = styled.span`
 `;
 
 const JobPostDetail = ({ job }) => {
+  const detailedLocations =
+    job.locations?.map((loc) => {
+      const address = loc.address?.trim() || "";
+      const province = loc.province?.trim() || "";
+      return [address, province].filter(Boolean).join(", ");
+    }) || [];
   return (
     <StyledCard>
       <Row>
@@ -137,53 +156,53 @@ const JobPostDetail = ({ job }) => {
         </JobHeader>
       </Row>
       <Row>
-        {job.tags && job.tags.length > 0 && (
+        {job.skills && job.skills.length > 0 && (
           <TagList>
-            {job.tags.map((tag, index) => (
-              <TagItem key={index}>{tag}</TagItem>
+            {job.skills.map((skill, index) => (
+              <TagItem key={index}>{skill}</TagItem>
             ))}
           </TagList>
         )}
       </Row>
       <JobSection>
         <SectionTitle level={4}>Mô tả công việc</SectionTitle>
-        <SectionContent>{job.description}</SectionContent>
+        <HtmlContent
+          dangerouslySetInnerHTML={{ __html: job.description || "" }}
+        />
       </JobSection>
 
       <JobSection>
         <SectionTitle level={4}>Yêu cầu ứng viên</SectionTitle>
-        <SectionList>
-          {job.requirements.map((req, index) => (
-            <li key={index}>{req}</li>
-          ))}
-        </SectionList>
+        <HtmlContent
+          dangerouslySetInnerHTML={{ __html: job.requirements || "" }}
+        />
       </JobSection>
 
       <JobSection>
         <SectionTitle level={4}>Quyền lợi ứng viên</SectionTitle>
-        <SectionList>
-          {job.benefits.map((benefit, index) => (
-            <li key={index}>{benefit}</li>
-          ))}
-        </SectionList>
+        <HtmlContent dangerouslySetInnerHTML={{ __html: job.benefits || "" }} />
       </JobSection>
 
       <JobSection>
         <SectionTitle level={4}>Địa điểm làm việc</SectionTitle>
-        <AdditionalInfo direction="vertical">
-          <InfoItem>
-            <InfoIcon>
-              <EnvironmentOutlined />
-            </InfoIcon>
-            <Text>Địa điểm: {job.detailedLocation}</Text>
-          </InfoItem>
+        <AdditionalInfo>
+          {detailedLocations.map((loc, index) => (
+            <InfoItem key={index}>
+              <InfoIcon>
+                <EnvironmentOutlined />
+              </InfoIcon>
+              <Text>{loc}</Text>
+            </InfoItem>
+          ))}
+        </AdditionalInfo>
+        {/* <AdditionalInfo direction="vertical">
           <InfoItem>
             <InfoIcon>
               <ClockCircleOutlined />
             </InfoIcon>
             <Text>Thời gian làm việc: {job.workingHours}</Text>
           </InfoItem>
-        </AdditionalInfo>
+        </AdditionalInfo> */}
       </JobSection>
     </StyledCard>
   );

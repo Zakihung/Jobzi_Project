@@ -9,6 +9,8 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { Box, ExternalLink } from "lucide-react";
+import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -114,31 +116,36 @@ const ViewCompanyButton = styled(Button)`
   }
 `;
 
-const JobPostCompany = ({ job, company, onViewCompany }) => {
+const JobPostCompany = ({ companyId }) => {
+  const navigate = useNavigate();
+  const { data: companyData, isLoading } = useGetCompanyById(companyId);
+  if (isLoading) return;
   return (
     <StyledCard>
       <CompanyHeader>
-        <CompanyLogo src={job.logo} size={80} />
+        <CompanyLogo src={companyData.logo} size={80} />
         <CompanyNameSpace>
-          <CompanyName>{company.name}</CompanyName>
+          <CompanyName>{companyData.name}</CompanyName>
         </CompanyNameSpace>
       </CompanyHeader>
 
       <CompanyDetails direction="vertical">
-        <DetailItem>
-          <DetailIcon>
-            <TeamOutlined />
-          </DetailIcon>
-          <DetailLabel>Quy mô:</DetailLabel>
-          <DetailValue>{company.size}</DetailValue>
-        </DetailItem>
+        {companyData.size != "" && (
+          <DetailItem>
+            <DetailIcon>
+              <TeamOutlined />
+            </DetailIcon>
+            <DetailLabel>Quy mô:</DetailLabel>
+            <DetailValue>{companyData.size}</DetailValue>
+          </DetailItem>
+        )}
 
         <DetailItem>
           <DetailIcon>
             <Box size={18} strokeWidth={1.75} />
           </DetailIcon>
           <DetailLabel>Lĩnh vực:</DetailLabel>
-          <DetailValue>{company.industry}</DetailValue>
+          <DetailValue>{companyData.company_industry_id?.name}</DetailValue>
         </DetailItem>
 
         <DetailItem>
@@ -146,7 +153,7 @@ const JobPostCompany = ({ job, company, onViewCompany }) => {
             <EnvironmentOutlined />
           </DetailIcon>
           <DetailLabel>Địa điểm:</DetailLabel>
-          <DetailValue>{company.location}</DetailValue>
+          <DetailValue>{companyData.address}</DetailValue>
         </DetailItem>
       </CompanyDetails>
 
@@ -155,7 +162,7 @@ const JobPostCompany = ({ job, company, onViewCompany }) => {
         block
         icon={<ExternalLink size={18} />}
         iconPosition="end"
-        onClick={onViewCompany}
+        onClick={() => navigate(`/company/${companyId}`)}
       >
         Xem chi tiết công ty
       </ViewCompanyButton>

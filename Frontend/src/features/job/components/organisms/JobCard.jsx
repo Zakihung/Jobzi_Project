@@ -8,6 +8,8 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { formatTime } from "../../../../constants/formatTime";
+import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -177,8 +179,11 @@ const PostedTime = styled(Text)`
 `;
 
 const JobCard = ({ job }) => {
+  const navigate = useNavigate();
+  const { data: companyData, isLoading } = useGetCompanyById(job.company);
+  if (isLoading) return;
   return (
-    <JobCardWrapper>
+    <JobCardWrapper onClick={() => navigate(`/jobpost/${job.id}`)}>
       <JobHeader>
         <CompanyLogo
           src={
@@ -189,7 +194,7 @@ const JobCard = ({ job }) => {
         />
         <JobContent>
           <JobTitle className="job-title">{job.title}</JobTitle>
-          <CompanyName>{job.company}</CompanyName>
+          <CompanyName>{companyData?.name}</CompanyName>
         </JobContent>
         <JobActions>
           <SaveBtn

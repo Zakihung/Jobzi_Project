@@ -71,42 +71,86 @@ const InfoContent = styled.div`
   flex-direction: column;
 `;
 
+const roleOrganizationData = {
+  unspecified: "Không quy định",
+  intern: "Thực tập sinh",
+  staff: "Nhân viên",
+  leader: "Tổ trưởng",
+  manager: "Trưởng nhóm",
+  head: "Trưởng phòng",
+  deputy_director: "Phó giám đốc bộ phận",
+  director: "Giám đốc bộ phận",
+  ceo: "Giám đốc điều hành (CEO)",
+  cto: "Giám đốc kỹ thuật (CTO)",
+  cfo: "Giám đốc tài chính (CFO)",
+};
+
+const experienceLevelData = {
+  none: "Không yêu cầu",
+  intern: "Thực tập sinh",
+  fresher: "Mới tốt nghiệp (Fresher)",
+  junior: "Nhân viên mới (Junior)",
+  mid: "Trung cấp (Mid-level)",
+  senior: "Nhân viên cao cấp (Senior)",
+  lead: "Trưởng nhóm kỹ thuật (Team Lead / Technical Lead)",
+  architect: "Kiến trúc sư hệ thống (Architect / Solution Architect)",
+  expert: "Chuyên gia cao cấp (Principal / Expert)",
+};
+
+const educationLevelData = {
+  "Không yêu cầu": "Không yêu cầu",
+  "Trung học phổ thông": "Trung học phổ thông",
+  "Trung cấp": "Trung cấp",
+  "Cao đẳng": "Cao đẳng",
+  "Đại học": "Đại học",
+  "Thạc sĩ": "Thạc sĩ",
+  "Tiến sĩ": "Tiến sĩ",
+};
+
+const workTypeData = {
+  full_time: "Toàn thời gian",
+  part_time: "Bán thời gian",
+  internship: "Thực tập",
+};
+
+const genderData = {
+  unspecified: "Không yêu cầu",
+  male: "Nam",
+  female: "Nữ",
+};
+
 const JobPostGeneralInfo = ({ job }) => {
   const generalInfo = [
     {
       icon: <TrophyOutlined />,
       label: "Cấp bậc",
-      value: job.level || "NaN",
+      value: roleOrganizationData[job.role_organization] || "Không rõ",
     },
     {
       icon: <StarOutlined />,
       label: "Cấp độ chuyên môn",
-      value: job.expertise + " trở lên" || "N/a",
+      value:
+        experienceLevelData[job.experience_level] + " trở lên" || "Không rõ",
     },
     {
       icon: <BookOutlined />,
       label: "Học vấn",
-      value: job.education + " trở lên" || "N/a",
+      value: educationLevelData[job.education_level] + " trở lên" || "Không rõ",
     },
     {
       icon: <TeamOutlined />,
       label: "Số lượng tuyển",
-      value: job.number || "N/a",
+      value: job.number || "Không rõ",
     },
     {
       icon: <ClockCircleOutlined />,
       label: "Hình thức làm việc",
-      value: job.workType || "N/a",
+      value: workTypeData[job.work_type] || "Không rõ",
     },
     {
       icon: <VenusAndMars />,
       label: "Giới tính",
-      value:
-        job.gender === "unspecified"
-          ? "Không yêu cầu"
-          : job.gender === "male"
-          ? "Nam"
-          : "Nữ",
+      value: genderData[job.gender] || "Không rõ",
     },
   ];
 
