@@ -1,0 +1,397 @@
+.accountLayout {
+  background: #ffffff;
+  padding: 0;
+}
+
+.accountContent {
+  background: #ffffff;
+  padding: 0;
+}
+
+.accountRow {
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.menuCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+  padding: 16px;
+  position: sticky;
+  top: 60px;
+}
+
+.accountMenu {
+  border: none;
+}
+
+.accountMenu :global(.ant-menu-item-icon) {
+  font-size: 18px;
+  color: #577cf6;
+}
+
+.accountMenu :global(.ant-menu-item-selected .ant-menu-item-icon) {
+  color: #ffffff;
+}
+
+.accountMenu :global(.ant-menu-item) {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  padding: 12px 16px;
+  height: auto;
+  line-height: 1.5;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.accountMenu :global(.ant-menu-item:not(.ant-menu-item-selected):hover) {
+  background-color: #f5f9ff !important;
+  color: #577cf6 !important;
+}
+
+.accountMenu :global(.ant-menu-item-selected) {
+  background: #577cf6 !important;
+  color: #ffffff !important;
+}
+
+.accountMenu :global(.ant-menu-item-selected::after) {
+  display: none;
+}
+
+.accountMenu :global(.ant-menu-item .anticon) {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.contentCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+  padding: 32px;
+}
+
+.contentSection {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sectionTitle {
+  color: #1a1a1a !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 24px !important;
+}
+
+.personalInfoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.editButton {
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+.editButton:hover {
+  background: #4c6ef5 !important;
+  border-color: #4c6ef5 !important;
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+}
+
+.avatarSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+  position: relative;
+  width: 120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.avatar {
+  cursor: pointer;
+  border: 4px solid white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.avatarOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.avatarSection:hover .avatarOverlay {
+  opacity: 1;
+}
+
+.cameraIcon {
+  color: white;
+  font-size: 24px;
+}
+
+.personalInfoForm {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.personalInfoForm :global(.ant-form-item-label > label) {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 15px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 24px;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.disabledInput {
+  background: #f5f5f5 !important;
+  border-color: #d9d9d9 !important;
+  color: #666 !important;
+  max-width: 500px;
+}
+
+.disabledInput :global(.ant-input[disabled]) {
+  background: #f5f5f5 !important;
+  color: #666 !important;
+}
+
+.disabledInput :global(.ant-picker[disabled]) {
+  background: #f5f5f5 !important;
+  color: #666 !important;
+}
+
+.disabledInput :global(.ant-select-disabled .ant-select-selector) {
+  background: #f5f5f5 !important;
+  color: #666 !important;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 300px;
+}
+
+.actionButton {
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 44px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+  background: #4c6ef5 !important;
+  border-color: #4c6ef5 !important;
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+}
+
+.deleteButton {
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 44px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.deleteButton:hover {
+  background: #4c6ef5 !important;
+  border-color: #4c6ef5 !important;
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+}
+
+.saveButton {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 44px;
+  font-size: 15px;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.saveButton:hover {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.modal :global(.ant-modal-content) {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.modal :global(.ant-modal-header) {
+  border-radius: 16px 16px 0 0;
+  padding: 0 24px 24px 16px;
+}
+
+.modal :global(.ant-modal-body) {
+  padding: 0;
+}
+
+.modal :global(.ant-modal-footer) {
+  border-radius: 0 0 16px 16px;
+  padding: 0;
+}
+
+.uploadDragger {
+  border: 2px dashed #d6e4ff !important;
+  border-radius: 12px !important;
+  background: #f6f8ff !important;
+  padding: 32px !important;
+}
+
+.uploadDragger :global(.ant-upload-drag-icon) {
+  font-size: 32px;
+  color: #577cf6;
+}
+
+.uploadDragger :global(.ant-upload-text) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 8px 0;
+}
+
+.uploadDragger :global(.ant-upload-hint) {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .personalInfoHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .editButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .accountContent {
+    padding: 1rem 0;
+  }
+
+  .menuCard,
+  .contentCard {
+    padding: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 20px !important;
+  }
+
+  .personalInfoForm {
+    max-width: 100%;
+  }
+
+  .buttonGroup {
+    max-width: 100%;
+  }
+
+  .accountMenu :global(.ant-menu-item) {
+    font-size: 15px;
+    padding: 14px 16px;
+  }
+
+  .avatarSection {
+    margin-bottom: 24px;
+  }
+
+  .avatar {
+    width: 100px !important;
+    height: 100px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .accountRow {
+    padding: 0 16px;
+  }
+
+  .menuCard,
+  .contentCard {
+    padding: 16px;
+  }
+
+  .personalInfoHeader {
+    margin-bottom: 24px;
+  }
+
+  .sectionTitle {
+    font-size: 18px !important;
+  }
+
+  .actionButton,
+  .deleteButton,
+  .saveButton {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .modal :global(.ant-modal-body) {
+    padding: 16px;
+  }
+
+  .uploadDragger {
+    padding: 24px !important;
+  }
+
+  .uploadDragger :global(.ant-upload-text) {
+    font-size: 14px;
+  }
+
+  .uploadDragger :global(.ant-upload-hint) {
+    font-size: 12px;
+  }
+}

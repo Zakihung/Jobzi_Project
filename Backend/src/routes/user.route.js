@@ -11,11 +11,13 @@ const {
   getEmail,
   getListUser,
   getUserById,
+  changePassword,
   updateUser,
   deleteUserById,
   uploadAvatarUser,
 } = require("../controllers/user.controller");
 const upload = require("../middleware/uploadAvaUser");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // Đăng ký người dùng (ứng viên hoặc admin)
 router.post("/signup", signup);
@@ -35,6 +37,8 @@ router.get("/reset-password/:token", (req, res) => {
 router.post("/reset-password/:token", resetPassword);
 // Lấy email người dùng từ token
 router.get("/get-email/:token", getEmail);
+// Đổi mật khẩu
+router.post("/change-password", authMiddleware, changePassword);
 // Lấy danh sách người dùng
 router.get("/", getListUser);
 // Lấy thông tin người dùng theo ID

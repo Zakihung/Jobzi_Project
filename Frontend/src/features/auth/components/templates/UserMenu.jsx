@@ -135,12 +135,12 @@ const UserMenu = ({ onSignin, onSignup }) => {
         navigate("/profile");
         break;
 
-      case "profile":
-        navigate("/employer/profile");
+      case "accountE":
+        navigate("/employer/account");
         break;
 
-      case "settings":
-        navigate("/settings");
+      case "account":
+        navigate("/account");
         break;
       default:
         break;
@@ -164,9 +164,9 @@ const UserMenu = ({ onSignin, onSignup }) => {
             ),
           },
           {
-            key: "settings",
+            key: "account",
             label: (
-              <MenuItemLabel onClick={() => handleMenuClick("settings")}>
+              <MenuItemLabel onClick={() => handleMenuClick("account")}>
                 <SettingOutlined /> Cài đặt
               </MenuItemLabel>
             ),
@@ -176,10 +176,10 @@ const UserMenu = ({ onSignin, onSignup }) => {
     ...(role !== "candidate"
       ? [
           {
-            key: "profile",
+            key: "accountE",
             label: (
-              <MenuItemLabel onClick={() => handleMenuClick("profile")}>
-                <ProfileOutlined /> Tài khoản
+              <MenuItemLabel onClick={() => handleMenuClick("accountE")}>
+                <SettingOutlined /> Cài đặt
               </MenuItemLabel>
             ),
           },
@@ -246,7 +246,7 @@ const UserMenu = ({ onSignin, onSignup }) => {
         arrow={true}
         trigger={["hover"]}
       >
-        <UserAvatar size={45} src={auth.user.avatar} icon={<UserOutlined />} />
+        <UserAvatar size={45} src={auth.user?.avatar} icon={<UserOutlined />} />
       </Dropdown>
     </UserMenuContainer>
   );

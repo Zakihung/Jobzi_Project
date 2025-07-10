@@ -7,6 +7,7 @@ import "./styles/global.css";
 import App from "./App.jsx";
 import EmployerApp from "./EmployerApp.jsx";
 import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
+import AccountPage from "./pages/AccountPage.jsx";
 
 //Candidate
 import HomePage from "./pages/candidate/HomePage.jsx";
@@ -62,10 +63,10 @@ const router = createBrowserRouter([
         path: "profile",
         element: <ProfileCandidatePage />,
       },
-      // {
-      //   path: "account",
-      //   element: <AccountPage />,
-      // },
+      {
+        path: "account",
+        element: <AccountPage />,
+      },
       {
         path: "companies",
         element: <CompanyPage />,
@@ -123,6 +124,10 @@ const router = createBrowserRouter([
       {
         path: "jobs",
         element: <JobEmployerPage />,
+      },
+      {
+        path: "account",
+        element: <AccountPage />,
       },
     ],
   },

@@ -9,6 +9,7 @@ const {
   getEmailFromTokenService,
   getListUserService,
   getUserByIdService,
+  changePasswordService,
   updateUserService,
   deleteUserByIdService,
 } = require("../services/user.service");
@@ -177,6 +178,25 @@ const getUserById = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res, next) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user_id = req.user.userId;
+
+    const result = await changePasswordService(
+      user_id,
+      oldPassword,
+      newPassword
+    );
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -213,13 +233,25 @@ const uploadAvatarUser = async (req, res) => {
   try {
     const { id } = req.params;
     const file = req.file;
+
+    // Kiểm tra file có tồn tại
+    if (!file) {
+      return res.status(400).json({
+        message: "Không có file ảnh được cung cấp",
+      });
+    }
+
     const data = await uploadAvatarUserService(id, file);
+
     res.status(200).json({
       message: "Tải lên avatar người dùng thành công",
-      data,
+      data: data, // Trả về toàn bộ user object
     });
   } catch (error) {
-    res.status(error.status || 500).json({ message: error.message });
+    console.error("Upload avatar error:", error);
+    res.status(error.statusCode || 500).json({
+      message: error.message || "Đã xảy ra lỗi khi tải lên avatar",
+    });
   }
 };
 
@@ -233,6 +265,7 @@ module.exports = {
   getEmail,
   getListUser,
   getUserById,
+  changePassword,
   updateUser,
   deleteUserById,
   uploadAvatarUser,

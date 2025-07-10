@@ -9,6 +9,7 @@ const Company = require("../models/company.model");
 const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
+const cloudinary = require("../configs/cloudinary");
 
 const signupService = async ({
   email,
@@ -465,6 +466,46 @@ const getUserByIdService = async (user_id) => {
   return user;
 };
 
+const changePasswordService = async (user_id, oldPassword, newPassword) => {
+  // Kiểm tra dữ liệu đầu vào
+  if (!user_id || !oldPassword || !newPassword) {
+    throw new AppError("Dữ liệu không được để trống!", 400);
+  }
+
+  // Kiểm tra định dạng mật khẩu mới
+  if (
+    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
+      newPassword
+    )
+  ) {
+    throw new AppError(
+      "Mật khẩu mới phải có chữ hoa, chữ thường, số, ký tự đặc biệt và dài hơn 8 ký tự!",
+      400
+    );
+  }
+
+  // Tìm người dùng
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+
+  // Kiểm tra mật khẩu cũ
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) {
+    throw new AppError("Mật khẩu cũ không đúng", 401);
+  }
+
+  // Băm mật khẩu mới
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  // Cập nhật mật khẩu
+  user.password = hashedNewPassword;
+  await user.save();
+
+  return { message: "Đổi mật khẩu thành công" };
+};
+
 const updateUserService = async (user_id, updateData) => {
   const { full_name, gender, date_of_birth, phone_number } = updateData;
   let user = await User.findById(user_id);
@@ -545,6 +586,7 @@ module.exports = {
   getEmailFromTokenService,
   getListUserService,
   getUserByIdService,
+  changePasswordService,
   updateUserService,
   deleteUserByIdService,
 };
