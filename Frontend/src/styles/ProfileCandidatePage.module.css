@@ -1,6 +1,6 @@
 .profileLayout {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: #fff;
   padding: 0;
 }
 
@@ -141,7 +141,6 @@
 .onlineResumeButton:hover {
   background: #4c6ef5 !important;
   border-color: #4c6ef5 !important;
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
 }
 
@@ -182,10 +181,35 @@
 .cvItem {
   padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
 }
 
 .cvItem:last-child {
   border-bottom: none;
+}
+
+/* Tăng chiều rộng của List.Item.Meta */
+.cvItem :global(.ant-list-item-meta) {
+  flex: 1; /* Chiếm toàn bộ không gian còn lại */
+  max-width: 70%; /* Giới hạn tối đa 70% chiều rộng để dành chỗ cho các nút */
+}
+
+/* Thu hẹp các nút hành động (Xem trước, Sửa, Xóa) */
+.cvItem :global(.ant-list-item-action) {
+  display: flex;
+  gap: 8px; /* Khoảng cách giữa các nút */
+}
+
+.cvItem :global(.ant-list-item-action) :global(.ant-btn) {
+  padding: 0 8px; /* Giảm padding để thu hẹp nút */
+  font-size: 12px; /* Giảm kích thước chữ */
+  line-height: 24px; /* Giảm chiều cao nút */
+}
+
+/* Đảm bảo icon trong nút không bị to quá */
+.cvItem :global(.ant-list-item-action) :global(.anticon) {
+  font-size: 18px; /* Giảm kích thước icon */
 }
 
 .cvIcon {
@@ -206,13 +230,42 @@
 .uploadCvButton:hover {
   background: #4c6ef5 !important;
   border-color: #4c6ef5 !important;
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
 }
 
 .uploadModal :global(.ant-modal-content) {
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Căn chỉnh các nút trong modal tải lên */
+.uploadModal :global(.ant-space) {
+  width: 100%;
+}
+
+/* Căn phải các nút Đăng tải và Hủy */
+.uploadModal :global(.ant-space):last-child {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.uploadModal :global(.ant-input) {
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.uploadModal :global(.ant-btn) {
+  border-radius: 8px;
+}
+
+.uploadModal :global(.ant-btn-primary) {
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+}
+
+.uploadModal :global(.ant-btn-primary:hover) {
+  background: #4c6ef5 !important;
+  border-color: #4c6ef5 !important;
 }
 
 .uploadDragger {

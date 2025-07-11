@@ -9,9 +9,10 @@ const {
 
 const createResumeFile = async (req, res, next) => {
   try {
-    const { candidate_id, name } = req.body;
+    const { name } = req.body;
+    const { id: candidate_id } = req.params;
     const file = req.file;
-    const data = await createResumeFileService({ candidate_id, name }, file);
+    const data = await createResumeFileService(candidate_id, name, file);
     res.status(201).json(data);
   } catch (error) {
     next(error);

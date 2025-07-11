@@ -3,8 +3,7 @@ const AppError = require("../utils/AppError");
 const ResumeFile = require("../models/resume_file.model");
 const cloudinary = require("../configs/cloudinary");
 
-const createResumeFileService = async (resumeData, file) => {
-  const { candidate_id, name } = resumeData;
+const createResumeFileService = async (candidate_id, name, file) => {
   if (!candidate_id || !name) {
     throw new AppError(
       "Thiếu các trường bắt buộc: candidate_id và name là bắt buộc",

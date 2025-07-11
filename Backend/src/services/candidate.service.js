@@ -6,8 +6,8 @@ const getListCandidateService = async () => {
   return result;
 };
 
-const getCandidateByUserIdService = async (candidate_id) => {
-  let candidate = await Candidate.findOne({ candidate_id }).populate("user_id");
+const getCandidateByUserIdService = async (user_id) => {
+  let candidate = await Candidate.findOne({ user_id }).populate("user_id");
   if (!candidate) {
     throw new AppError("Không tìm thấy ứng viên", 404);
   }
