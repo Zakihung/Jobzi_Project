@@ -1,13 +1,15 @@
-import { Typography } from "antd";
+import { Button, Typography } from "antd";
 import styles from "../../styles/SignupEmployerContainer.module.css";
 import { useState } from "react";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import RoleSelectionModal from "../templates/RoleSelectionModal";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Stepcard from "../organisms/StepCard";
 
 const { Title, Text } = Typography;
 
 const SignupEmployerContainer = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [modalVisible, setModalVisible] = useState(
     location.state?.showRoleModal || false
@@ -45,6 +47,17 @@ const SignupEmployerContainer = () => {
 
       {/* Right side - Signup Form */}
       <div className={styles.signupFormSection}>
+        {/* Back to Home Button */}
+        <div className={styles.backToHomeFloating}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/")}
+            className={styles.backToHomeButton}
+          >
+            Về trang chủ
+          </Button>
+        </div>
         <div className={styles.formWrapper}>
           {/* Logo */}
           <div className={styles.logoSignupSection}>

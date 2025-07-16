@@ -16,15 +16,18 @@ import {
   PhoneOutlined,
   ManOutlined,
   WomanOutlined,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { useSignup } from "../../../auth/hooks/useSignup";
 import styles from "../../styles/SignupCandidateForm.module.css";
 import { useState } from "react";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const SignupCandidateForm = () => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const { mutate: signupMutation, isLoading } = useSignup(form);
   const [selectedGender, setSelectedGender] = useState("male"); // Mặc định là Nam
@@ -77,9 +80,19 @@ const SignupCandidateForm = () => {
           </div>
         </div>
       </div>
-
       {/* Right side - Signup Form */}
       <div className={styles.signupFormSection}>
+        {/* Back to Home Button */}
+        <div className={styles.backToHomeFloating}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/")}
+            className={styles.backToHomeButton}
+          >
+            Về trang chủ
+          </Button>
+        </div>
         <div className={styles.formWrapper}>
           {/* Logo */}
           <div className={styles.logoSignupSection}>

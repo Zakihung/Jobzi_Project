@@ -1,12 +1,18 @@
 import { Form, Input, Button, Typography, Alert } from "antd";
-import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import {
+  MailOutlined,
+  LockOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
 import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninEmployerForm.module.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const SigninEmployerForm = () => {
+  const navigate = useNavigate();
   const { mutate: signinMutation, isLoading } = useSignin();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -53,6 +59,17 @@ const SigninEmployerForm = () => {
 
       {/* Right side - Signin Form */}
       <div className={styles.signinFormSection}>
+        {/* Back to Home Button */}
+        <div className={styles.backToHomeFloating}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/")}
+            className={styles.backToHomeButton}
+          >
+            Về trang chủ
+          </Button>
+        </div>
         <div className={styles.formWrapper}>
           {/* Logo */}
           <div className={styles.logoSigninSection}>

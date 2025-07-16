@@ -114,12 +114,42 @@
 
 /* Right Side - Form Section */
 .signinFormSection {
+  position: relative;
   flex: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   background: var(--white);
+}
+
+/* Back to Home Button */
+.backToHomeFloating {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.backToHomeButton {
+  color: var(--text-secondary) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  height: 3rem !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--border-radius) !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  background: transparent !important;
+  border: 1px solid var(--gray-200) !important;
+}
+
+.backToHomeButton:hover {
+  color: var(--primary) !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+  border-color: var(--primary-light) !important;
 }
 
 .formWrapper {
