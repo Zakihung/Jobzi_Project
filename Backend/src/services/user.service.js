@@ -148,10 +148,25 @@ const signupService = async ({
       status: "ready",
     });
     await candidate.save();
-    return { user, candidate, accessToken, refreshToken };
+    return {
+      user: {
+        ...user.toObject(),
+        candidate_id: candidate._id,
+      },
+      candidate,
+      accessToken,
+      refreshToken,
+    };
   } else {
     // Nếu là admin, không cần tạo bản ghi khác
-    return { user, accessToken, refreshToken };
+    return {
+      user: {
+        ...user.toObject(),
+        candidate_id: null,
+      },
+      accessToken,
+      refreshToken,
+    };
   }
 };
 
@@ -321,7 +336,16 @@ const signupEmployerService = async ({
   });
   await employer.save();
 
-  return { user, company, employer, accessToken, refreshToken };
+  return {
+    user: {
+      ...user.toObject(),
+      employer_id: employer._id,
+    },
+    company,
+    employer,
+    accessToken,
+    refreshToken,
+  };
 };
 
 const signinService = async ({ email, password }) => {
@@ -350,13 +374,32 @@ const signinService = async ({ email, password }) => {
   const refreshToken = jwt.sign(
     { userId: user._id, role: user.role },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "3d" }
   );
 
   user.refreshToken = refreshToken;
   await user.save();
 
-  return { user, accessToken, refreshToken };
+  let candidate_id = null;
+  let employer_id = null;
+
+  if (user.role === "candidate") {
+    const candidate = await Candidate.findOne({ user_id: user._id });
+    candidate_id = candidate ? candidate._id : null;
+  } else if (user.role === "employer") {
+    const employer = await Employer.findOne({ user_id: user._id });
+    employer_id = employer ? employer._id : null;
+  }
+
+  return {
+    user: {
+      ...user.toObject(),
+      candidate_id,
+      employer_id,
+    },
+    accessToken,
+    refreshToken,
+  };
 };
 
 const refreshAccessTokenService = async (refreshToken) => {

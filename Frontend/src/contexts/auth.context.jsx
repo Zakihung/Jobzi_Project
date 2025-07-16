@@ -15,6 +15,8 @@ export const AuthContext = createContext({
       date_of_birth: "",
       phone_number: "",
       token: "",
+      candidate_id: "",
+      employer_id: "",
     },
   },
   setAuth: () => {},
@@ -54,6 +56,8 @@ export const AuthWrapper = ({ children }) => {
           date_of_birth: "",
           phone_number: "",
           token: "",
+          candidate_id: "",
+          employer_id: "",
         },
       };
     } catch (error) {
@@ -72,6 +76,8 @@ export const AuthWrapper = ({ children }) => {
           date_of_birth: "",
           phone_number: "",
           token: "",
+          candidate_id: "",
+          employer_id: "",
         },
       };
     }
@@ -99,6 +105,8 @@ export const AuthWrapper = ({ children }) => {
           date_of_birth: "",
           phone_number: "",
           token: "",
+          candidate_id: "",
+          employer_id: "",
         },
       });
 

@@ -35,6 +35,7 @@ export const useSignup = (form) => {
           data.user.avatar ||
           "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750090817/avaMacDinh_toiqej.jpg",
         date_of_birth: data.user.date_of_birth || null,
+        candidate_id: data.user.candidate_id || null,
         token: data.accessToken,
         refreshToken: data.refreshToken, // Lưu refreshToken
       };
