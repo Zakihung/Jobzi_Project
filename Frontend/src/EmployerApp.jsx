@@ -14,7 +14,7 @@ function EmployerApp() {
       <Layout style={{ marginLeft: 0, minHeight: "100vh" }}>
         <Content
           style={{
-            maxWidth: "100vw",
+            width: "100%",
             boxSizing: "border-box",
           }}
         >

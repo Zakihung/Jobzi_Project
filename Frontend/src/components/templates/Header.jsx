@@ -11,8 +11,9 @@ const { Header: AntHeader } = Layout;
 
 const HeaderRow = styled(Row)`
   position: sticky;
+  width: 100%;
   top: 0;
-  z-index: 1001;
+  z-index: 999;
   background-color: #ffffff;
 `;
 
