@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Layout, Row, Col, App } from "antd";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -8,8 +8,8 @@ import useGetResumeFilesByCandidateId from "../../features/resume_file/hooks/use
 import useCreateResumeFile from "../../features/resume_file/hooks/useCreateResumeFile";
 import useUpdateResumeFile from "../../features/resume_file/hooks/useUpdateResumeFile";
 import useDeleteResumeFile from "../../features/resume_file/hooks/useDeleteResumeFile";
-import useGetCandidateByUserId from "../../features/candidate/hooks/useGetCandidateByUserId";
 import useUpdateCandidateStatus from "../../features/candidate/hooks/useUpdateCandidateStatus";
+import useGetCandidateById from "../../features/candidate/hooks/useGetCandidateById";
 
 import ProfileCard from "../../features/candidate/components/templates/ProfileCard";
 import CVManagementCard from "../../features/candidate/components/templates/CVManagementCard";
@@ -41,8 +41,7 @@ const ProfileCandidatePage = () => {
   const { message } = App.useApp();
   const { auth } = useContext(AuthContext);
   const userData = auth?.user;
-  const { data: candidateData } = useGetCandidateByUserId(userData?.id);
-  const candidateId = candidateData?.data?._id;
+  const candidateId = userData?.candidate_id;
   const navigate = useNavigate();
 
   // Menu state
@@ -67,7 +66,20 @@ const ProfileCandidatePage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Profile state
-  const [candidateStatus, setCandidateStatus] = useState("Sẵn sàng tìm việc");
+  const [candidateStatus, setCandidateStatus] = useState("");
+  const { data: candidateProfile, isLoading: isLoadingCandidateProfile } =
+    useGetCandidateById(candidateId);
+
+  useEffect(() => {
+    if (candidateProfile?.status) {
+      setCandidateStatus(candidateProfile.status);
+    }
+  }, [candidateProfile]);
+
+  const { mutate: updateCandidateStatus } = useUpdateCandidateStatus();
+
+  // State để kiểm soát Popover trong ProfileCard
+  const [, setIsPopoverVisible] = useState(false);
 
   // Hooks
   const { data: resumeFiles, isLoading: isLoadingResumeFiles } =
@@ -92,7 +104,19 @@ const ProfileCandidatePage = () => {
 
   const handleStatusChange = (status) => {
     setCandidateStatus(status);
-    message.success(`Cập nhật trạng thái thành: ${status}`);
+    setIsPopoverVisible(true); // Mở Popover nếu cần (tùy thuộc vào UX)
+    updateCandidateStatus(
+      { id: candidateId, data: { status } },
+      {
+        onSuccess: () => {
+          message.success(`Cập nhật trạng thái thành công`);
+          setIsPopoverVisible(false); // Đóng Popover khi cập nhật thành công
+        },
+        onError: () => {
+          message.error("Cập nhật trạng thái thất bại!");
+        },
+      }
+    );
   };
 
   // Upload Modal Handlers
@@ -236,6 +260,10 @@ const ProfileCandidatePage = () => {
     setPreviewFileUrl("");
   };
 
+  if (isLoadingCandidateProfile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <ProfileLayout>
       <Row justify="center">
@@ -257,6 +285,7 @@ const ProfileCandidatePage = () => {
                 userData={userData}
                 candidateStatus={candidateStatus}
                 onStatusChange={handleStatusChange}
+                onStatusChangeSuccess={() => setIsPopoverVisible(false)}
                 onViewOnlineResume={handleViewOnlineResume}
               />
               <CVManagementCard

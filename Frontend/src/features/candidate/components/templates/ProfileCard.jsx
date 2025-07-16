@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Typography, Avatar, Button, Popover } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import styled from "styled-components";
@@ -109,17 +109,35 @@ const ProfileCard = ({
   onStatusChange,
   onViewOnlineResume,
 }) => {
+  const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+
+  // Mapping between backend status values and display text
+  const statusMap = {
+    ready: "Sẵn sàng tìm việc",
+    not_available: "Chưa có nhu cầu",
+    available_this_month: "Nhận việc trong tháng này",
+  };
+
+  // Map backend status to display text
+  const displayStatus = statusMap[candidateStatus] || candidateStatus;
+
+  // Status options for Popover
   const statusOptions = [
-    "Chưa có nhu cầu",
-    "Sẵn sàng tìm việc",
-    "Nhận việc trong tháng này",
+    { backend: "ready", display: "Sẵn sàng tìm việc" },
+    { backend: "not_available", display: "Chưa có nhu cầu" },
+    { backend: "available_this_month", display: "Nhận việc trong tháng này" },
   ];
+
+  const handleStatusSelect = (status) => {
+    onStatusChange(status);
+    setIsPopoverVisible(false); // Đóng Popover ngay khi chọn trạng thái
+  };
 
   const statusPopoverContent = (
     <StatusOptions>
-      {statusOptions.map((status) => (
-        <StatusOption key={status} onClick={() => onStatusChange(status)}>
-          {status}
+      {statusOptions.map(({ backend, display }) => (
+        <StatusOption key={backend} onClick={() => handleStatusSelect(backend)}>
+          {display}
         </StatusOption>
       ))}
     </StatusOptions>
@@ -138,11 +156,13 @@ const ProfileCard = ({
         <ProfileName level={4}>{userData.full_name}</ProfileName>
         <Popover
           content={statusPopoverContent}
+          visible={isPopoverVisible}
+          onVisibleChange={(visible) => setIsPopoverVisible(visible)}
           trigger="click"
           placement="bottom"
         >
           <StatusWrapper>
-            <StatusText>{candidateStatus}</StatusText>
+            <StatusText>{displayStatus}</StatusText>
             <EditStatusIcon />
           </StatusWrapper>
         </Popover>
