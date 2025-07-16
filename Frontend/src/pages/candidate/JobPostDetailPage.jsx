@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Row, Col, Spin } from "antd";
+import { Layout, Row, Col } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
 import { useAuth } from "../../contexts/auth.context";
@@ -9,6 +9,10 @@ import JobPostCompany from "../../features/job/components/templates/JobPostCompa
 import JobPostGeneralInfo from "../../features/job/components/templates/JobPostGeneralInfo";
 import styled from "styled-components";
 import useGetJobPostById from "../../features/postjob/hooks/Job_Post/useGetJobPostById";
+import SkeletonJobPostTitle from "../../components/skeletons/SkeletonJobPostTitle";
+import SkeletonJobPostDetail from "../../components/skeletons/SkeletonJobPostDetail";
+import SkeletonJobPostCompany from "../../components/skeletons/SkeletonJobPostCompany";
+import SkeletonJobPostGeneralInfo from "../../components/skeletons/SkeletonJobPostGeneralInfo";
 
 const { Content } = Layout;
 
@@ -25,13 +29,6 @@ const StyledContent = styled(Content)`
 const StyledRow = styled(Row)`
   margin: 0 auto;
   padding: 1.5rem;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
 `;
 
 const NoResults = styled.div`
@@ -78,9 +75,23 @@ const JobPostDetailPage = () => {
     return (
       <StyledLayout>
         <StyledContent>
-          <LoadingContainer>
-            <Spin size="large" />
-          </LoadingContainer>
+          <Row justify={"center"}>
+            <Col
+              span={21}
+              style={{ backgroundColor: "#f8f9fa", borderRadius: 24 }}
+            >
+              <StyledRow gutter={[24, 24]} justify="center">
+                <Col span={17}>
+                  <SkeletonJobPostTitle />
+                  <SkeletonJobPostDetail />
+                </Col>
+                <Col span={7}>
+                  <SkeletonJobPostCompany />
+                  <SkeletonJobPostGeneralInfo />
+                </Col>
+              </StyledRow>
+            </Col>
+          </Row>
         </StyledContent>
       </StyledLayout>
     );
