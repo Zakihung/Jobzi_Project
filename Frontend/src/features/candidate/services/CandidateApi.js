@@ -19,7 +19,7 @@ const getCandidateByUserIdApi = (user_id) => {
 };
 
 // API để cập nhật trạng thái candidate
-const updateStatusCandidateApi = (id, data) => {
+const updateCandidateStatusApi = (id, data) => {
   const URL_API = `/api/candidate/${id}/status`;
   return axios.put(URL_API, data);
 };
@@ -34,6 +34,6 @@ export {
   getListCandidateApi,
   getCandidateByIdApi,
   getCandidateByUserIdApi,
-  updateStatusCandidateApi,
+  updateCandidateStatusApi,
   deleteCandidateApi,
 };
