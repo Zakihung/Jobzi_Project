@@ -16,9 +16,6 @@ import {
   Progress,
   List,
   Typography,
-  Space,
-  Divider,
-  message,
 } from "antd";
 import {
   UserOutlined,
@@ -42,7 +39,6 @@ const { Option } = Select;
 
 const OnlineResumePage = () => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [jobStatus, setJobStatus] = useState("Đang xem xét cơ hội mới");
   const [form] = Form.useForm();
   const [personalInfo, setPersonalInfo] = useState({
@@ -119,31 +115,6 @@ const OnlineResumePage = () => {
 
   const handleEditCancel = () => {
     setIsEditModalVisible(false);
-  };
-
-  const showUploadModal = () => {
-    setIsUploadModalVisible(true);
-  };
-
-  const handleUploadOk = () => {
-    setIsUploadModalVisible(false);
-  };
-
-  const handleUploadCancel = () => {
-    setIsUploadModalVisible(false);
-  };
-
-  const uploadProps = {
-    name: "file",
-    multiple: false,
-    accept: ".pdf",
-    onChange(info) {
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
   };
 
   const addSection = (section) => {
@@ -431,34 +402,6 @@ const OnlineResumePage = () => {
             {/* Cột 3: Quản lý CV và Hoàn thành thông tin */}
             <Col xs={24} md={6} lg={5}>
               <Card className={styles.sidebarCard}>
-                <Title level={4} className={styles.sidebarTitle}>
-                  Quản lý tệp CV
-                </Title>
-                <Button
-                  type="primary"
-                  icon={<UploadOutlined />}
-                  block
-                  onClick={showUploadModal}
-                >
-                  Đăng tải CV
-                </Button>
-                <Modal
-                  title="Đăng tải CV"
-                  visible={isUploadModalVisible}
-                  onOk={handleUploadOk}
-                  onCancel={handleUploadCancel}
-                  okText="Hoàn tất"
-                  cancelText="Hủy"
-                >
-                  <Upload.Dragger {...uploadProps}>
-                    <p className="ant-upload-drag-icon">
-                      <FileTextOutlined />
-                    </p>
-                    <p className="ant-upload-text">Kéo và thả tệp CV tại đây</p>
-                    <p className="ant-upload-hint">Hỗ trợ định dạng .pdf</p>
-                  </Upload.Dragger>
-                </Modal>
-                <Divider />
                 <Title level={4} className={styles.sidebarTitle}>
                   Hoàn thành thông tin
                 </Title>
