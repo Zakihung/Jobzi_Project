@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Avatar,
   Button,
@@ -9,23 +9,34 @@ import {
   Divider,
   Row,
   Col,
+  DatePicker,
+  App,
+  Upload,
+  Image,
 } from "antd";
 import {
-  UserOutlined,
   EditOutlined,
   PhoneOutlined,
   MailOutlined,
   FacebookOutlined,
   CalendarOutlined,
   MessageOutlined,
+  CameraOutlined,
+  UploadOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
+import moment from "moment";
+import useUpdateOnlineResume from "../../hooks/useUpdateOnlineResume";
+import useUploadAvatar from "../../../auth/hooks/useUploadAvatar";
+import { AuthContext } from "../../../../contexts/auth.context";
+import useGetUserById from "../../../auth/hooks/useGetUserById";
 
 const { Title, Text } = Typography;
 
 // Styled Components
 const Section = styled.div`
-  margin-bottom: 0px;
+  margin-bottom: 24px;
 `;
 
 const SectionTitle = styled(Title)`
@@ -43,9 +54,40 @@ const TopRow = styled.div`
   gap: 16px;
 `;
 
+const AvatarOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+`;
+
 const AvatarContainer = styled.div`
   flex-shrink: 0;
   margin-bottom: 16px;
+  position: relative;
+  &:hover ${AvatarOverlay} {
+    opacity: 1;
+  }
+`;
+
+const AvatarSpace = styled(Avatar)`
+  cursor: pointer;
+  border: 1px solid #577cf6;
+  transition: all 0.3s ease;
+  position: relative;
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 const InfoRight = styled.div`
@@ -115,24 +157,210 @@ const InfoValue = styled(Text)`
   color: #333;
 `;
 
-const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
+const PersonalInfo = ({
+  personalInfo,
+  setPersonalInfo,
+  sectionRefs,
+  candidateId,
+}) => {
+  const { auth, setAuth } = useContext(AuthContext);
+  const userId = auth?.user?.id;
+  const { data: userData } = useGetUserById(userId);
+  const { message } = App.useApp();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const { mutate, isLoading: isUpdating } = useUpdateOnlineResume(candidateId);
+
+  const [isChangeAvatarModalVisible, setIsChangeAvatarModalVisible] =
+    useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  // State mới cho preview avatar
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const uploadAvatarMutation = useUploadAvatar();
+
+  // Hàm xử lý khi chọn file để preview
+  const handleFileSelect = (info) => {
+    const { fileList } = info;
+
+    if (fileList.length > 0) {
+      const selectedFile = fileList[0];
+
+      // Kiểm tra file có hợp lệ
+      if (!selectedFile.originFileObj) {
+        message.error("File không hợp lệ!");
+        return;
+      }
+
+      // Kiểm tra loại file
+      const isImage =
+        selectedFile.type && selectedFile.type.startsWith("image/");
+      if (!isImage) {
+        message.error("Chỉ được chọn file ảnh!");
+        return;
+      }
+
+      // Kiểm tra kích thước file (giới hạn 5MB)
+      const isLt5M = selectedFile.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.error("Kích thước file phải nhỏ hơn 5MB!");
+        return;
+      }
+
+      // Tạo URL để preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewImage(e.target.result);
+      };
+      reader.readAsDataURL(selectedFile.originFileObj);
+      setSelectedFile(selectedFile.originFileObj);
+    }
+  };
+
+  // Hàm xử lý upload avatar
+  const handleAvatarUpload = () => {
+    if (!selectedFile) {
+      message.error("Vui lòng chọn ảnh trước khi tải lên!");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+
+    // console.log("Uploading file:", {
+    //   user_id: userData?._id,
+    //   file: selectedFile,
+    // });
+
+    uploadAvatarMutation.mutate(
+      {
+        user_id: userData?._id,
+        file: selectedFile,
+      },
+      {
+        onSuccess: (response) => {
+          // console.log("API response:", response);
+
+          // Cập nhật avatar trong context
+          const avatarUrl =
+            response?.data?.data?.avatar || response?.data?.avatar;
+          if (avatarUrl) {
+            setAuth({
+              ...auth,
+              user: { ...auth.user, avatar: avatarUrl },
+            });
+            // Reset modal state
+            setIsUploadingAvatar(false);
+            setIsChangeAvatarModalVisible(false);
+            setPreviewImage(null);
+            setSelectedFile(null);
+            message.success("Đăng tải ảnh đại diện thành công!");
+          } else {
+            console.error("Unexpected API response structure:", response);
+            message.error("Phản hồi từ server không đúng định dạng!");
+          }
+        },
+        onError: (error) => {
+          // console.error("API error:", error);
+          message.error(
+            error.response?.data?.message ||
+              "Đã có lỗi xảy ra khi đăng tải ảnh đại diện!"
+          );
+          setIsUploadingAvatar(false);
+        },
+      }
+    );
+  };
+
+  // Hàm reset modal avatar
+  const handleCancelAvatarModal = () => {
+    setIsChangeAvatarModalVisible(false);
+    setPreviewImage(null);
+    setSelectedFile(null);
+  };
 
   const showEditModal = () => {
-    form.setFieldsValue(personalInfo);
+    form.setFieldsValue({
+      full_name: personalInfo.full_name,
+      phone_number: personalInfo.phone_number,
+      date_of_birth: personalInfo.date_of_birth
+        ? moment(personalInfo.date_of_birth)
+        : null,
+      email: personalInfo.email,
+      address: personalInfo.address,
+      zalo: personalInfo.zalo,
+      facebook: personalInfo.facebook,
+    });
     setIsEditModalVisible(true);
   };
 
   const handleEditOk = () => {
     form.validateFields().then((values) => {
-      setPersonalInfo(values);
-      setIsEditModalVisible(false);
+      const updatedPersonalInfo = {
+        full_name: values.full_name,
+        phone_number: values.phone_number,
+        date_of_birth: values.date_of_birth
+          ? values.date_of_birth.format("YYYY-MM-DD")
+          : "",
+        email: personalInfo.email, // Không cập nhật email
+        address: values.address || "",
+        zalo: values.zalo || "",
+        facebook: values.facebook || "",
+        avatar: personalInfo.avatar || "",
+      };
+
+      mutate(
+        { personalInfo: updatedPersonalInfo },
+        {
+          onSuccess: () => {
+            setPersonalInfo({
+              ...personalInfo,
+              ...updatedPersonalInfo,
+              jobStatus: personalInfo.jobStatus,
+            });
+            setIsEditModalVisible(false);
+            message.success("Cập nhật thông tin cá nhân thành công");
+          },
+          onError: (error) => {
+            message.error(
+              error.message || "Cập nhật thông tin cá nhân thất bại"
+            );
+          },
+        }
+      );
     });
   };
 
   const handleEditCancel = () => {
     setIsEditModalVisible(false);
+  };
+
+  const validateDateOfBirth = (_, value) => {
+    if (!value) {
+      return Promise.reject(new Error("Ngày sinh là bắt buộc"));
+    }
+
+    const dob = new Date(value);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+
+    // Điều chỉnh tuổi nếu chưa đến sinh nhật trong năm hiện tại
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    if (age < 15) {
+      return Promise.reject(new Error("Bạn phải từ 15 tuổi trở lên"));
+    }
+
+    if (age > 60) {
+      return Promise.reject(new Error("Tuổi không được vượt quá 60"));
+    }
+
+    return Promise.resolve(); // Hợp lệ
   };
 
   return (
@@ -142,16 +370,23 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
       {/* Hàng 1 */}
       <TopRow>
         <AvatarContainer>
-          <Avatar size={80} src={personalInfo.avatar} icon={<UserOutlined />} />
+          <AvatarSpace
+            size={80}
+            src={personalInfo.avatar}
+            onClick={() => setIsChangeAvatarModalVisible(true)}
+          />
+          <AvatarOverlay onClick={() => setIsChangeAvatarModalVisible(true)}>
+            <CameraOutlined style={{ color: "#fff", fontSize: "24px" }} />
+          </AvatarOverlay>
         </AvatarContainer>
 
         <InfoRight>
           <NameAndStatus>
             <Title level={4} style={{ marginBottom: 4 }}>
-              {personalInfo.fullName}
+              {personalInfo.full_name || "---"}
             </Title>
             <Text type="secondary" style={{ fontWeight: 500 }}>
-              Trạng thái: {personalInfo.jobStatus}
+              Trạng thái: {personalInfo.jobStatus || "---"}
             </Text>
           </NameAndStatus>
 
@@ -159,6 +394,7 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
             type="primary"
             icon={<EditOutlined />}
             onClick={showEditModal}
+            loading={isUpdating}
           >
             Chỉnh sửa
           </EditButton>
@@ -176,7 +412,7 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Số điện thoại</InfoTitle>
-            <InfoValue>{personalInfo.phone}</InfoValue>
+            <InfoValue>{personalInfo.phone_number || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -185,8 +421,12 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
             <CalendarOutlined />
           </InfoIcon>
           <InfoContent>
-            <InfoTitle>Tuổi</InfoTitle>
-            <InfoValue>{personalInfo.age}</InfoValue>
+            <InfoTitle>Ngày sinh</InfoTitle>
+            <InfoValue>
+              {personalInfo.date_of_birth
+                ? `${moment(personalInfo.date_of_birth).format("DD/MM/YYYY")}`
+                : "---"}
+            </InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -196,7 +436,7 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Email</InfoTitle>
-            <InfoValue>{personalInfo.email}</InfoValue>
+            <InfoValue>{personalInfo.email || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -206,9 +446,7 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Địa chỉ</InfoTitle>
-            <InfoValue>
-              {personalInfo.address ? personalInfo.address : "---"}
-            </InfoValue>
+            <InfoValue>{personalInfo.address || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -218,9 +456,7 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Zalo</InfoTitle>
-            <InfoValue>
-              {personalInfo.zalo ? personalInfo.zalo : "---"}
-            </InfoValue>
+            <InfoValue>{personalInfo.zalo || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -230,12 +466,9 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Facebook</InfoTitle>
-            <InfoValue>
-              {personalInfo.facebook ? personalInfo.facebook : "---"}
-            </InfoValue>
+            <InfoValue>{personalInfo.facebook || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
-        <InfoItem span={12} />
       </InfoGrid>
 
       {/* Modal chỉnh sửa */}
@@ -247,35 +480,209 @@ const PersonalInfo = ({ personalInfo, setPersonalInfo, sectionRefs }) => {
         okText="Lưu"
         cancelText="Hủy"
         centered
+        confirmLoading={isUpdating}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="fullName"
+            name="full_name"
             label="Họ và tên"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true, message: "Họ và tên là bắt buộc" },
+              {
+                pattern: /^[a-zA-ZÀ-ỹ\s.-]{1,100}$/,
+                message:
+                  "Họ tên chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự",
+              },
+            ]}
           >
-            <Input />
+            <Input placeholder="Họ và tên" />
           </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="phone_number"
+                label="Số điện thoại"
+                rules={[
+                  { required: true, message: "Số điện thoại là bắt buộc" },
+                  {
+                    pattern: /^0\d{9}$/,
+                    message:
+                      "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0",
+                  },
+                ]}
+              >
+                <Input placeholder="Số điện thoại" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="date_of_birth"
+                label="Ngày tháng năm sinh"
+                rules={[{ required: true, validator: validateDateOfBirth }]}
+              >
+                <DatePicker
+                  format="DD-MM-YYYY"
+                  style={{ width: "100%" }}
+                  disabledDate={(current) =>
+                    current && current > moment().subtract(15, "years")
+                  }
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item name="email" label="Email">
+            <Input disabled />
+          </Form.Item>
+
           <Form.Item
-            name="phone"
-            label="Số điện thoại"
-            rules={[{ required: true }]}
+            name="address"
+            label="Địa chỉ"
+            rules={[
+              {
+                max: 200,
+                message: "Địa chỉ không được vượt quá 200 ký tự",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
-          <Form.Item name="age" label="Tuổi" rules={[{ required: true }]}>
-            <Input type="number" />
-          </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="zalo" label="Zalo">
-            <Input />
-          </Form.Item>
-          <Form.Item name="facebook" label="Facebook">
-            <Input />
-          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="zalo"
+                label="Zalo"
+                rules={[
+                  {
+                    max: 50,
+                    message: "Zalo không được vượt quá 50 ký tự",
+                  },
+                ]}
+              >
+                <Input prefix={"+"} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="facebook"
+                label="Facebook"
+                rules={[
+                  {
+                    max: 100,
+                    message: "Facebook không được vượt quá 100 ký tự",
+                  },
+                  {
+                    pattern: /^(https?:\/\/)?(www\.)?facebook\.com\/.+$/,
+                    message: "Facebook phải là một URL hợp lệ",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
+      </Modal>
+      {/* Change Avatar Modal */}
+      <Modal
+        title="Đổi ảnh đại diện"
+        open={isChangeAvatarModalVisible}
+        onCancel={handleCancelAvatarModal}
+        width={600}
+        footer={
+          previewImage ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                onClick={handleCancelAvatarModal}
+                disabled={uploadAvatarMutation.isLoading}
+              >
+                Hủy
+              </Button>
+              <Upload
+                accept="image/*"
+                maxCount={1}
+                beforeUpload={() => false}
+                onChange={handleFileSelect}
+                showUploadList={false}
+                disabled={uploadAvatarMutation.isLoading}
+              >
+                <Button
+                  icon={<UploadOutlined />}
+                  disabled={uploadAvatarMutation.isLoading}
+                >
+                  Đăng tải ảnh khác
+                </Button>
+              </Upload>
+
+              <Button
+                type="primary"
+                onClick={handleAvatarUpload}
+                loading={isUploadingAvatar}
+                disabled={isUploadingAvatar}
+                icon={
+                  isUploadingAvatar ? <LoadingOutlined /> : <UploadOutlined />
+                }
+                style={{ minWidth: "200px" }}
+              >
+                {isUploadingAvatar
+                  ? "Đang tải lên..."
+                  : "Cập nhật ảnh đại diện"}
+              </Button>
+            </div>
+          ) : null
+        }
+      >
+        <div style={{ textAlign: "center" }}>
+          {previewImage ? (
+            <div>
+              <div style={{ marginBottom: 16 }}>
+                <Image
+                  src={previewImage}
+                  alt="Preview"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "300px",
+                    borderRadius: "8px",
+                  }}
+                  preview={false}
+                />
+              </div>
+              <Text type="secondary">Ảnh đại diện mới của bạn</Text>
+            </div>
+          ) : (
+            <Upload.Dragger
+              name="avatar"
+              accept="image/*"
+              maxCount={1}
+              beforeUpload={() => false}
+              onChange={handleFileSelect}
+              showUploadList={false}
+              disabled={uploadAvatarMutation.isLoading}
+              style={{
+                lineHeight: "50px",
+                padding: "40px 0",
+              }}
+            >
+              <p className="ant-upload-drag-icon">
+                <UploadOutlined />
+              </p>
+              <p className="ant-upload-text">
+                Kéo và thả ảnh tại đây hoặc nhấn để chọn
+              </p>
+              <p className="ant-upload-hint">
+                Hỗ trợ định dạng JPG, PNG, GIF. Kích thước tối đa 5MB
+              </p>
+            </Upload.Dragger>
+          )}
+        </div>
       </Modal>
     </Section>
   );

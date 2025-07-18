@@ -1,15 +1,10 @@
 import React from "react";
-import { Select, Typography } from "antd";
+import { Select, Typography, App } from "antd";
 import styled from "styled-components";
+import useUpdateCandidateStatus from "../../../candidate/hooks/useUpdateCandidateStatus";
 
 const { Title } = Typography;
 const { Option } = Select;
-
-const jobStatusOptions = [
-  "Sẵn sàng tìm việc",
-  "Chưa có nhu cầu",
-  "Nhận việc trong tháng này",
-];
 
 // Styled Components
 const Section = styled.div`
@@ -31,14 +26,34 @@ const StatusSelect = styled(Select)`
   }
 `;
 
-const JobStatus = ({ jobStatus, setJobStatus, sectionRefs }) => {
+const JobStatus = ({ jobStatus, setJobStatus, sectionRefs, candidateId }) => {
+  const jobStatusOptions = {
+    ready: "Sẵn sàng tìm việc",
+    not_available: "Chưa có nhu cầu",
+    available_this_month: "Nhận việc trong tháng này",
+  };
+
+  const { message } = App.useApp();
+  const { mutate } = useUpdateCandidateStatus();
+
+  const handleChange = (value) => {
+    setJobStatus(value);
+    // Gửi cập nhật đến server
+    mutate(
+      { id: candidateId, data: { status: value } },
+      {
+        onSuccess: () => message.success("Cập nhật trạng thái thành công"),
+        onError: () => message.error("Cập nhật trạng thái thất bại"),
+      }
+    );
+  };
   return (
     <Section ref={sectionRefs.jobStatus}>
       <SectionTitle level={3}>Trạng thái tìm việc</SectionTitle>
-      <StatusSelect value={jobStatus} onChange={setJobStatus}>
-        {jobStatusOptions.map((status) => (
-          <Option key={status} value={status}>
-            {status}
+      <StatusSelect value={jobStatus} onChange={handleChange}>
+        {Object.entries(jobStatusOptions).map(([value, label]) => (
+          <Option key={value} value={value}>
+            {label}
           </Option>
         ))}
       </StatusSelect>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Card, Col } from "antd";
+import React, { useContext, useEffect, useState } from "react";
+import { Alert, Card, Col, Spin } from "antd";
 import styled from "styled-components";
+import { AuthContext } from "../../../../contexts/auth.context";
 import PersonalInfo from "../organisms/PersonalInfo";
 import JobStatus from "../organisms/JobStatus";
 import JobExpectation from "../organisms/JobExpectation";
@@ -9,6 +10,8 @@ import Highlights from "../organisms/Highlights";
 import WorkExperience from "../organisms/WorkExperience";
 import Projects from "../organisms/Projects";
 import Skills from "../organisms/Skills";
+import useGetCandidateById from "../../../candidate/hooks/useGetCandidateById";
+import useGetOnlineResume from "../../hooks/useGetOnlineResume";
 
 // Styled Components
 const ContentCard = styled(Card)`
@@ -25,20 +28,68 @@ const ContentColumn = ({
   completedSections,
   setCompletedSections,
 }) => {
-  const [jobStatus, setJobStatus] = useState("Sẵn sàng tìm việc");
-  useEffect(() => {
-    setPersonalInfo((prev) => ({ ...prev, jobStatus }));
-  }, [jobStatus]);
+  const jobStatusLabels = {
+    ready: "Sẵn sàng tìm việc",
+    not_available: "Chưa có nhu cầu",
+    available_this_month: "Nhận việc trong tháng này",
+  };
+
+  const { auth } = useContext(AuthContext);
+  const candidateId = auth?.user?.candidate_id;
+  const { data: candidateProfile } = useGetCandidateById(candidateId);
+  const {
+    data: resumeData,
+    isLoading: isLoadingResumeData,
+    isError: isErrorResumeData,
+    error,
+  } = useGetOnlineResume(candidateId);
+
+  const [jobStatus, setJobStatus] = useState("");
+
   const [personalInfo, setPersonalInfo] = useState({
-    fullName: "Nguyễn Phước Hưng",
-    phone: "0123 456 789",
-    age: 22,
-    education: "Sinh viên",
-    experience: "0 năm",
-    email: "hung@example.com",
-    address: "123 Đường ABC, Quận 1, TP.HCM",
-    jobStatus,
+    full_name: "",
+    phone_number: "",
+    date_of_birth: "",
+    email: "",
+    address: "",
+    zalo: "",
+    facebook: "",
+    jobStatus: "",
+    avatar: "",
   });
+
+  // Cập nhật personalInfo từ resumeData
+  useEffect(() => {
+    if (resumeData?.data?.personalInfo) {
+      const { personalInfo } = resumeData.data;
+      setPersonalInfo({
+        full_name: personalInfo.full_name || "",
+        phone_number: personalInfo.phone_number || "",
+        date_of_birth: personalInfo.date_of_birth || "",
+        email: personalInfo.email || "",
+        address: personalInfo.address || "",
+        zalo: personalInfo.zalo || "",
+        facebook: personalInfo.facebook || "",
+        jobStatus: jobStatusLabels[jobStatus] || "",
+        avatar: personalInfo.avatar || "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeData, jobStatus]);
+
+  useEffect(() => {
+    if (candidateProfile?.status) {
+      setJobStatus(candidateProfile.status);
+    }
+  }, [candidateProfile]);
+
+  useEffect(() => {
+    setPersonalInfo((prev) => ({
+      ...prev,
+      jobStatus: jobStatusLabels[jobStatus] || "",
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobStatus]);
 
   const addSection = (section) => {
     if (!completedSections.includes(section)) {
@@ -50,17 +101,41 @@ const ContentColumn = ({
     setCompletedSections(completedSections.filter((s) => s !== section));
   };
 
+  // Xử lý trạng thái tải và lỗi
+  if (isLoadingResumeData) {
+    return (
+      <ContentCard>
+        <Spin tip="Đang tải hồ sơ..." />
+      </ContentCard>
+    );
+  }
+
+  if (isErrorResumeData) {
+    return (
+      <ContentCard>
+        <Alert
+          message="Lỗi"
+          description={error?.message || "Không thể tải hồ sơ"}
+          type="error"
+          showIcon
+        />
+      </ContentCard>
+    );
+  }
+
   return (
     <ContentCard>
       <PersonalInfo
         sectionRefs={sectionRefs}
         personalInfo={personalInfo}
         setPersonalInfo={setPersonalInfo}
+        candidateId={candidateId}
       />
       <JobStatus
         sectionRefs={sectionRefs}
         jobStatus={jobStatus}
         setJobStatus={setJobStatus}
+        candidateId={candidateId}
       />
       <JobExpectation
         sectionRefs={sectionRefs}
