@@ -36,6 +36,7 @@ import useChangePassword from "../features/auth/hooks/useChangePassword";
 import useUpdateUser from "../features/auth/hooks/useUpdateUser";
 import useUploadAvatar from "../features/auth/hooks/useUploadAvatar";
 import { AuthContext } from "../contexts/auth.context";
+import useGetUserById from "../features/auth/hooks/useGetUserById";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -43,8 +44,8 @@ const { Option } = Select;
 
 const AccountPage = () => {
   const { auth, setAuth } = useContext(AuthContext);
-  // const email = auth?.user?.email;
-  const userData = auth?.user;
+  const userId = auth?.user?.id;
+  const { data: userData, isLoading: isLoadingUser } = useGetUserById(userId);
   const { message } = App.useApp();
   const [selectedMenu, setSelectedMenu] = useState("account");
   const [isEditMode, setIsEditMode] = useState(false);
@@ -72,9 +73,9 @@ const AccountPage = () => {
 
   const formattedUserData = {
     ...userData,
-    gender: userData.gender == "male" ? "Nam" : "Nữ",
-    date_of_birth: userData.date_of_birth
-      ? dayjs(userData.date_of_birth)
+    gender: userData?.gender == "male" ? "Nam" : "Nữ",
+    date_of_birth: userData?.date_of_birth
+      ? dayjs(userData?.date_of_birth)
       : null,
   };
 
@@ -106,12 +107,12 @@ const AccountPage = () => {
       };
 
       // console.log("Sending data to API:", {
-      //   user_id: userData.id,
+      //   user_id: userData?._id,
       //   data: formattedValues,
       // }); // Debug dữ liệu gửi đi
 
       updateUserMutation.mutate(
-        { user_id: userData.id, data: formattedValues },
+        { user_id: userData?._id, data: formattedValues },
         {
           onSuccess: (response) => {
             // console.log("API response:", response); // Debug phản hồi API
@@ -252,13 +253,13 @@ const AccountPage = () => {
     setIsUploadingAvatar(true);
 
     // console.log("Uploading file:", {
-    //   user_id: userData.id,
+    //   user_id: userData?._id,
     //   file: selectedFile,
     // });
 
     uploadAvatarMutation.mutate(
       {
-        user_id: userData.id,
+        user_id: userData?._id,
         file: selectedFile,
       },
       {
@@ -312,7 +313,7 @@ const AccountPage = () => {
       <div className={styles.formGroup}>
         <Text className={styles.label}>Email:</Text>
         <Input
-          value={userData.email}
+          value={userData?.email}
           disabled
           className={styles.disabledInput}
         />
@@ -469,6 +470,18 @@ const AccountPage = () => {
         return null;
     }
   };
+
+  if (isLoadingUser || !userData) {
+    return (
+      <Layout className={styles.accountLayout}>
+        <Content className={styles.accountContent}>
+          <Row justify="center" style={{ padding: "40px" }}>
+            <LoadingOutlined style={{ fontSize: 36 }} spin />
+          </Row>
+        </Content>
+      </Layout>
+    );
+  }
 
   return (
     <Layout className={styles.accountLayout}>

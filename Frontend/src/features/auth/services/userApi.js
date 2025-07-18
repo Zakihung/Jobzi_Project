@@ -51,6 +51,36 @@ const uploadAvatarUser = (user_id, file) => {
   });
 };
 
+// Lấy danh sách người dùng
+const getListUser = () => {
+  const URL_API = "/api/user";
+  return axios.get(URL_API, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+};
+
+// Lấy thông tin người dùng theo ID
+const getUserById = (user_id) => {
+  const URL_API = `/api/user/${user_id}`;
+  return axios.get(URL_API, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+};
+
+// Xóa người dùng theo ID
+const deleteUserById = (user_id) => {
+  const URL_API = `/api/user/${user_id}`;
+  return axios.delete(URL_API, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+};
+
 export {
   signinUser,
   signupUser,
@@ -58,4 +88,7 @@ export {
   changePasswordUser,
   updateUser,
   uploadAvatarUser,
+  getListUser,
+  getUserById,
+  deleteUserById,
 };
