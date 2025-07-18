@@ -220,43 +220,18 @@
 .signinButton {
   height: 48px;
   border-radius: var(--border-radius);
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   border: none;
   font-size: 1rem;
   font-weight: 600;
   margin-top: 1rem;
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.signinButton::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s;
-}
-
-.signinButton:hover::before {
-  left: 100%;
-}
-
 .signinButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
-}
-
-.signinButton:active {
-  transform: translateY(0);
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
 }
 
 /* Signup Section */

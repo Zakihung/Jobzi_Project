@@ -3,6 +3,7 @@ import {
   MailOutlined,
   LockOutlined,
   ArrowLeftOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import { useSignin } from "../../../auth/hooks/useSignin";
 import styles from "../../styles/SigninCandidateForm.module.css";
@@ -13,16 +14,27 @@ const { Title, Text } = Typography;
 
 const SigninCandidateForm = () => {
   const navigate = useNavigate();
-  const { mutate: signinMutation, isLoading } = useSignin();
+  const signinMutation = useSignin();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onFinish = (values) => {
-    setErrorMessage(""); // Xóa thông báo lỗi trước khi gọi API
-    signinMutation(values, {
+    setErrorMessage("");
+    setIsSubmitting(true); // bật loading thủ công
+
+    signinMutation.mutate(values, {
       onError: (error) => {
         setErrorMessage(
           error.errorMessage || "Email hoặc mật khẩu không chính xác!"
         );
+        setTimeout(() => setIsSubmitting(false), 1500); // giữ loading tối thiểu 1.5s
+      },
+      onSuccess: () => {
+        // loading sẽ được ẩn sau khi chuyển trang trong useSignin.js
+        // nhưng vẫn giữ ít nhất 1.5s
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 1500);
       },
     });
   };
@@ -99,7 +111,7 @@ const SigninCandidateForm = () => {
             layout="vertical"
             size="large"
             className={styles.signinForm}
-            disabled={isLoading}
+            disabled={signinMutation.isLoading}
           >
             <Form.Item
               name="email"
@@ -159,10 +171,18 @@ const SigninCandidateForm = () => {
                 type="primary"
                 htmlType="submit"
                 className={styles.signinButton}
-                isLoading={isLoading}
+                loading={false}
+                disabled={isSubmitting}
                 block
               >
-                {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
+                {isSubmitting ? (
+                  <>
+                    <LoadingOutlined style={{ marginRight: 8 }} />
+                    Đang đăng nhập...
+                  </>
+                ) : (
+                  "Đăng Nhập"
+                )}
               </Button>
             </Form.Item>
 

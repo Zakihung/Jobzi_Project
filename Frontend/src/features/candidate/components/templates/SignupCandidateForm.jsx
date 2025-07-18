@@ -17,6 +17,7 @@ import {
   ManOutlined,
   WomanOutlined,
   ArrowLeftOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import { useSignup } from "../../../auth/hooks/useSignup";
 import styles from "../../styles/SignupCandidateForm.module.css";
@@ -29,10 +30,13 @@ const { Title, Text } = Typography;
 const SignupCandidateForm = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const { mutate: signupMutation, isLoading } = useSignup(form);
+  const signupMutation = useSignup(form);
+
   const [selectedGender, setSelectedGender] = useState("male"); // Mặc định là Nam
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onFinish = (values) => {
+    setIsSubmitting(true); // bật loading thủ công
     const formattedValues = {
       full_name: values.full_name,
       email: values.email,
@@ -42,7 +46,15 @@ const SignupCandidateForm = () => {
       role: "candidate",
       date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
     };
-    signupMutation(formattedValues);
+    signupMutation.mutate(formattedValues, {
+      onSuccess: () => {
+        // loading sẽ được ẩn sau khi chuyển trang trong useSignin.js
+        // nhưng vẫn giữ ít nhất 1.5s
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 1500);
+      },
+    });
   };
 
   // Lấy ngày hiện tại và tính giới hạn tuổi
@@ -122,7 +134,7 @@ const SignupCandidateForm = () => {
             size="large"
             className={styles.signupForm}
             scrollToFirstError
-            disabled={isLoading}
+            disabled={signupMutation.isLoading}
             initialValues={{ gender: "male" }} // Thiết lập giá trị mặc định
           >
             {/* Full Name Field */}
@@ -312,33 +324,6 @@ const SignupCandidateForm = () => {
               />
             </Form.Item>
 
-            {/* Terms and Conditions */}
-            {/* <Form.Item
-              name="agreement"
-              valuePropName="checked"
-              rules={[
-                {
-                  validator: (_, value) =>
-                    value
-                      ? Promise.resolve()
-                      : Promise.reject(
-                          new Error("Vui lòng đồng ý với điều khoản sử dụng!")
-                        ),
-                },
-              ]}
-            >
-              <Checkbox className={styles.agreementCheckbox}>
-                Tôi đồng ý với{" "}
-                <a href="/terms" className={styles.termsLink}>
-                  Điều khoản sử dụng
-                </a>{" "}
-                và{" "}
-                <a href="/privacy" className={styles.termsLink}>
-                  Chính sách bảo mật
-                </a>
-              </Checkbox>
-            </Form.Item> */}
-
             {/* Signup Button */}
             <Form.Item>
               <Button
@@ -346,9 +331,17 @@ const SignupCandidateForm = () => {
                 htmlType="submit"
                 className={styles.signupButton}
                 block
-                isLoading={isLoading}
+                loading={false}
+                disabled={isSubmitting}
               >
-                {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+                {isSubmitting ? (
+                  <>
+                    <LoadingOutlined style={{ marginRight: 8 }} />
+                    Đang tạo tài khoản...
+                  </>
+                ) : (
+                  "Tạo tài khoản"
+                )}
               </Button>
             </Form.Item>
 
