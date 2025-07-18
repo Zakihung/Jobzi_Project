@@ -261,25 +261,6 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.modal :global(.ant-modal-content) {
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.modal :global(.ant-modal-header) {
-  border-radius: 16px 16px 0 0;
-  padding: 0 24px 24px 16px;
-}
-
-.modal :global(.ant-modal-body) {
-  padding: 0;
-}
-
-.modal :global(.ant-modal-footer) {
-  border-radius: 0 0 16px 16px;
-  padding: 0;
-}
-
 .uploadDragger {
   border: 2px dashed #d6e4ff !important;
   border-radius: 12px !important;

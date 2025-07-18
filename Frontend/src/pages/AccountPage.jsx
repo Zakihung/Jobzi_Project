@@ -541,7 +541,6 @@ const AccountPage = () => {
               }}
               okText={isChangingPassword ? "Đang đổi..." : "Đổi mật khẩu"}
               cancelText="Hủy"
-              className={styles.modal}
               okButtonProps={{
                 loading: isChangingPassword,
                 disabled: isChangingPassword,
@@ -610,7 +609,6 @@ const AccountPage = () => {
               okText="Xác nhận xóa"
               cancelText="Hủy"
               okButtonProps={{ danger: true }}
-              className={styles.modal}
             >
               <Space direction="vertical" size={16}>
                 <Text strong style={{ color: "#ff4d4f" }}>
@@ -628,8 +626,7 @@ const AccountPage = () => {
               title="Đổi ảnh đại diện"
               open={isChangeAvatarModalVisible}
               onCancel={handleCancelAvatarModal}
-              width={500}
-              className={styles.modal}
+              width={600}
               footer={
                 previewImage ? (
                   <div
@@ -709,6 +706,10 @@ const AccountPage = () => {
                     onChange={handleFileSelect}
                     showUploadList={false}
                     disabled={uploadAvatarMutation.isLoading}
+                    style={{
+                      lineHeight: "50px",
+                      padding: "40px 0",
+                    }}
                   >
                     <p className="ant-upload-drag-icon">
                       <UploadOutlined />
