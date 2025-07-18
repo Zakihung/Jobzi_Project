@@ -6,6 +6,7 @@ const User = require("../models/user.model");
 const Candidate = require("../models/candidate.model");
 const Employer = require("../models/employer.model");
 const Company = require("../models/company.model");
+const OnlineResume = require("../models/online_resume.model"); // Thêm import
 const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
@@ -148,17 +149,40 @@ const signupService = async ({
       status: "ready",
     });
     await candidate.save();
+
+    // Tạo OnlineResume cho candidate
+    const onlineResume = new OnlineResume({
+      candidate_id: candidate._id,
+      personalInfo: {
+        full_name: user.full_name,
+        phone_number: user.phone_number,
+        date_of_birth: user.date_of_birth,
+        email: user.email,
+        avatar:
+          user.avatar ||
+          "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750090817/avaMacDinh_toiqej.jpg",
+      },
+      jobExpectations: [],
+      education: [],
+      highlights: [],
+      workExperience: [],
+      projects: [],
+      skills: [],
+    });
+    await onlineResume.save();
+
     return {
       user: {
         ...user.toObject(),
         candidate_id: candidate._id,
       },
       candidate,
+      onlineResume, // Thêm onlineResume vào kết quả trả về
       accessToken,
       refreshToken,
     };
   } else {
-    // Nếu là admin, không cần tạo bản ghi khác
+    // Nếu là admin, không tạo OnlineResume
     return {
       user: {
         ...user.toObject(),
@@ -321,7 +345,7 @@ const signupEmployerService = async ({
   user.refreshToken = refreshToken;
   await user.save();
 
-  //Tạo company
+  // Tạo company
   const company = new Company({
     name: company_name,
     address,
@@ -441,8 +465,20 @@ const uploadAvatarUserService = async (user_id, file) => {
 
   // Lưu URL của ảnh mới từ Cloudinary
   user.avatar = file.path; // file.path chứa URL từ Cloudinary sau khi upload
-  let result = await user.save();
-  return result;
+  await user.save();
+
+  // Đồng bộ avatar với OnlineResume nếu người dùng là candidate
+  if (user.role === "candidate") {
+    const candidate = await Candidate.findOne({ user_id: user._id });
+    if (candidate) {
+      await OnlineResume.findOneAndUpdate(
+        { candidate_id: candidate._id },
+        { $set: { "personalInfo.avatar": user.avatar } }
+      );
+    }
+  }
+
+  return user;
 };
 
 const requestPasswordResetService = async (email) => {
@@ -583,6 +619,28 @@ const updateUserService = async (user_id, updateData) => {
       400
     );
   }
+  if (date_of_birth !== undefined) {
+    const dob = new Date(date_of_birth);
+    const today = new Date();
+    const minAge = 15;
+    const maxAge = 60;
+    const minDate = new Date(
+      today.getFullYear() - maxAge,
+      today.getMonth(),
+      today.getDate()
+    );
+    const maxDate = new Date(
+      today.getFullYear() - minAge,
+      today.getMonth(),
+      today.getDate()
+    );
+    if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
+      throw new AppError(
+        `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
+        400
+      );
+    }
+  }
 
   user.full_name = full_name !== undefined ? full_name : user.full_name;
   user.gender = gender !== undefined ? gender : user.gender;
@@ -591,31 +649,57 @@ const updateUserService = async (user_id, updateData) => {
   user.phone_number =
     phone_number !== undefined ? phone_number : user.phone_number;
 
-  const result = await user.save();
-  return result;
+  await user.save();
+
+  // Đồng bộ với OnlineResume nếu người dùng là candidate
+  if (user.role === "candidate") {
+    const candidate = await Candidate.findOne({ user_id: user._id });
+    if (candidate) {
+      await OnlineResume.findOneAndUpdate(
+        { candidate_id: candidate._id },
+        {
+          $set: {
+            "personalInfo.full_name": user.full_name,
+            "personalInfo.date_of_birth": user.date_of_birth,
+            "personalInfo.phone_number": user.phone_number,
+            "personalInfo.email": user.email,
+          },
+        }
+      );
+    }
+  }
+
+  return user;
 };
 
 const deleteUserByIdService = async (user_id) => {
-  let user = await User.findById(user_id);
+  const user = await User.findById(user_id);
   if (!user) {
     throw new AppError("Không tìm thấy người dùng", 404);
   }
 
-  // Xóa mềm document trong Candidate nếu tồn tại
-  const candidate = await Candidate.findOne({ user_id });
-  if (candidate) {
-    await candidate.delete();
+  if (user.role === "candidate") {
+    // Xóa Candidate và OnlineResume
+    const candidate = await Candidate.findOne({ user_id });
+    if (candidate) {
+      await OnlineResume.deleteMany({ candidate_id: candidate._id });
+      await Candidate.deleteOne({ _id: candidate._id });
+    }
   }
 
-  // Xóa mềm document trong Employer nếu tồn tại
-  const employer = await Employer.findOne({ user_id });
-  if (employer) {
-    await employer.delete();
+  if (user.role === "employer") {
+    // Xóa Employer và công ty liên quan nếu cần
+    const employer = await Employer.findOne({ user_id });
+    if (employer) {
+      await Employer.deleteOne({ _id: employer._id });
+      await Company.deleteOne({ _id: employer.company_id });
+    }
   }
 
-  // Xóa mềm document User
-  const result = await user.delete(); // Xóa mềm sử dụng mongoose-delete
-  return result;
+  // Xóa tài khoản user
+  await User.deleteOne({ _id: user_id });
+
+  return { message: "Đã xóa người dùng và dữ liệu liên quan" };
 };
 
 module.exports = {
