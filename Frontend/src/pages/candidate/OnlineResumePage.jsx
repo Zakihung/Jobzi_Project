@@ -32,7 +32,7 @@ const OnlineResumePage = () => {
 
   return (
     <ResumeLayout>
-      <Row gutter={[24, 24]} justify="center">
+      <Row justify="center">
         <Col span={21}>
           <Row
             gutter={[24, 24]}

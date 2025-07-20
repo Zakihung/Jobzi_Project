@@ -108,9 +108,11 @@ const PreviewResumeModal = ({
             <InfoItem>
               <CalendarOutlined />
               <Text>
-                {new Date(personalInfo.date_of_birth).toLocaleDateString(
-                  "vi-VN"
-                )}
+                {new Intl.DateTimeFormat("vi-VN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                }).format(new Date(personalInfo.date_of_birth))}
               </Text>
             </InfoItem>
           )}

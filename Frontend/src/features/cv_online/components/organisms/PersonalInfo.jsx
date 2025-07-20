@@ -25,7 +25,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
-import moment from "moment";
+import dayjs from "dayjs";
 import useUpdateOnlineResume from "../../hooks/useUpdateOnlineResume";
 import useUploadAvatar from "../../../auth/hooks/useUploadAvatar";
 import { AuthContext } from "../../../../contexts/auth.context";
@@ -226,11 +226,6 @@ const PersonalInfo = ({
 
     setIsUploadingAvatar(true);
 
-    // console.log("Uploading file:", {
-    //   user_id: userData?._id,
-    //   file: selectedFile,
-    // });
-
     uploadAvatarMutation.mutate(
       {
         user_id: userData?._id,
@@ -238,8 +233,6 @@ const PersonalInfo = ({
       },
       {
         onSuccess: (response) => {
-          // console.log("API response:", response);
-
           // Cập nhật avatar trong context
           const avatarUrl =
             response?.data?.data?.avatar || response?.data?.avatar;
@@ -260,7 +253,6 @@ const PersonalInfo = ({
           }
         },
         onError: (error) => {
-          // console.error("API error:", error);
           message.error(
             error.response?.data?.message ||
               "Đã có lỗi xảy ra khi đăng tải ảnh đại diện!"
@@ -278,13 +270,52 @@ const PersonalInfo = ({
     setSelectedFile(null);
   };
 
+  // Hàm chuyển đổi date string sang dayjs object
+  const parseDateToDayjs = (dateValue) => {
+    if (!dateValue) return null;
+
+    // Nếu đã là dayjs object
+    if (dayjs.isDayjs(dateValue)) {
+      return dateValue;
+    }
+
+    // Nếu là moment object (để tương thích ngược)
+    if (
+      dateValue &&
+      typeof dateValue === "object" &&
+      dateValue._isAMomentObject
+    ) {
+      return dayjs(dateValue.toISOString());
+    }
+
+    // Nếu là string, thử parse với nhiều format
+    if (typeof dateValue === "string") {
+      // Thử parse ISO format trước
+      let parsed = dayjs(dateValue);
+      if (parsed.isValid()) {
+        return parsed;
+      }
+
+      // Thử các format khác
+      const formats = ["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY"];
+      for (const format of formats) {
+        parsed = dayjs(dateValue, format);
+        if (parsed.isValid()) {
+          return parsed;
+        }
+      }
+    }
+
+    return null;
+  };
+
   const showEditModal = () => {
+    const dateOfBirth = parseDateToDayjs(personalInfo.date_of_birth);
+
     form.setFieldsValue({
       full_name: personalInfo.full_name,
       phone_number: personalInfo.phone_number,
-      date_of_birth: personalInfo.date_of_birth
-        ? moment(personalInfo.date_of_birth)
-        : null,
+      date_of_birth: dateOfBirth,
       email: personalInfo.email,
       address: personalInfo.address,
       zalo: personalInfo.zalo,
@@ -339,14 +370,13 @@ const PersonalInfo = ({
       return Promise.reject(new Error("Ngày sinh là bắt buộc"));
     }
 
-    const dob = new Date(value);
+    const dob = value.toDate(); // Chuyển từ dayjs -> Date
     const today = new Date();
 
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
     const dayDiff = today.getDate() - dob.getDate();
 
-    // Điều chỉnh tuổi nếu chưa đến sinh nhật trong năm hiện tại
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
       age--;
     }
@@ -359,7 +389,15 @@ const PersonalInfo = ({
       return Promise.reject(new Error("Tuổi không được vượt quá 60"));
     }
 
-    return Promise.resolve(); // Hợp lệ
+    return Promise.resolve();
+  };
+
+  // Format date để hiển thị
+  const formatDateForDisplay = (dateValue) => {
+    if (!dateValue) return "---";
+
+    const parsed = parseDateToDayjs(dateValue);
+    return parsed ? parsed.format("DD/MM/YYYY") : "---";
   };
 
   return (
@@ -422,9 +460,7 @@ const PersonalInfo = ({
           <InfoContent>
             <InfoTitle>Ngày sinh</InfoTitle>
             <InfoValue>
-              {personalInfo.date_of_birth
-                ? `${moment(personalInfo.date_of_birth).format("DD/MM/YYYY")}`
-                : "---"}
+              {formatDateForDisplay(personalInfo.date_of_birth)}
             </InfoValue>
           </InfoContent>
         </InfoItem>
@@ -534,8 +570,10 @@ const PersonalInfo = ({
                 <DatePicker
                   format="DD-MM-YYYY"
                   style={{ width: "100%" }}
+                  placeholder="Chọn ngày sinh"
                   disabledDate={(current) =>
-                    current && current > moment().subtract(15, "years")
+                    current &&
+                    current.isAfter(dayjs().subtract(15, "years"), "day")
                   }
                 />
               </Form.Item>
@@ -595,6 +633,7 @@ const PersonalInfo = ({
           </Row>
         </Form>
       </Modal>
+
       {/* Change Avatar Modal */}
       <Modal
         title="Đổi ảnh đại diện"
