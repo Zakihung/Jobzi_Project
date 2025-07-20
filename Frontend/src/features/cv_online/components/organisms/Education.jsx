@@ -13,6 +13,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
+
 const { Title, Text } = Typography;
 
 // Styled Components
@@ -111,13 +115,20 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const Education = ({ addSection, removeSection, sectionRefs }) => {
+const Education = ({
+  addSection,
+  removeSection,
+  sectionRefs,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [educationList, setEducationList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [form] = Form.useForm();
+
+  const educationList = resume?.education || [];
 
   const educationOptions = [
     "Trung học cơ sở trở xuống",
@@ -128,6 +139,11 @@ const Education = ({ addSection, removeSection, sectionRefs }) => {
     "Thạc sĩ",
     "Tiến sĩ",
   ];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const scrollTo = () => {
     const element = sectionRefs.education?.current;
@@ -162,21 +178,49 @@ const Education = ({ addSection, removeSection, sectionRefs }) => {
         message.error("Năm kết thúc phải lớn hơn năm bắt đầu.");
         return;
       }
+      const item = {
+        school: values.school,
+        education: values.education,
+        major: values.major,
+        startMonth: values.startMonth,
+        startYear: values.startYear,
+        endMonth: values.endMonth,
+        endYear: values.endYear,
+      };
+
       if (editingIndex !== null) {
-        const updatedEducation = [...educationList];
-        updatedEducation[editingIndex] = values;
-        setEducationList(updatedEducation);
-        message.success("Đã cập nhật học vấn.");
-        setIsModalVisible(false);
+        updateItemMutation.mutate(
+          { field: "education", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật học vấn.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setEducationList([...educationList, values]);
-        message.success("Đã thêm học vấn.");
-        setIsAdding(false);
-        addSection("Học vấn");
+        addItemMutation.mutate(
+          { field: "education", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm học vấn.");
+              setIsAdding(false);
+              addSection("Học vấn");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -189,13 +233,20 @@ const Education = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedEducation = educationList.filter((_, i) => i !== index);
-    setEducationList(updatedEducation);
-    message.success("Đã xóa học vấn.");
-
-    if (updatedEducation.length === 0) {
-      removeSection("Học vấn");
-    }
+    deleteItemMutation.mutate(
+      { field: "education", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa học vấn.");
+          if (educationList.length - 1 === 0) {
+            removeSection("Học vấn");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
+    );
   };
 
   return (

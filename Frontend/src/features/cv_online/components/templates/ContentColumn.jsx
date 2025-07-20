@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Card, Col, Spin } from "antd";
+import { Alert, Card, Spin } from "antd";
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
 import PersonalInfo from "../organisms/PersonalInfo";
@@ -44,6 +44,8 @@ const ContentColumn = ({
     error,
   } = useGetOnlineResume(candidateId);
 
+  const resume = resumeData?.data;
+
   const [jobStatus, setJobStatus] = useState("");
 
   const [personalInfo, setPersonalInfo] = useState({
@@ -60,8 +62,8 @@ const ContentColumn = ({
 
   // Cập nhật personalInfo từ resumeData
   useEffect(() => {
-    if (resumeData?.data?.personalInfo) {
-      const { personalInfo } = resumeData.data;
+    if (resume?.personalInfo) {
+      const { personalInfo } = resume;
       setPersonalInfo({
         full_name: personalInfo.full_name || "",
         phone_number: personalInfo.phone_number || "",
@@ -90,6 +92,38 @@ const ContentColumn = ({
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobStatus]);
+
+  const checkCompletedSections = (resume) => {
+    const completed = ["Thông tin cá nhân", "Trạng thái tìm việc"]; // Mặc định
+
+    if (resume?.jobExpectations && resume.jobExpectations.length > 0) {
+      completed.push("Mong muốn tìm việc");
+    }
+    if (resume?.education && resume.education.length > 0) {
+      completed.push("Học vấn");
+    }
+    if (resume?.highlights && resume.highlights.length > 0) {
+      completed.push("Điểm nổi bật");
+    }
+    if (resume?.workExperience && resume.workExperience.length > 0) {
+      completed.push("Kinh nghiệm làm việc");
+    }
+    if (resume?.projects && resume.projects.length > 0) {
+      completed.push("Kinh nghiệm dự án");
+    }
+    if (resume?.skills && resume.skills.length > 0) {
+      completed.push("Năng lực chuyên môn");
+    }
+
+    return completed;
+  };
+
+  useEffect(() => {
+    if (resume && candidateProfile) {
+      const completed = checkCompletedSections(resume);
+      setCompletedSections(completed);
+    }
+  }, [resume, candidateProfile, setCompletedSections]);
 
   const addSection = (section) => {
     if (!completedSections.includes(section)) {
@@ -142,36 +176,48 @@ const ContentColumn = ({
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
       <Education
         sectionRefs={sectionRefs}
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
       <Highlights
         sectionRefs={sectionRefs}
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
       <WorkExperience
         sectionRefs={sectionRefs}
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
       <Projects
         sectionRefs={sectionRefs}
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
       <Skills
         sectionRefs={sectionRefs}
         addSection={addSection}
         removeSection={removeSection}
         completedSections={completedSections}
+        candidateId={candidateId}
+        resume={resume}
       />
     </ContentCard>
   );

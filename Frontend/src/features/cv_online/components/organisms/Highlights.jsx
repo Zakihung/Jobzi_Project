@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Button, Typography, Form, Input, Modal, App, Row, Col } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -102,13 +105,25 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const Highlights = ({ addSection, removeSection, sectionRefs }) => {
+const Highlights = ({
+  addSection,
+  removeSection,
+  sectionRefs,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [highlightsList, setHighlightsList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [form] = Form.useForm();
+
+  const highlightsList = resume?.highlights || [];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const scrollTo = () => {
     const element = sectionRefs.highlights?.current;
@@ -125,7 +140,8 @@ const Highlights = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const showEditModal = (index) => {
-    form.setFieldsValue(highlightsList[index]);
+    const item = highlightsList[index];
+    form.setFieldsValue(item);
     setIsAdding(false);
     setEditingIndex(index);
     setIsModalVisible(true);
@@ -133,21 +149,41 @@ const Highlights = ({ addSection, removeSection, sectionRefs }) => {
 
   const handleOk = () => {
     form.validateFields().then((values) => {
+      const item = { title: values.title, description: values.description };
+
       if (editingIndex !== null) {
-        const updatedHighlights = [...highlightsList];
-        updatedHighlights[editingIndex] = values;
-        setHighlightsList(updatedHighlights);
-        message.success("Đã cập nhật điểm nổi bật.");
+        updateItemMutation.mutate(
+          { field: "highlights", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật điểm nổi bật.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setHighlightsList([...highlightsList, values]);
-        message.success("Đã thêm điểm nổi bật.");
-        addSection("Điểm nổi bật");
+        addItemMutation.mutate(
+          { field: "highlights", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm điểm nổi bật.");
+              setIsAdding(false);
+              addSection("Điểm nổi bật");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      setIsModalVisible(false);
-      setIsAdding(false);
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -160,13 +196,20 @@ const Highlights = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedHighlights = highlightsList.filter((_, i) => i !== index);
-    setHighlightsList(updatedHighlights);
-    message.success("Đã xóa điểm nổi bật.");
-
-    if (updatedHighlights.length === 0) {
-      removeSection("Điểm nổi bật");
-    }
+    deleteItemMutation.mutate(
+      { field: "highlights", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa điểm nổi bật.");
+          if (highlightsList.length - 1 === 0) {
+            removeSection("Điểm nổi bật");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
+    );
   };
 
   return (

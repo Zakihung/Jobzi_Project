@@ -15,6 +15,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 
@@ -25,13 +29,7 @@ const positionOptions = [
   "Quản lý dự án",
   "Nhà phân tích dữ liệu",
 ];
-const cityOptions = ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"];
-const predefinedSalaryOptions = [
-  "Dưới 10 triệu",
-  "10-15 triệu",
-  "15-20 triệu",
-  "Trên 20 triệu",
-];
+const provinceOptions = ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"];
 
 // Styled Components
 const Section = styled.div`
@@ -129,9 +127,14 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
+const JobExpectation = ({
+  sectionRefs,
+  addSection,
+  removeSection,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [jobExpectations, setJobExpectations] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSalaryModalVisible, setIsSalaryModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -139,6 +142,13 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
   const [salaryType, setSalaryType] = useState(null);
   const [form] = Form.useForm();
   const [salaryForm] = Form.useForm();
+
+  const jobExpectations = resume?.jobExpectations || [];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const showForm = () => {
     if (jobExpectations.length >= 3) {
@@ -158,33 +168,60 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
   };
 
   const showEditModal = (index) => {
-    form.setFieldsValue(jobExpectations[index]);
+    const item = jobExpectations[index];
+    let salary;
+    if (item.salary_type === "Khoảng lương") {
+      salary = `${item.min_salary_range} - ${item.max_salary_range} triệu`;
+    } else {
+      salary = item.salary_type;
+    }
+    form.setFieldsValue({ ...item, salary });
     setIsAdding(false);
     setEditingIndex(index);
     setIsModalVisible(true);
   };
 
   const showSalaryModal = () => {
-    salaryForm.resetFields();
-    setSalaryType(null);
+    const currentValues = form.getFieldsValue([
+      "salary_type",
+      "min_salary_range",
+      "max_salary_range",
+    ]);
+
+    const { salary_type, min_salary_range, max_salary_range } = currentValues;
+
+    salaryForm.setFieldsValue({
+      salaryType: salary_type || "Thỏa thuận",
+      minSalary: min_salary_range || undefined,
+      maxSalary: max_salary_range || undefined,
+    });
+
+    setSalaryType(salary_type || "Thỏa thuận");
     setIsSalaryModalVisible(true);
   };
 
   const handleSalaryOk = () => {
     salaryForm.validateFields().then((values) => {
-      if (values.salaryType === "custom") {
+      if (values.salaryType === "Khoảng lương") {
         if (parseFloat(values.maxSalary) <= parseFloat(values.minSalary)) {
           message.error("Lương tối đa phải lớn hơn lương tối thiểu.");
           return;
         }
-      }
-      let salary;
-      if (values.salaryType === "predefined") {
-        salary = values.predefinedSalary;
+        const salary = `${values.minSalary} - ${values.maxSalary} triệu`;
+        form.setFieldsValue({
+          salary,
+          salary_type: "Khoảng lương",
+          min_salary_range: parseFloat(values.minSalary),
+          max_salary_range: parseFloat(values.maxSalary),
+        });
       } else {
-        salary = `${values.minSalary} - ${values.maxSalary} triệu`;
+        form.setFieldsValue({
+          salary: "Thỏa thuận",
+          salary_type: "Thỏa thuận",
+          min_salary_range: 0,
+          max_salary_range: 0,
+        });
       }
-      form.setFieldsValue({ salary });
       setIsSalaryModalVisible(false);
     });
   };
@@ -195,21 +232,52 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
 
   const handleOk = () => {
     form.validateFields().then((values) => {
+      const salary_type = form.getFieldValue("salary_type") || "Thỏa thuận";
+      const min_salary_range = form.getFieldValue("min_salary_range") || 0;
+      const max_salary_range = form.getFieldValue("max_salary_range") || 0;
+
+      const item = {
+        jobType: values.jobType,
+        position: values.position,
+        province: values.province,
+        salary_type,
+        min_salary_range,
+        max_salary_range,
+      };
+
       if (editingIndex !== null) {
-        const updatedExpectations = [...jobExpectations];
-        updatedExpectations[editingIndex] = values;
-        setJobExpectations(updatedExpectations);
-        message.success("Đã cập nhật mong muốn tìm việc.");
-        setIsModalVisible(false);
+        updateItemMutation.mutate(
+          { field: "jobExpectations", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật mong muốn tìm việc.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setJobExpectations([...jobExpectations, values]);
-        message.success("Đã thêm mong muốn tìm việc.");
-        setIsAdding(false);
-        addSection("Mong muốn tìm việc");
+        addItemMutation.mutate(
+          { field: "jobExpectations", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm mong muốn tìm việc.");
+              setIsAdding(false);
+              addSection("Mong muốn tìm việc");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -222,13 +290,20 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedExpectations = jobExpectations.filter((_, i) => i !== index);
-    setJobExpectations(updatedExpectations);
-    message.success("Đã xóa mong muốn tìm việc.");
-
-    if (updatedExpectations.length === 0) {
-      removeSection("Mong muốn tìm việc");
-    }
+    deleteItemMutation.mutate(
+      { field: "jobExpectations", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa mong muốn tìm việc.");
+          if (jobExpectations.length - 1 === 0) {
+            removeSection("Mong muốn tìm việc");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
+    );
   };
 
   return (
@@ -290,14 +365,14 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
               />
             </Form.Item>
             <Form.Item
-              name="city"
+              name="province"
               label="Địa điểm làm việc"
               rules={[{ required: true, message: "Vui lòng chọn địa điểm" }]}
             >
               <Select placeholder="Chọn tỉnh/thành phố làm việc">
-                {cityOptions.map((city) => (
-                  <Option key={city} value={city}>
-                    {city}
+                {provinceOptions.map((province) => (
+                  <Option key={province} value={province}>
+                    {province}
                   </Option>
                 ))}
               </Select>
@@ -326,7 +401,15 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
                 <Col span={20}>
                   <PositionTitle level={4}>{item.position}</PositionTitle>
                   <InfoItem>
-                    {item.jobType} • {item.salary} • {item.city}
+                    {item.jobType} •{" "}
+                    {item.salary_type === "Thỏa thuận" ? (
+                      item.salary_type
+                    ) : (
+                      <>
+                        {item.min_salary_range} - {item.max_salary_range} triệu
+                      </>
+                    )}{" "}
+                    • {item.province}
                   </InfoItem>
                 </Col>
                 <Col span={4}>
@@ -386,25 +469,25 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
             </Select>
           </Form.Item>
           <Form.Item
-            name="salary"
-            label="Mức lương"
-            rules={[{ required: true, message: "Vui lòng chọn mức lương" }]}
+            name="salary_type"
+            label="Loại lương"
+            rules={[{ required: true, message: "Vui lòng chọn loại lương" }]}
           >
             <Input
-              placeholder="Nhấp để chọn mức lương"
+              placeholder="Nhấp để chọn loại lương"
               onClick={showSalaryModal}
               readOnly
             />
           </Form.Item>
           <Form.Item
-            name="city"
+            name="province"
             label="Địa điểm làm việc"
             rules={[{ required: true, message: "Vui lòng chọn địa điểm" }]}
           >
             <Select placeholder="Chọn tỉnh/thành phố làm việc">
-              {cityOptions.map((city) => (
-                <Option key={city} value={city}>
-                  {city}
+              {provinceOptions.map((province) => (
+                <Option key={province} value={province}>
+                  {province}
                 </Option>
               ))}
             </Select>
@@ -413,7 +496,7 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
       </Modal>
 
       <Modal
-        title="Chọn mức lương"
+        title="Chọn loại lương"
         open={isSalaryModalVisible}
         onOk={handleSalaryOk}
         onCancel={handleSalaryCancel}
@@ -421,36 +504,21 @@ const JobExpectation = ({ sectionRefs, addSection, removeSection }) => {
         cancelText="Hủy"
         width={500}
         centered
+        zIndex={2000}
       >
         <Form form={salaryForm} layout="vertical">
           <Form.Item
             name="salaryType"
-            label="Loại mức lương"
-            rules={[
-              { required: true, message: "Vui lòng chọn loại mức lương" },
-            ]}
+            label="Loại lương"
+            rules={[{ required: true, message: "Vui lòng chọn loại lương" }]}
           >
             <Radio.Group onChange={(e) => setSalaryType(e.target.value)}>
-              <Radio value="predefined">Mức lương có sẵn</Radio>
-              <Radio value="custom">Nhập khoảng lương</Radio>
+              <Radio value="Thỏa thuận">Thỏa thuận</Radio>
+              <Radio value="Khoảng lương">Khoảng lương</Radio>
             </Radio.Group>
           </Form.Item>
-          {salaryType === "predefined" && (
-            <Form.Item
-              name="predefinedSalary"
-              label="Mức lương"
-              rules={[{ required: true, message: "Vui lòng chọn mức lương" }]}
-            >
-              <Select placeholder="Chọn mức lương có sẵn">
-                {predefinedSalaryOptions.map((salary) => (
-                  <Option key={salary} value={salary}>
-                    {salary}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          )}
-          {salaryType === "custom" && (
+          {salaryType === "Thỏa thuận" && <></>}
+          {salaryType === "Khoảng lương" && (
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item

@@ -14,6 +14,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
+
 const { Title, Text } = Typography;
 
 // Styled Components
@@ -112,13 +116,20 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const Skills = ({ addSection, removeSection, sectionRefs }) => {
+const Skills = ({
+  addSection,
+  removeSection,
+  sectionRefs,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [skillList, setSkillList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [form] = Form.useForm();
+
+  const skillList = resume?.skills || [];
 
   const experienceOptions = Array.from(
     { length: 10 },
@@ -130,6 +141,11 @@ const Skills = ({ addSection, removeSection, sectionRefs }) => {
     { label: "Độc lập", value: "Độc lập" },
     { label: "Thành thạo", value: "Thành thạo" },
   ];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const scrollTo = () => {
     const element = sectionRefs.skills?.current;
@@ -153,21 +169,45 @@ const Skills = ({ addSection, removeSection, sectionRefs }) => {
 
   const handleOk = () => {
     form.validateFields().then((values) => {
+      const item = {
+        skillName: values.skillName,
+        experience: values.experience,
+        proficiency: values.proficiency,
+      };
+
       if (editingIndex !== null) {
-        const updatedSkills = [...skillList];
-        updatedSkills[editingIndex] = values;
-        setSkillList(updatedSkills);
-        message.success("Đã cập nhật kỹ năng.");
-        setIsModalVisible(false);
+        updateItemMutation.mutate(
+          { field: "skills", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật kỹ năng.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setSkillList([...skillList, values]);
-        message.success("Đã thêm kỹ năng.");
-        setIsAdding(false);
-        addSection("Năng lực chuyên môn");
+        addItemMutation.mutate(
+          { field: "skills", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm kỹ năng.");
+              setIsAdding(false);
+              addSection("Năng lực chuyên môn");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -180,13 +220,20 @@ const Skills = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedSkills = skillList.filter((_, i) => i !== index);
-    setSkillList(updatedSkills);
-    message.success("Đã xóa kỹ năng.");
-
-    if (updatedSkills.length === 0) {
-      removeSection("Năng lực chuyên môn");
-    }
+    deleteItemMutation.mutate(
+      { field: "skills", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa kỹ năng.");
+          if (skillList.length - 1 === 0) {
+            removeSection("Năng lực chuyên môn");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
+    );
   };
 
   return (

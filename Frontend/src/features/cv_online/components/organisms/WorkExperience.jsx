@@ -13,6 +13,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
+
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -112,13 +116,25 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const WorkExperience = ({ addSection, removeSection, sectionRefs }) => {
+const WorkExperience = ({
+  addSection,
+  removeSection,
+  sectionRefs,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [workExperienceList, setWorkExperienceList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [form] = Form.useForm();
+
+  const workExperienceList = resume?.workExperience || [];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const scrollTo = () => {
     const element = sectionRefs.workExperience?.current;
@@ -157,21 +173,50 @@ const WorkExperience = ({ addSection, removeSection, sectionRefs }) => {
         message.error("Thời gian kết thúc phải lớn hơn thời gian bắt đầu.");
         return;
       }
+      const item = {
+        company: values.company,
+        position: values.position,
+        industry: values.industry,
+        startMonth: values.startMonth,
+        startYear: values.startYear,
+        endMonth: values.endMonth,
+        endYear: values.endYear,
+        description: values.description,
+      };
+
       if (editingIndex !== null) {
-        const updatedWorkExperience = [...workExperienceList];
-        updatedWorkExperience[editingIndex] = values;
-        setWorkExperienceList(updatedWorkExperience);
-        message.success("Đã cập nhật kinh nghiệm làm việc.");
-        setIsModalVisible(false);
+        updateItemMutation.mutate(
+          { field: "workExperience", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật kinh nghiệm làm việc.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setWorkExperienceList([...workExperienceList, values]);
-        message.success("Đã thêm kinh nghiệm làm việc.");
-        setIsAdding(false);
-        addSection("Kinh nghiệm làm việc");
+        addItemMutation.mutate(
+          { field: "workExperience", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm kinh nghiệm làm việc.");
+              setIsAdding(false);
+              addSection("Kinh nghiệm làm việc");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -184,15 +229,20 @@ const WorkExperience = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedWorkExperience = workExperienceList.filter(
-      (_, i) => i !== index
+    deleteItemMutation.mutate(
+      { field: "workExperience", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa kinh nghiệm làm việc.");
+          if (workExperienceList.length - 1 === 0) {
+            removeSection("Kinh nghiệm làm việc");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
     );
-    setWorkExperienceList(updatedWorkExperience);
-    message.success("Đã xóa kinh nghiệm làm việc.");
-
-    if (updatedWorkExperience.length === 0) {
-      removeSection("Kinh nghiệm làm việc");
-    }
   };
 
   return (
@@ -215,7 +265,7 @@ const WorkExperience = ({ addSection, removeSection, sectionRefs }) => {
               label="Tên công ty"
               rules={[{ required: true, message: "Vui lòng nhập tên công ty" }]}
             >
-              <Input placeholder="VD: Công ty TNHH ABC" />
+              <Input placeholder="VD: Trung tâm CNPM Đại học Cần Thơ" />
             </Form.Item>
 
             <Form.Item

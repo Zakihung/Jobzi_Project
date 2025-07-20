@@ -13,6 +13,10 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
+import useAddItemToArray from "../../hooks/useAddItemToArray";
+import useUpdateItemInArray from "../../hooks/useUpdateItemInArray";
+import useDeleteItemInArray from "../../hooks/useDeleteItemInArray";
+
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -112,13 +116,25 @@ const FormContainer = styled.div`
   margin-top: 16px;
 `;
 
-const Projects = ({ addSection, removeSection, sectionRefs }) => {
+const Projects = ({
+  addSection,
+  removeSection,
+  sectionRefs,
+  candidateId,
+  resume,
+}) => {
   const { message } = App.useApp();
-  const [projectList, setProjectList] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [form] = Form.useForm();
+
+  const projectList = resume?.projects || [];
+
+  // Mutations
+  const addItemMutation = useAddItemToArray(candidateId);
+  const updateItemMutation = useUpdateItemInArray(candidateId);
+  const deleteItemMutation = useDeleteItemInArray(candidateId);
 
   const scrollTo = () => {
     const element = sectionRefs.projects?.current;
@@ -157,21 +173,50 @@ const Projects = ({ addSection, removeSection, sectionRefs }) => {
         message.error("Thời gian kết thúc phải lớn hơn thời gian bắt đầu.");
         return;
       }
+      const item = {
+        projectName: values.projectName,
+        role: values.role,
+        projectLink: values.projectLink,
+        startMonth: values.startMonth,
+        startYear: values.startYear,
+        endMonth: values.endMonth,
+        endYear: values.endYear,
+        description: values.description,
+      };
+
       if (editingIndex !== null) {
-        const updatedProjects = [...projectList];
-        updatedProjects[editingIndex] = values;
-        setProjectList(updatedProjects);
-        message.success("Đã cập nhật dự án.");
-        setIsModalVisible(false);
+        updateItemMutation.mutate(
+          { field: "projects", index: editingIndex, item },
+          {
+            onSuccess: () => {
+              message.success("Đã cập nhật dự án.");
+              setIsModalVisible(false);
+              setEditingIndex(null);
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Cập nhật thất bại.");
+            },
+          }
+        );
       } else {
-        setProjectList([...projectList, values]);
-        message.success("Đã thêm dự án.");
-        setIsAdding(false);
-        addSection("Kinh nghiệm dự án");
+        addItemMutation.mutate(
+          { field: "projects", item },
+          {
+            onSuccess: () => {
+              message.success("Đã thêm dự án.");
+              setIsAdding(false);
+              addSection("Kinh nghiệm dự án");
+              form.resetFields();
+              scrollTo();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm thất bại.");
+            },
+          }
+        );
       }
-      form.resetFields();
-      setEditingIndex(null);
-      scrollTo();
     });
   };
 
@@ -184,13 +229,20 @@ const Projects = ({ addSection, removeSection, sectionRefs }) => {
   };
 
   const handleDelete = (index) => {
-    const updatedProjects = projectList.filter((_, i) => i !== index);
-    setProjectList(updatedProjects);
-    message.success("Đã xóa dự án.");
-
-    if (updatedProjects.length === 0) {
-      removeSection("Kinh nghiệm dự án");
-    }
+    deleteItemMutation.mutate(
+      { field: "projects", index },
+      {
+        onSuccess: () => {
+          message.success("Đã xóa dự án.");
+          if (projectList.length - 1 === 0) {
+            removeSection("Kinh nghiệm dự án");
+          }
+        },
+        onError: (error) => {
+          message.error(error.message || "Xóa thất bại.");
+        },
+      }
+    );
   };
 
   return (
