@@ -16,6 +16,16 @@ const getEmployerByUserIdService = async (user_id) => {
   return employer;
 };
 
+const getEmployerByCompanyIdService = async (company_id) => {
+  let employer = await Employer.findOne({ company_id })
+    .populate("user_id")
+    .populate("company_id");
+  if (!employer) {
+    throw new AppError("Không tìm thấy nhà tuyển dụng", 404);
+  }
+  return employer;
+};
+
 const getEmployerByIdService = async (employer_id) => {
   let employer = await Employer.findById(employer_id)
     .populate("user_id")
@@ -54,6 +64,7 @@ module.exports = {
   getListEmployerService,
   getEmployerByIdService,
   getEmployerByUserIdService,
+  getEmployerByCompanyIdService,
   updatePositionService,
   deleteEmployerService,
 };

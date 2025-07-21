@@ -18,6 +18,12 @@ const getEmployerByUserIdApi = (userId) => {
   return axios.get(URL_API);
 };
 
+// API để lấy employer theo user ID
+const getEmployerByCompanyIdApi = (companyId) => {
+  const URL_API = `/api/employer/company/${companyId}`;
+  return axios.get(URL_API);
+};
+
 // API để cập nhật vị trí employer
 const updatePositionEmployerApi = (id, data) => {
   const URL_API = `/api/employer/${id}`;
@@ -34,6 +40,7 @@ export {
   getListEmployerApi,
   getEmployerByIdApi,
   getEmployerByUserIdApi,
+  getEmployerByCompanyIdApi,
   updatePositionEmployerApi,
   deleteEmployerApi,
 };
