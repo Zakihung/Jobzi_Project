@@ -8,17 +8,14 @@ const companySchema = new mongoose.Schema(
       ref: "CompanyIndustry",
       required: true,
     },
+    province_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Province",
+      required: true,
+    },
     name: {
       type: String,
-      require: true,
-    },
-    description: {
-      type: String,
-      default: "",
-    },
-    size: {
-      type: String,
-      default: "",
+      required: true,
     },
     logo: {
       type: String,
@@ -29,9 +26,33 @@ const companySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    min_size: {
+      type: Number,
+      default: 0,
+    },
+    max_size: {
+      type: Number,
+      default: 0,
+    },
     address: {
       type: String,
       default: "",
+    },
+    introduction: {
+      type: String,
+      default: "",
+    },
+    businessOperations: {
+      type: [String],
+      default: [],
+    },
+    regulations: {
+      type: [String],
+      default: [],
+    },
+    benefits: {
+      type: [String],
+      default: [],
     },
   },
   { timestamps: true }
@@ -39,8 +60,8 @@ const companySchema = new mongoose.Schema(
 
 // Thêm plugin xóa mềm
 companySchema.plugin(mongooseDelete, {
-  deletedAt: true, // Tự động thêm trường `deletedAt`
-  overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
+  deletedAt: true,
+  overrideMethods: "all",
   deleted: true,
 });
 

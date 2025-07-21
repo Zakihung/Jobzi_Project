@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Select, Button, Typography } from "antd";
+import { Form, Input, Select, Button, Typography, Row, Col } from "antd";
 import styled from "styled-components";
 import {
   ShopOutlined,
@@ -7,7 +7,8 @@ import {
   EnvironmentOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import useGetListCompanyIndustry from "../../../company/hooks/Company_Industry/useGetListCompanyIndustry";
+import useGetListCompanyIndustry from "../../../../features/company/hooks/Company_Industry/useGetListCompanyIndustry";
+import useGetAllProvinceAlphabet from "../../../../features/company/hooks/Province/useGetAllProvinceAlphabet";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -64,9 +65,8 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
   const [form] = Form.useForm();
   const { data: industriesData, isLoading: isIndustriesLoading } =
     useGetListCompanyIndustry();
-
-  // Ánh xạ dữ liệu từ API thành danh sách tên ngành
-  const industries = industriesData?.map((industry) => industry.name) || [];
+  const { data: provincesData, isLoading: isProvincesLoading } =
+    useGetAllProvinceAlphabet();
 
   // Gửi tham chiếu form ra ngoài
   useEffect(() => {
@@ -74,6 +74,12 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
       setFormRef(form);
     }
   }, [form, setFormRef]);
+
+  // Tạo danh sách tỉnh/thành phố từ provincesData
+  const provinces =
+    provincesData
+      ?.flatMap((group) => group.provinces)
+      .map((province) => ({ id: province._id, name: province.name })) || [];
 
   return (
     <StyledForm
@@ -83,7 +89,7 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
       layout="vertical"
       size="large"
       scrollToFirstError
-      disabled={isLoading || isIndustriesLoading}
+      disabled={isLoading || isIndustriesLoading || isProvincesLoading}
     >
       <Form.Item
         name="company_name"
@@ -91,9 +97,9 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
         rules={[
           { required: true, message: "Vui lòng nhập tên công ty!" },
           {
-            pattern: /^[a-zA-ZÀ-ỹ0-9\s.-]{2,100}$/,
+            pattern: /^[\p{L}0-9\s.,&@/()+\-'"!%*#]{2,100}$/u,
             message:
-              "Tên công ty chỉ được chứa chữ cái, số, khoảng trắng và chứa từ 2 đến 100 ký tự!",
+              "Tên công ty chứa từ 2 đến 100 ký tự, bao gồm chữ cái, số, khoảng trắng và ký tự đặc biệt hợp lệ!",
           },
         ]}
       >
@@ -127,43 +133,79 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
             option.children.toLowerCase().includes(input.toLowerCase())
           }
         >
-          {industries.map((industry) => (
-            <Option key={industry} value={industry}>
-              {industry}
+          {industriesData?.map((industry) => (
+            <Option key={industry._id} value={industry.name}>
+              {industry.name}
             </Option>
           ))}
         </StyledSelect>
       </Form.Item>
 
-      <Form.Item
-        name="company_location"
-        label="Địa chỉ công ty"
-        rules={[
-          { required: true, message: "Vui lòng nhập địa chỉ công ty!" },
-          {
-            min: 10,
-            max: 255,
-            message: "Địa chỉ phải từ 10 đến 255 ký tự!",
-          },
-          {
-            pattern: /^[a-zA-ZÀ-ỹ0-9\s,./\-()]+$/,
-            message: "Địa chỉ chỉ được chứa chữ, số và các ký tự: , . / - ( )",
-          },
-        ]}
-      >
-        <StyledInput
-          prefix={
-            <EnvironmentOutlined
-              style={{ color: "#64748b", marginRight: "5px" }}
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item
+            name="company_location"
+            label="Địa chỉ công ty"
+            rules={[
+              { required: true, message: "Vui lòng nhập địa chỉ công ty!" },
+              {
+                min: 10,
+                max: 255,
+                message: "Địa chỉ phải từ 10 đến 255 ký tự!",
+              },
+              {
+                pattern: /^[a-zA-ZÀ-ỹ0-9\s,./\-()]+$/,
+                message:
+                  "Địa chỉ chỉ được chứa chữ, số và các ký tự: , . / - ( )",
+              },
+            ]}
+          >
+            <StyledInput
+              prefix={
+                <EnvironmentOutlined
+                  style={{ color: "#64748b", marginRight: "5px" }}
+                />
+              }
+              placeholder="Nhập địa chỉ công ty"
             />
-          }
-          placeholder="Nhập địa chỉ công ty"
-        />
-      </Form.Item>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="province_id"
+            label="Tỉnh/Thành phố"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn tỉnh/thành phố!",
+              },
+            ]}
+          >
+            <StyledSelect
+              showSearch
+              placeholder="Chọn tỉnh/thành phố"
+              prefix={
+                <EnvironmentOutlined
+                  style={{ color: "#64748b", marginRight: "5px" }}
+                />
+              }
+              filterOption={(input, option) =>
+                option.children.toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {provinces.map((province) => (
+                <Option key={province.id} value={province.id}>
+                  {province.name}
+                </Option>
+              ))}
+            </StyledSelect>
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Form.Item
         name="position"
-        label="Vị trí"
+        label="Vị trí của bạn trong công ty"
         rules={[
           {
             required: true,
@@ -189,9 +231,9 @@ const CompanyForm = ({ onFinish, isLoading, setFormRef }) => {
           type="primary"
           htmlType="submit"
           block
-          loading={isLoading || isIndustriesLoading}
+          loading={isLoading || isIndustriesLoading || isProvincesLoading}
         >
-          {isLoading || isIndustriesLoading
+          {isLoading || isIndustriesLoading || isProvincesLoading
             ? "Đang tạo tài khoản..."
             : "Hoàn tất"}
         </StyledButton>

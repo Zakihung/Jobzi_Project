@@ -4,10 +4,21 @@ const Company = require("../models/company.model");
 const cloudinary = require("../configs/cloudinary");
 
 const createCompanyService = async (companyData) => {
-  const { company_industry_id, name, address } = companyData;
-  if (!company_industry_id || !name || !address) {
+  const {
+    company_industry_id,
+    province_id,
+    name,
+    address,
+    min_size,
+    max_size,
+    introduction,
+    businessOperations,
+    regulations,
+    benefits,
+  } = companyData;
+  if (!company_industry_id || !province_id || !name || !address) {
     throw new AppError(
-      "Thiếu các trường bắt buộc: company_industry_id, name và address là bắt buộc",
+      "Thiếu các trường bắt buộc: company_industry_id, province_id, name và address là bắt buộc",
       400
     );
   }
@@ -20,14 +31,18 @@ const createCompanyService = async (companyData) => {
 };
 
 const getListCompanyService = async () => {
-  let result = await Company.find().populate("company_industry_id");
+  let result = await Company.find().populate([
+    "company_industry_id",
+    "province_id",
+  ]);
   return result;
 };
 
 const getCompanyByIdService = async (company_id) => {
-  let company = await Company.findById(company_id).populate(
-    "company_industry_id"
-  );
+  let company = await Company.findById(company_id).populate([
+    "company_industry_id",
+    "province_id",
+  ]);
   if (!company) {
     throw new AppError("Không tìm thấy công ty", 404);
   }
@@ -38,15 +53,39 @@ const getCompanyByIndustryIdService = async (company_industry_id) => {
   if (!mongoose.Types.ObjectId.isValid(company_industry_id)) {
     throw new AppError("ID ngành công ty không hợp lệ", 400);
   }
-  let result = await Company.find({ company_industry_id }).populate(
-    "company_industry_id"
-  );
+  let result = await Company.find({ company_industry_id }).populate([
+    "company_industry_id",
+    "province_id",
+  ]);
+  return result;
+};
+
+const getCompanyByProvinceIdService = async (province_id) => {
+  if (!mongoose.Types.ObjectId.isValid(province_id)) {
+    throw new AppError("ID tỉnh/thành phố không hợp lệ", 400);
+  }
+  let result = await Company.find({ province_id }).populate([
+    "company_industry_id",
+    "province_id",
+  ]);
   return result;
 };
 
 const updateCompanyService = async (company_id, updateData) => {
-  const { company_industry_id, name, description, size, website_url, address } =
-    updateData;
+  const {
+    company_industry_id,
+    province_id,
+    name,
+    description,
+    min_size,
+    max_size,
+    website_url,
+    address,
+    introduction,
+    businessOperations,
+    regulations,
+    benefits,
+  } = updateData;
   let company = await Company.findById(company_id);
   if (!company) {
     throw new AppError("Không tìm thấy công ty", 404);
@@ -60,13 +99,25 @@ const updateCompanyService = async (company_id, updateData) => {
     company_industry_id !== undefined
       ? company_industry_id
       : company.company_industry_id;
+  company.province_id =
+    province_id !== undefined ? province_id : company.province_id;
   company.name = name !== undefined ? name : company.name;
   company.description =
     description !== undefined ? description : company.description;
-  company.size = size !== undefined ? size : company.size;
+  company.min_size = min_size !== undefined ? min_size : company.min_size;
+  company.max_size = max_size !== undefined ? max_size : company.max_size;
   company.website_url =
     website_url !== undefined ? website_url : company.website_url;
   company.address = address !== undefined ? address : company.address;
+  company.introduction =
+    introduction !== undefined ? introduction : company.introduction;
+  company.businessOperations =
+    businessOperations !== undefined
+      ? businessOperations
+      : company.businessOperations;
+  company.regulations =
+    regulations !== undefined ? regulations : company.regulations;
+  company.benefits = benefits !== undefined ? benefits : company.benefits;
 
   let result = await company.save();
   return result;
@@ -81,7 +132,7 @@ const deleteCompanyService = async (company_id) => {
     const publicId = company.logo.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(`company_avatars/${publicId}`);
   }
-  let result = await company.delete(); // Xóa mềm sử dụng mongoose-delete
+  let result = await company.delete();
   return result;
 };
 
@@ -95,14 +146,12 @@ const uploadLogoCompanyService = async (company_id, file) => {
     throw new AppError("Không tìm thấy công ty", 404);
   }
 
-  // Xóa logo cũ trên Cloudinary nếu tồn tại
   if (company.logo) {
     const publicId = company.logo.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(`company_avatars/${publicId}`);
   }
 
-  // Lưu URL của logo mới từ Cloudinary
-  company.logo = file.path; // file.path chứa URL từ Cloudinary sau khi upload
+  company.logo = file.path;
   let result = await company.save();
   return result;
 };
@@ -112,6 +161,7 @@ module.exports = {
   getListCompanyService,
   getCompanyByIdService,
   getCompanyByIndustryIdService,
+  getCompanyByProvinceIdService,
   updateCompanyService,
   deleteCompanyService,
   uploadLogoCompanyService,

@@ -118,6 +118,7 @@ const Stepcard = () => {
               company_name: companyValues.company_name,
               company_industry_id: selectedIndustry?._id,
               address: companyValues.company_location,
+              province_id: companyValues.province_id,
               position: companyValues.position,
             };
 

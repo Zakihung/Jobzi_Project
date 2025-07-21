@@ -21,12 +21,45 @@ const getAllProvinceService = async () => {
 };
 
 const getAllProvinceAlphabetService = async () => {
-  // Lấy tất cả tỉnh và sắp xếp theo name
+  // Bảng chữ cái tiếng Việt theo thứ tự chuẩn
+  const vietnameseAlphabet = [
+    "A",
+    "Ă",
+    "Â",
+    "B",
+    "C",
+    "D",
+    "Đ",
+    "E",
+    "Ê",
+    "G",
+    "H",
+    "I",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "Ô",
+    "Ơ",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "Ư",
+    "V",
+    "X",
+    "Y",
+  ];
+
+  // Lấy danh sách tỉnh và sắp xếp theo tên
   const provinces = await Province.find().sort({ name: 1 });
 
   // Nhóm tỉnh theo chữ cái đầu
   const groupedProvinces = provinces.reduce((acc, province) => {
-    const firstLetter = province.name.charAt(0).toUpperCase(); // Lấy chữ cái đầu và chuyển thành in hoa
+    const firstLetter = province.name.charAt(0).toUpperCase();
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
     }
@@ -34,9 +67,9 @@ const getAllProvinceAlphabetService = async () => {
     return acc;
   }, {});
 
-  // Chuyển đổi thành mảng các đối tượng { letter, provinces }
-  const result = Object.keys(groupedProvinces)
-    .sort() // Sắp xếp các chữ cái theo thứ tự bảng chữ cái
+  // Sắp xếp các chữ cái đầu theo bảng chữ cái tiếng Việt
+  const result = vietnameseAlphabet
+    .filter((letter) => groupedProvinces[letter]) // Chỉ lấy các nhóm có dữ liệu
     .map((letter) => ({
       letter,
       provinces: groupedProvinces[letter],

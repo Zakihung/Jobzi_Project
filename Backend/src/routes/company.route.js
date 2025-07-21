@@ -4,6 +4,7 @@ const {
   getListCompany,
   getCompanyById,
   getCompanyByIndustryId,
+  getCompanyByProvinceId,
   updateCompany,
   deleteCompany,
   uploadLogoCompany,
@@ -17,6 +18,7 @@ router.post("/create", createCompany);
 router.get("/", getListCompany);
 router.get("/:id", getCompanyById);
 router.get("/industry/:company_industry_id", getCompanyByIndustryId);
+router.get("/province/:province_id", getCompanyByProvinceId);
 router.put("/:id", updateCompany);
 router.delete("/:id", deleteCompany);
 router.post("/:id/upload-logo", upload.single("logo"), uploadLogoCompany);

@@ -63,6 +63,7 @@ const signupEmployer = async (req, res) => {
       date_of_birth,
       company_name,
       address,
+      province_id,
       company_industry_id,
       position,
     } = req.body;
@@ -76,6 +77,7 @@ const signupEmployer = async (req, res) => {
       role,
       company_name,
       address,
+      province_id,
       company_industry_id,
       position,
     });

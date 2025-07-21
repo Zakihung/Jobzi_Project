@@ -11,6 +11,7 @@ const AppError = require("../utils/AppError");
 const ResetToken = require("../models/user.resetpassword");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
 const cloudinary = require("../configs/cloudinary");
+const { createCompanyService } = require("../services/company.service"); // Thêm import
 
 const signupService = async ({
   email,
@@ -204,8 +205,16 @@ const signupEmployerService = async ({
   phone_number,
   company_name,
   address,
+  province_id,
   company_industry_id,
   position,
+  min_size,
+  max_size,
+  website_url,
+  introduction,
+  businessOperations,
+  regulations,
+  benefits,
 }) => {
   // Kiểm tra dữ liệu đầu vào
   if (
@@ -218,6 +227,7 @@ const signupEmployerService = async ({
     !phone_number ||
     !company_name ||
     !address ||
+    !province_id ||
     !company_industry_id ||
     !position
   ) {
@@ -294,9 +304,9 @@ const signupEmployerService = async ({
   }
 
   // Kiểm tra tên công ty
-  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(company_name)) {
+  if (!/^[\p{L}0-9\s.,&@/()+\-'"!%*#]{1,100}$/u.test(company_name)) {
     throw new AppError(
-      "Tên công ty không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      "Tên công ty không hợp lệ! Chỉ được chứa chữ cái, số, khoảng trắng và một số ký tự đặc biệt như . , & / + - ( ) ' \" v.v., tối đa 100 ký tự.",
       400
     );
   }
@@ -345,14 +355,22 @@ const signupEmployerService = async ({
   user.refreshToken = refreshToken;
   await user.save();
 
-  // Tạo company
-  const company = new Company({
+  // Tạo company bằng createCompanyService
+  const company = await createCompanyService({
+    company_industry_id,
+    province_id,
     name: company_name,
     address,
-    company_industry_id,
+    min_size: min_size || 0,
+    max_size: max_size || 0,
+    website_url: website_url || "",
+    introduction: introduction || "",
+    businessOperations: businessOperations || [],
+    regulations: regulations || [],
+    benefits: benefits || [],
   });
-  await company.save();
 
+  // Tạo employer
   const employer = new Employer({
     user_id: user._id,
     company_id: company._id,

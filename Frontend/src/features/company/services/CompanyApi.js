@@ -24,6 +24,12 @@ const getCompanyByIndustryIdApi = (company_industry_id) => {
   return axios.get(URL_API);
 };
 
+// API để lấy công ty theo tỉnh/thành phố
+const getCompanyByProvinceIdApi = (province_id) => {
+  const URL_API = `/api/company/province/${province_id}`;
+  return axios.get(URL_API);
+};
+
 // API để cập nhật công ty
 const updateCompanyApi = ({ id, data }) => {
   const URL_API = `/api/company/${id}`;
@@ -52,6 +58,7 @@ export {
   createCompanyApi,
   getListCompanyApi,
   getCompanyByIdApi,
+  getCompanyByProvinceIdApi,
   getCompanyByIndustryIdApi,
   updateCompanyApi,
   deleteCompanyApi,
