@@ -248,6 +248,14 @@ const Projects = ({
   return (
     <Section ref={sectionRefs.projects}>
       <SectionTitle level={3}>Kinh nghiệm dự án</SectionTitle>
+      {projectList.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Trình bày kinh nghiệm liên quan đến các dự án nổi bật với thành tích
+            hoặc kết quả cụ thể
+          </Text>
+        </div>
+      )}
       <AddButton
         type="primary"
         icon={<PlusOutlined />}

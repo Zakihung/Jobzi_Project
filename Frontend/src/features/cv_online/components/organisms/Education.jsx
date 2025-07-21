@@ -252,6 +252,13 @@ const Education = ({
   return (
     <Section ref={sectionRefs.education}>
       <SectionTitle level={3}>Học vấn</SectionTitle>
+      {educationList.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Liệt kê quá trình học tập, bằng cấp đạt được nếu có.
+          </Text>
+        </div>
+      )}
       <AddButton
         type="primary"
         icon={<PlusOutlined />}

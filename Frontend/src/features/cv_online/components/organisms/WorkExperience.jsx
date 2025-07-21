@@ -248,6 +248,14 @@ const WorkExperience = ({
   return (
     <Section ref={sectionRefs.workExperience}>
       <SectionTitle level={3}>Kinh nghiệm làm việc</SectionTitle>
+      {workExperienceList.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Chi tiết kinh nghiệm làm việc là thông tin nhà tuyển dụng quan tâm
+            nhất
+          </Text>
+        </div>
+      )}
       <AddButton
         type="primary"
         icon={<PlusOutlined />}

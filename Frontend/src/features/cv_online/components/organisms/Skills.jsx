@@ -239,6 +239,13 @@ const Skills = ({
   return (
     <Section ref={sectionRefs.skills}>
       <SectionTitle level={3}>Năng lực chuyên môn</SectionTitle>
+      {skillList.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Liệt kê các năng lực, kỹ năng cạnh tranh
+          </Text>
+        </div>
+      )}
       <AddButton
         type="primary"
         icon={<PlusOutlined />}

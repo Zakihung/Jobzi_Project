@@ -215,6 +215,13 @@ const Highlights = ({
   return (
     <Section ref={sectionRefs.highlights}>
       <SectionTitle level={3}>Điểm nổi bật</SectionTitle>
+      {highlightsList.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Sơ lược bản thân, nêu bật thành tựu và kỹ năng cốt lõi
+          </Text>
+        </div>
+      )}
       <AddButton
         type="primary"
         icon={<PlusOutlined />}

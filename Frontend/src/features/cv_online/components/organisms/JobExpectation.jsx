@@ -311,6 +311,14 @@ const JobExpectation = ({
       <SectionTitle level={3}>
         Mong muốn tìm việc ({jobExpectations.length}/3)
       </SectionTitle>
+      {jobExpectations.length === 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary" style={{ fontWeight: 500 }}>
+            Trình bày hình thức làm việc, vị trí, mức lương mong muốn và địa
+            điểm làm việc phù hợp.
+          </Text>
+        </div>
+      )}
       {jobExpectations.length < 3 && (
         <AddButton
           type="primary"
