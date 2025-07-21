@@ -123,20 +123,22 @@ const JobPostCompany = ({ companyId }) => {
   return (
     <StyledCard>
       <CompanyHeader>
-        <CompanyLogo src={companyData.logo} size={80} />
+        <CompanyLogo src={companyData?.logo} size={80} />
         <CompanyNameSpace>
-          <CompanyName>{companyData.name}</CompanyName>
+          <CompanyName>{companyData?.name}</CompanyName>
         </CompanyNameSpace>
       </CompanyHeader>
 
       <CompanyDetails direction="vertical">
-        {companyData.size != "" && (
+        {companyData?.max_size != 0 && (
           <DetailItem>
             <DetailIcon>
               <TeamOutlined />
             </DetailIcon>
             <DetailLabel>Quy mô:</DetailLabel>
-            <DetailValue>{companyData.size}</DetailValue>
+            <DetailValue>
+              {companyData?.min_size} - {companyData?.max_size} nhân viên
+            </DetailValue>
           </DetailItem>
         )}
 
@@ -145,7 +147,7 @@ const JobPostCompany = ({ companyId }) => {
             <Box size={18} strokeWidth={1.75} />
           </DetailIcon>
           <DetailLabel>Lĩnh vực:</DetailLabel>
-          <DetailValue>{companyData.company_industry_id?.name}</DetailValue>
+          <DetailValue>{companyData?.company_industry_id?.name}</DetailValue>
         </DetailItem>
 
         <DetailItem>
@@ -153,7 +155,9 @@ const JobPostCompany = ({ companyId }) => {
             <EnvironmentOutlined />
           </DetailIcon>
           <DetailLabel>Địa điểm:</DetailLabel>
-          <DetailValue>{companyData.address}</DetailValue>
+          <DetailValue>
+            {companyData?.address}, {companyData?.province_id?.name}
+          </DetailValue>
         </DetailItem>
       </CompanyDetails>
 

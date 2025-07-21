@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "antd";
+import { Row, Col, Skeleton } from "antd";
 import styled from "styled-components";
 import ResetFilterButton from "../../../../components/organisms/ResetFilterButton";
 import PaginationSection from "../../../../components/organisms/PaginationSection";
@@ -20,11 +20,14 @@ const SectionContainer = styled.div`
   padding: 0;
 `;
 
+const SkeletonContainer = styled.div`
+  padding: 16px;
+`;
+
 const AllCompaniesSection = ({
   filters,
   handleFilterChange,
   handleResetFilters,
-  // filteredCompanies,
   currentPage,
   pageSize,
   handlePageChange,
@@ -33,7 +36,7 @@ const AllCompaniesSection = ({
 
   const companyList = Array.isArray(companies) ? companies : [];
 
-  //   Sắp xếp companies theo ngày đăng (createdAt) mới nhất
+  // Sắp xếp companies theo ngày đăng (createdAt) mới nhất
   const sortedCompanies = companyList
     ? [...companyList].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -41,10 +44,44 @@ const AllCompaniesSection = ({
     : [];
 
   if (isLoading) {
-    return <div>Đang tải...</div>;
+    return (
+      <AllCompaniesSectionWrapper>
+        <SectionContainer>
+          <Row
+            align="middle"
+            justify="space-between"
+            style={{ gap: "8px", marginBottom: "24px" }}
+          >
+            <Col>
+              <Row style={{ gap: "8px" }}>
+                <Skeleton.Button active size="large" />
+                <Skeleton.Button active size="large" />
+              </Row>
+            </Col>
+            <Col>
+              <Skeleton.Button active size="large" />
+            </Col>
+          </Row>
+          <SkeletonContainer>
+            <Row gutter={[16, 16]}>
+              {Array(6)
+                .fill()
+                .map((_, index) => (
+                  <Col key={index} xs={24} sm={12} md={8}>
+                    <Skeleton
+                      active
+                      avatar={{ size: 70, shape: "square" }}
+                      paragraph={{ rows: 3 }}
+                    />
+                  </Col>
+                ))}
+            </Row>
+          </SkeletonContainer>
+          <Skeleton.Button active size="large" style={{ marginTop: 16 }} />
+        </SectionContainer>
+      </AllCompaniesSectionWrapper>
+    );
   }
-
-  // Áp dụng bộ lọc cho companies
 
   const filterOptions = {
     industry: [

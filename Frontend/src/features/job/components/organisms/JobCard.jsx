@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Avatar, Typography, Button, Tag, Badge } from "antd";
+import { Card, Avatar, Typography, Button, Tag, Badge, Skeleton } from "antd";
 import {
   EnvironmentOutlined,
   DollarOutlined,
@@ -178,16 +178,34 @@ const PostedTime = styled(Text)`
   gap: 4px;
 `;
 
+const SkeletonContainer = styled.div`
+  padding: 16px;
+`;
+
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
   const { data: companyData, isLoading } = useGetCompanyById(job.company);
-  if (isLoading) return;
+
+  if (isLoading) {
+    return (
+      <JobCardWrapper>
+        <SkeletonContainer>
+          <Skeleton
+            active
+            avatar={{ size: 70, shape: "square" }}
+            paragraph={{ rows: 3 }}
+          />
+        </SkeletonContainer>
+      </JobCardWrapper>
+    );
+  }
+
   return (
     <JobCardWrapper onClick={() => navigate(`/jobpost/${job.id}`)}>
       <JobHeader>
         <CompanyLogo
           src={
-            job.logo ||
+            companyData?.logo ||
             "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png"
           }
           size={70}
@@ -205,7 +223,6 @@ const JobCard = ({ job }) => {
         </JobActions>
       </JobHeader>
       <JobInfo>
-        {/* <CompanyName>{job.company}</CompanyName> */}
         <JobDetails>
           <PostedTime type="secondary">{formatTime(job.posted)}</PostedTime>
           <DetailItem>

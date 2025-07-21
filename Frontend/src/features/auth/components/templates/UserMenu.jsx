@@ -1,5 +1,13 @@
 import React, { useContext } from "react";
-import { Dropdown, Avatar, Button, Space, message, Badge } from "antd";
+import {
+  Dropdown,
+  Avatar,
+  Button,
+  Space,
+  message,
+  Badge,
+  Skeleton,
+} from "antd";
 import {
   UserOutlined,
   SettingOutlined,
@@ -77,7 +85,6 @@ const NotificationButton = styled(Button)`
   }
 `;
 
-// Styled div dùng làm label trong menu items
 const MenuItemLabel = styled.div`
   display: flex;
   align-items: center;
@@ -114,6 +121,12 @@ const MenuItemLabelLogout = styled.div`
   }
 `;
 
+const SkeletonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
 const UserMenu = ({ onSignin, onSignup }) => {
   const { auth, logout, loading } = useContext(AuthContext);
   const role = auth?.user?.role;
@@ -134,11 +147,9 @@ const UserMenu = ({ onSignin, onSignup }) => {
       case "cv-management":
         navigate("/profile");
         break;
-
       case "accountE":
         navigate("/employer/account");
         break;
-
       case "account":
         navigate("/account");
         break;
@@ -151,7 +162,6 @@ const UserMenu = ({ onSignin, onSignup }) => {
     navigate("/employer/postjob");
   };
 
-  // Menu items với styled label
   const menuItems = [
     ...(role !== "employer"
       ? [
@@ -201,14 +211,14 @@ const UserMenu = ({ onSignin, onSignup }) => {
   if (loading) {
     return (
       <UserMenuContainer>
-        <Button loading size="small">
-          Đang tải...
-        </Button>
+        <SkeletonContainer>
+          {role === "employer" && <Skeleton.Button active size="large" />}
+          <Skeleton.Button active shape="circle" size="large" />
+        </SkeletonContainer>
       </UserMenuContainer>
     );
   }
 
-  // Nếu chưa đăng nhập, hiển thị nút đăng nhập/đăng ký
   if (!auth.isAuthenticated) {
     return (
       <UserMenuContainer>
@@ -217,7 +227,6 @@ const UserMenu = ({ onSignin, onSignup }) => {
     );
   }
 
-  // Nếu đã đăng nhập, hiển thị menu người dùng
   return (
     <UserMenuContainer>
       {role === "employer" && (
@@ -228,7 +237,7 @@ const UserMenu = ({ onSignin, onSignup }) => {
       <NotificationButton
         icon={
           <Badge
-            count={5} // Example notification count
+            count={5}
             style={{
               backgroundColor: "#ff0000",
               top: "-3px",

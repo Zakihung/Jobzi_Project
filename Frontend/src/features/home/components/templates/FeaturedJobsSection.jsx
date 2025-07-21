@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Typography, Button } from "antd";
+import { Row, Col, Typography, Button, Skeleton } from "antd";
 import { FireOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import JobCard from "../../../job/components/organisms/JobCard";
@@ -76,6 +76,10 @@ const ViewAllBtn = styled(Button)`
   }
 `;
 
+const SkeletonContainer = styled.div`
+  padding: 16px;
+`;
+
 const FeaturedJobsSection = () => {
   const navigate = useNavigate();
   const { data: jobs, isLoading } = useGetAllJobPosts();
@@ -86,7 +90,33 @@ const FeaturedJobsSection = () => {
     : [];
 
   if (isLoading) {
-    return <div>Đang tải...</div>;
+    return (
+      <FeaturedJobsSectionWrapper>
+        <SectionContainer>
+          <SectionHeader>
+            <SectionTitleGroup>
+              <Skeleton active title={{ width: "30%" }} paragraph={false} />
+            </SectionTitleGroup>
+            <Skeleton.Button active size="large" />
+          </SectionHeader>
+          <SkeletonContainer>
+            <Row gutter={[16, 16]}>
+              {Array(6)
+                .fill()
+                .map((_, index) => (
+                  <Col key={index} xs={24} sm={12} md={8}>
+                    <Skeleton
+                      active
+                      avatar={{ size: 70, shape: "square" }}
+                      paragraph={{ rows: 3 }}
+                    />
+                  </Col>
+                ))}
+            </Row>
+          </SkeletonContainer>
+        </SectionContainer>
+      </FeaturedJobsSectionWrapper>
+    );
   }
 
   return (
@@ -98,9 +128,6 @@ const FeaturedJobsSection = () => {
               <SectionIcon />
               Việc làm nổi bật
             </SectionTitle>
-            {/* <SectionSubtitle>
-              Những cơ hội việc làm tốt nhất được cập nhật hàng ngày
-            </SectionSubtitle> */}
           </SectionTitleGroup>
           <ViewAllBtn type="primary" ghost onClick={() => navigate("/search")}>
             Xem tất cả <RightOutlined />
