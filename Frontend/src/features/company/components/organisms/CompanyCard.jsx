@@ -1,6 +1,10 @@
 import React from "react";
 import { Card, Avatar, Typography, Button, Tag } from "antd";
 import styled from "styled-components";
+import { EnvironmentOutlined, StarOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import useGetEmployerByCompanyId from "../../../employer/hooks/useGetEmployerByCompanyId";
+import useGetJobPostsByEmployerId from "../../../postjob/hooks/Job_Post/useGetJobPostsByEmployerId";
 
 const { Title, Text } = Typography;
 
@@ -26,7 +30,6 @@ const CompanyHeader = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
   width: 100%;
 `;
 
@@ -90,8 +93,12 @@ const JobSectionTitle = styled(Text)`
 `;
 
 const CompanyCard = ({ company }) => {
+  const { data: employerData } = useGetEmployerByCompanyId(company._id);
+  const employerId = employerData?.data._id;
+  const { data: jobpostData } = useGetJobPostsByEmployerId(employerId);
+  const navigate = useNavigate();
   return (
-    <CompanyCardWrapper>
+    <CompanyCardWrapper onClick={() => navigate(`/company/${company._id}`)}>
       <CompanyHeader>
         <CompanyLogo
           src={
@@ -104,16 +111,11 @@ const CompanyCard = ({ company }) => {
           <CompanyName className="company-name">{company.name}</CompanyName>
           <CompanyIndustry>{company.company_industry_id?.name}</CompanyIndustry>
           <DetailText>
-            {company.address}{" "}
-            {company.size != "" && (
-              <DetailText>• {company.size} nhân viên</DetailText>
-            )}
+            <EnvironmentOutlined /> {company.province_id?.name}{" "}
           </DetailText>
         </CompanyContent>
       </CompanyHeader>
-      <JobSectionTitle>
-        Việc làm ({company.totalJobs || company.jobs?.length || 0})
-      </JobSectionTitle>
+      <JobSectionTitle>Việc làm ({jobpostData?.length || 0})</JobSectionTitle>
     </CompanyCardWrapper>
   );
 };

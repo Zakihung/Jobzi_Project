@@ -95,15 +95,24 @@ const CompanyInfo = ({ company }) => {
         <StyledCard>
           <ContentSection>
             <SectionTitle level={4}>Giới thiệu công ty</SectionTitle>
-            <SectionContent>{company.introduction}</SectionContent>
+            <SectionContent>
+              {company.introduction && company.introduction.trim() !== ""
+                ? company.introduction
+                : "Chưa điền thông tin"}
+            </SectionContent>
           </ContentSection>
           <ContentSection>
             <SectionTitle level={4}>Nghiệp vụ kinh doanh</SectionTitle>
-            <SectionList>
-              {company.businessOperations.map((op, index) => (
-                <li key={index}>{op}</li>
-              ))}
-            </SectionList>
+            {company.businessOperations &&
+            company.businessOperations.length > 0 ? (
+              <SectionList>
+                {company.businessOperations.map((op, index) => (
+                  <li key={index}>{op}</li>
+                ))}
+              </SectionList>
+            ) : (
+              <SectionContent>Chưa điền thông tin</SectionContent>
+            )}
           </ContentSection>
         </StyledCard>
       </Col>
@@ -113,19 +122,27 @@ const CompanyInfo = ({ company }) => {
         <StyledCard>
           <ContentSection>
             <SectionTitle level={4}>Quy định công ty</SectionTitle>
-            <SectionList>
-              {company.regulations.map((reg, index) => (
-                <li key={index}>{reg}</li>
-              ))}
-            </SectionList>
+            {company.regulations && company.regulations.length > 0 ? (
+              <SectionList>
+                {company.regulations.map((op, index) => (
+                  <li key={index}>{op}</li>
+                ))}
+              </SectionList>
+            ) : (
+              <SectionContent>Chưa điền thông tin</SectionContent>
+            )}
           </ContentSection>
           <ContentSection>
             <SectionTitle level={4}>Phúc lợi</SectionTitle>
-            <SectionList>
-              {company.benefits.map((benefit, index) => (
-                <li key={index}>{benefit}</li>
-              ))}
-            </SectionList>
+            {company.benefits && company.benefits.length > 0 ? (
+              <SectionList>
+                {company.benefits.map((op, index) => (
+                  <li key={index}>{op}</li>
+                ))}
+              </SectionList>
+            ) : (
+              <SectionContent>Chưa điền thông tin</SectionContent>
+            )}
           </ContentSection>
         </StyledCard>
       </Col>

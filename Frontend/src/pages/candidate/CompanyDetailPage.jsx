@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import { Layout, Row, Col, Tabs } from "antd";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Layout, Row, Col, Tabs, Spin, Typography, Skeleton } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import CompanyBasicInfo from "../../features/company/components/templates/CompanyBasicInfo";
 import CompanyInfo from "../../features/company/components/templates/CompanyInfo";
 import CompanyJobPosition from "../../features/company/components/templates/CompanyJobPosition";
+import useGetCompanyById from "../../features/company/hooks/Company/useGetCompanyById";
 
 const { TabPane } = Tabs;
+const { Text } = Typography;
 
 const StyledLayout = styled(Layout)`
   min-height: 100vh;
@@ -16,45 +18,29 @@ const StyledLayout = styled(Layout)`
 
 const StyledTabs = styled(Tabs)`
   .ant-tabs-tab {
+    font-size: 16px;
     font-weight: 600;
   }
 `;
 
-const CompanyDetailPage = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+const ErrorText = styled(Text)`
+  color: #ff4d4f;
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  margin: 40px 0;
+`;
 
-  // Sample company data
-  const company = {
-    id: 1,
-    name: "Công ty ABC",
-    logo: "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
-    company_industry_id: "",
-    website_url: "",
-    min_size: "100",
-    max_size: "500",
-    address: "Tòa nhà ABC, Quận 1",
-    province_id: "",
-    introduction:
-      "Công ty ABC là một công ty công nghệ hàng đầu, chuyên cung cấp các giải pháp phần mềm sáng tạo. Với hơn 10 năm kinh nghiệm, chúng tôi tự hào mang đến các sản phẩm và dịch vụ chất lượng cao cho khách hàng toàn cầu.",
-    businessOperations: [
-      "Phát triển phần mềm tùy chỉnh.",
-      "Giải pháp trí tuệ nhân tạo và học máy.",
-      "Dịch vụ tư vấn công nghệ thông tin.",
-      "Quản lý hệ thống đám mây.",
-    ],
-    regulations: [
-      "Tuân thủ quy định làm việc từ 9:00 - 18:00, Thứ Hai - Thứ Sáu.",
-      "Khuyến khích môi trường làm việc minh bạch và hợp tác.",
-      "Đánh giá hiệu suất định kỳ hàng quý.",
-    ],
-    benefits: [
-      "Bảo hiểm sức khỏe toàn diện.",
-      "Thưởng hiệu suất và các dịp lễ, Tết.",
-      "Cơ hội đào tạo và phát triển nghề nghiệp.",
-      "Môi trường làm việc năng động, sáng tạo.",
-    ],
-  };
+const SkeletonContainer = styled.div`
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+`;
+
+const CompanyDetailPage = () => {
+  const { companyId } = useParams();
+  const navigate = useNavigate();
+  const { data: companyData, isLoading, error } = useGetCompanyById(companyId);
 
   // Sample job data
   const jobs = [
@@ -88,6 +74,27 @@ const CompanyDetailPage = () => {
     navigate(`/jobs/${jobId}`);
   };
 
+  // Xử lý dữ liệu công ty từ API
+  const company = companyData
+    ? {
+        id: companyData._id,
+        name: companyData.name,
+        logo:
+          companyData.logo ||
+          "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+        company_industry: companyData.company_industry_id?.name || "",
+        website_url: companyData.website_url || "",
+        min_size: companyData.min_size || 0,
+        max_size: companyData.max_size || 0,
+        address: companyData.address || "",
+        province: companyData.province_id?.name || "",
+        introduction: companyData.introduction || "",
+        businessOperations: companyData.businessOperations || [],
+        regulations: companyData.regulations || [],
+        benefits: companyData.benefits || [],
+      }
+    : null;
+
   return (
     <StyledLayout>
       <Row justify="center">
@@ -101,24 +108,43 @@ const CompanyDetailPage = () => {
           >
             {/* Basic Company Info */}
             <Col span={24}>
-              <CompanyBasicInfo company={company} />
+              {isLoading ? (
+                <SkeletonContainer>
+                  <Skeleton active avatar paragraph={{ rows: 4 }} />
+                </SkeletonContainer>
+              ) : error || !company ? (
+                <ErrorText>
+                  {error?.response?.data?.message ||
+                    "Không tìm thấy thông tin công ty"}
+                </ErrorText>
+              ) : (
+                <CompanyBasicInfo company={company} />
+              )}
             </Col>
 
             {/* Tabs and Content */}
-            <Col span={24}>
-              <StyledTabs defaultActiveKey="introduction">
-                <TabPane tab="Giới thiệu công ty" key="introduction">
-                  <CompanyInfo company={company} />
-                </TabPane>
-                <TabPane tab="Vị trí tuyển dụng" key="jobs">
-                  <CompanyJobPosition
-                    jobs={jobs}
-                    loading={loading}
-                    onViewJob={handleViewJob}
-                  />
-                </TabPane>
-              </StyledTabs>
-            </Col>
+            {!isLoading && !error && company ? (
+              <Col span={24}>
+                <StyledTabs defaultActiveKey="introduction">
+                  <TabPane tab="Giới thiệu công ty" key="introduction">
+                    <CompanyInfo company={company} />
+                  </TabPane>
+                  <TabPane tab="Vị trí tuyển dụng" key="jobs">
+                    <CompanyJobPosition
+                      jobs={jobs}
+                      loading={false}
+                      onViewJob={handleViewJob}
+                    />
+                  </TabPane>
+                </StyledTabs>
+              </Col>
+            ) : isLoading ? (
+              <Col span={24}>
+                <SkeletonContainer>
+                  <Skeleton active paragraph={{ rows: 6 }} />
+                </SkeletonContainer>
+              </Col>
+            ) : null}
           </Row>
         </Col>
       </Row>

@@ -43,8 +43,8 @@ const deleteCompanyApi = (id) => {
 };
 
 // API để tải lên logo công ty
-const uploadLogoCompanyApi = ({ id, logo }) => {
-  const URL_API = `/api/company/${id}/upload-logo`;
+const uploadLogoCompanyApi = ({ company_id, logo }) => {
+  const URL_API = `/api/company/${company_id}/upload-logo`;
   const formData = new FormData();
   formData.append("logo", logo);
   return axios.post(URL_API, formData, {
