@@ -1,11 +1,15 @@
-import React from "react";
-import { Card, Menu, List, Typography, Space } from "antd";
+import React, { useContext } from "react";
+import { Card, Menu, List, Typography, Space, Spin, Button } from "antd";
 import {
   FileTextOutlined,
   CalendarOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
+import { AuthContext } from "../../../../contexts/auth.context";
+import useGetJobPostSaveByCandidate from "../../../candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
+import JobGrid from "../../../job/components/templates/JobGrid";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
@@ -70,13 +74,51 @@ const ListIcon = styled.div`
   font-size: 20px;
 `;
 
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 40px 0;
+`;
+
+const EmptyText = styled(Text)`
+  display: block;
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 16px;
+`;
+
+const ExploreButton = styled(Button)`
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 40px;
+  padding: 0 24px;
+  color: #ffffff !important;
+
+  &:hover {
+    background: #4c6ef5 !important;
+    border-color: #4c6ef5 !important;
+    box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+  }
+`;
+
 const JobMenuCard = ({
   selectedMenu,
   onMenuClick,
   appliedJobs,
   interviews,
-  followedJobs,
 }) => {
+  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
+  const candidateId = auth?.user?.candidate_id;
+  const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
+    useGetJobPostSaveByCandidate(candidateId);
+
+  // Sắp xếp savedJobPosts theo createdAt giảm dần (mới nhất trước)
+  const sortedJobPosts = [...savedJobPosts].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
   const renderContent = () => {
     switch (selectedMenu) {
       case "applied":
@@ -129,28 +171,40 @@ const JobMenuCard = ({
             )}
           />
         );
-      case "followed":
+      case "saved":
+        if (isLoadingSavedJobPosts) {
+          return <Spin tip="Đang tải bài đăng đã lưu..." />;
+        }
+        if (!savedJobPosts || savedJobPosts.length === 0) {
+          return (
+            <EmptyState>
+              <EmptyText>Bạn chưa lưu việc làm nào!</EmptyText>
+              <ExploreButton onClick={() => navigate("/jobs")}>
+                Khám phá việc làm
+              </ExploreButton>
+            </EmptyState>
+          );
+        }
         return (
-          <List
-            dataSource={followedJobs}
-            renderItem={(item) => (
-              <StyledListItem>
-                <List.Item.Meta
-                  avatar={
-                    <ListIcon>
-                      <HeartOutlined />
-                    </ListIcon>
-                  }
-                  title={<Text strong>{item.title}</Text>}
-                  description={
-                    <Space direction="vertical" size={4}>
-                      <Text>{item.company}</Text>
-                      <Text type="secondary">Quan tâm: {item.date}</Text>
-                    </Space>
-                  }
-                />
-              </StyledListItem>
-            )}
+          <JobGrid
+            jobs={
+              sortedJobPosts?.map((item) => ({
+                _id: item.job_post_id._id,
+                title: item.job_post_id.title,
+                locations: [
+                  {
+                    province:
+                      item.job_post_id.locations?.[0]?.province ||
+                      "Không xác định",
+                  },
+                ],
+                min_salary_range: item.job_post_id.min_salary_range || 0,
+                max_salary_range: item.job_post_id.max_salary_range || 0,
+                skills: item.job_post_id.skills || [],
+                createdAt: item.createdAt,
+              })) || []
+            }
+            fullWidth={true}
           />
         );
       default:
@@ -171,8 +225,8 @@ const JobMenuCard = ({
         <Menu.Item key="interviews" icon={<CalendarOutlined />}>
           Phỏng vấn
         </Menu.Item>
-        <Menu.Item key="followed" icon={<HeartOutlined />}>
-          Quan tâm
+        <Menu.Item key="saved" icon={<HeartOutlined />}>
+          Đã lưu
         </Menu.Item>
       </StyledMenu>
       <MenuContent>{renderContent()}</MenuContent>

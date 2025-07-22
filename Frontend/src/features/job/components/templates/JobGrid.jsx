@@ -2,11 +2,16 @@ import React from "react";
 import { Row, Col } from "antd";
 import JobCard from "../organisms/JobCard";
 
-const JobGrid = ({ jobs }) => {
+const JobGrid = ({ jobs, fullWidth = false }) => {
   return (
     <Row gutter={[24, 24]}>
       {jobs.map((job) => (
-        <Col xs={24} md={12} xl={8} key={job._id}>
+        <Col
+          xs={24}
+          md={fullWidth ? 24 : 12}
+          xl={fullWidth ? 24 : 8}
+          key={job._id}
+        >
           <JobCard
             job={{
               id: job._id,

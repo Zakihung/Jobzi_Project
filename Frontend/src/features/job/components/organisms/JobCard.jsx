@@ -1,15 +1,20 @@
-import React from "react";
-import { Card, Avatar, Typography, Button, Tag, Badge, Skeleton } from "antd";
+import React, { useContext, useState, useEffect } from "react";
+import { Card, Avatar, Typography, Button, Tag, Skeleton, App } from "antd";
 import {
   EnvironmentOutlined,
   DollarOutlined,
-  ClockCircleOutlined,
   HeartOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { formatTime } from "../../../../constants/formatTime";
 import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
 import { useNavigate } from "react-router-dom";
+import useSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useSaveJobPost";
+import useUnSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useUnSaveJobPost";
+import useGetJobPostSaveByCandidate from "../../../candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
+import { AuthContext } from "../../../../contexts/auth.context";
+import SigninRequiredModal from "../../../../components/organisms/SigninRequiredModal";
 
 const { Title, Text } = Typography;
 
@@ -81,10 +86,15 @@ const ActionBtn = styled(Button)`
 `;
 
 const SaveBtn = styled(ActionBtn)`
+  font-size: 17px;
+  transition: background-color 0.3s;
+
   &.saved {
-    background: #ff4d4f;
-    color: #ffffff;
-    border-color: #ff4d4f;
+    background-color: #fff1f0;
+    &:hover {
+      border-color: #ffe1e1 !important;
+      background-color: #ffe1e1 !important;
+    }
   }
 `;
 
@@ -183,10 +193,68 @@ const SkeletonContainer = styled.div`
 `;
 
 const JobCard = ({ job }) => {
+  const { auth } = useContext(AuthContext);
+  const candidateId = auth?.user?.candidate_id;
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const { data: companyData, isLoading } = useGetCompanyById(job.company);
+  const { mutate: saveJobPost, isLoading: isSaving } = useSaveJobPost();
+  const { mutate: unSaveJobPost, isLoading: isUnSaving } = useUnSaveJobPost();
+  const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
+    useGetJobPostSaveByCandidate(candidateId);
+  const [isSaved, setIsSaved] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  if (isLoading) {
+  // Kiểm tra trạng thái lưu bài đăng công việc từ backend
+  useEffect(() => {
+    if (savedJobPosts && job.id) {
+      const isJobSaved = savedJobPosts.some(
+        (savedJob) => savedJob.job_post_id._id === job.id
+      );
+      setIsSaved(isJobSaved);
+    }
+  }, [savedJobPosts, job.id]);
+
+  const handleSaveJob = () => {
+    if (!candidateId) {
+      setModalVisible(true);
+      return;
+    }
+
+    const data = { candidate_id: candidateId, job_post_id: job.id };
+    if (isSaved) {
+      unSaveJobPost(data, {
+        onSuccess: () => {
+          message.success("Đã hủy lưu việc làm này");
+          setIsSaved(false); // Cập nhật trạng thái giao diện
+        },
+        onError: (error) => {
+          message.error(
+            error.response?.data?.message || "Hủy lưu việc làm thất bại"
+          );
+        },
+      });
+    } else {
+      saveJobPost(data, {
+        onSuccess: () => {
+          message.success("Đã lưu việc làm này");
+          setIsSaved(true); // Cập nhật trạng thái giao diện
+        },
+        onError: (error) => {
+          message.error(
+            error.response?.data?.message || "Lưu việc làm thất bại"
+          );
+        },
+      });
+    }
+  };
+
+  // Handle modal cancel
+  const handleModalCancel = () => {
+    setModalVisible(false);
+  };
+
+  if (isLoading && isLoadingSavedJobPosts) {
     return (
       <JobCardWrapper>
         <SkeletonContainer>
@@ -217,18 +285,31 @@ const JobCard = ({ job }) => {
         <JobActions>
           <SaveBtn
             type="text"
-            icon={<HeartOutlined />}
-            className={job.saved ? "saved" : ""}
+            icon={
+              isSaved ? (
+                <HeartFilled style={{ color: "#ff4d4f" }} />
+              ) : (
+                <HeartOutlined />
+              )
+            }
+            className={isSaved ? "saved" : ""}
+            onClick={(e) => {
+              e.stopPropagation(); // Ngăn sự kiện click lan sang JobCardWrapper
+              handleSaveJob();
+            }}
+            loading={isSaving || isUnSaving}
           />
         </JobActions>
       </JobHeader>
       <JobInfo>
         <JobDetails>
           <PostedTime type="secondary">{formatTime(job.posted)}</PostedTime>
-          <DetailItem>
-            <DetailIcon as={EnvironmentOutlined} />
-            <DetailText>{job.location}</DetailText>
-          </DetailItem>
+          {job.location != "Không xác định" && (
+            <DetailItem>
+              <DetailIcon as={EnvironmentOutlined} />
+              <DetailText>{job.location}</DetailText>
+            </DetailItem>
+          )}
           <DetailItem>
             <DetailIcon as={DollarOutlined} />
             <SalaryText>
@@ -242,6 +323,10 @@ const JobCard = ({ job }) => {
           ))}
         </JobTags>
       </JobInfo>
+      <SigninRequiredModal
+        visible={modalVisible}
+        onCancel={handleModalCancel}
+      />
     </JobCardWrapper>
   );
 };

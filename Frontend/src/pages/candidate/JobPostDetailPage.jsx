@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Row, Col, message } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
@@ -13,6 +13,7 @@ import useGetResumeFilesByCandidateId from "../../features/resume_file/hooks/use
 import useCreateResumeFile from "../../features/resume_file/hooks/useCreateResumeFile";
 import useCreateApplication from "../../features/application/hooks/useCreateApplication";
 import useGetOnlineResume from "../../features/cv_online/hooks/useGetOnlineResume";
+import useGetJobPostSaveByCandidate from "../../features/candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
 import SkeletonJobPostTitle from "../../components/skeletons/SkeletonJobPostTitle";
 import SkeletonJobPostDetail from "../../components/skeletons/SkeletonJobPostDetail";
 import SkeletonJobPostCompany from "../../components/skeletons/SkeletonJobPostCompany";
@@ -47,8 +48,8 @@ const NoResults = styled.div`
 const JobPostDetailPage = () => {
   const navigate = useNavigate();
   const { jobPostId } = useParams();
-  const [isSaved, setIsSaved] = useState(false);
   const { isLoggedIn, auth } = useAuth();
+  const [isSaved, setIsSaved] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [applyModalVisible, setApplyModalVisible] = useState(false);
   const { data: jobPostData, isLoading: isLoadingJobPostData } =
@@ -57,6 +58,8 @@ const JobPostDetailPage = () => {
     auth?.user?.candidate_id
   );
   const { data: onlineResume } = useGetOnlineResume(auth?.user?.candidate_id);
+  const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
+    useGetJobPostSaveByCandidate(auth?.user?.candidate_id);
   const createResumeFile = useCreateResumeFile();
   const createApplication = useCreateApplication();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,9 +67,19 @@ const JobPostDetailPage = () => {
   const companyId = jobPostData?.employer_id?.company_id;
   const candidateId = auth?.user?.candidate_id;
 
+  // Kiểm tra trạng thái lưu bài đăng công việc từ backend
+  useEffect(() => {
+    if (savedJobPosts && jobPostId) {
+      const isJobSaved = savedJobPosts.some(
+        (savedJob) => savedJob.job_post_id._id === jobPostId
+      );
+      setIsSaved(isJobSaved);
+    }
+  }, [savedJobPosts, jobPostId]);
+
   // Xử lý lưu công việc
-  const handleSaveJob = () => {
-    setIsSaved(!isSaved);
+  const handleSaveJob = (newSavedStatus) => {
+    setIsSaved(newSavedStatus);
   };
 
   // Xử lý hiển thị modal ứng tuyển
@@ -130,7 +143,7 @@ const JobPostDetailPage = () => {
     setApplyModalVisible(false);
   };
 
-  if (isLoadingJobPostData) {
+  if (isLoadingJobPostData && isLoadingSavedJobPosts) {
     return (
       <StyledLayout>
         <StyledContent>

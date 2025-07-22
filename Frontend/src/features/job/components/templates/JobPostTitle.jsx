@@ -1,5 +1,5 @@
-import React from "react";
-import { Typography, Button, Tag, Card, Space, Row, Col } from "antd";
+import React, { useContext, useState } from "react";
+import { Typography, Button, Tag, Card, Row, Col, App } from "antd";
 import {
   HeartOutlined,
   HeartFilled,
@@ -11,6 +11,10 @@ import {
 import { Send } from "lucide-react";
 import styled from "styled-components";
 import { formatDate } from "../../../../constants/formatDate";
+import useSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useSaveJobPost";
+import useUnSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useUnSaveJobPost";
+import { AuthContext } from "../../../../contexts/auth.context";
+import SigninRequiredModal from "../../../../components/organisms/SigninRequiredModal";
 
 const { Title, Text } = Typography;
 
@@ -160,9 +164,73 @@ const TagContent = styled.div`
 `;
 
 const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
+  const { auth } = useContext(AuthContext);
+  const candidateId = auth?.user?.candidate_id;
+  const { message } = App.useApp();
+  const { mutate: saveJobPost, isLoading: isSaving } = useSaveJobPost();
+  const { mutate: unSaveJobPost, isLoading: isUnSaving } = useUnSaveJobPost();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Handle modal cancel
+  const handleModalCancel = () => {
+    setModalVisible(false);
+  };
+
+  const handleSaveJob = () => {
+    if (!candidateId) {
+      setModalVisible(true);
+      return;
+    }
+
+    const data = { candidate_id: candidateId, job_post_id: job._id };
+    if (isSaved) {
+      unSaveJobPost(data, {
+        onSuccess: () => {
+          message.success("Đã hủy lưu việc làm này");
+          onSaveJob(false); // Cập nhật trạng thái isSaved
+        },
+        onError: (error) => {
+          message.error(
+            error.response?.data?.message || "Hủy lưu việc làm thất bại"
+          );
+        },
+      });
+    } else {
+      saveJobPost(data, {
+        onSuccess: () => {
+          message.success("Đã lưu việc làm này");
+          onSaveJob(true); // Cập nhật trạng thái isSaved
+        },
+        onError: (error) => {
+          message.error(
+            error.response?.data?.message || "Lưu việc làm thất bại"
+          );
+        },
+      });
+    }
+  };
+
+  const handleApply = () => {
+    if (!candidateId) {
+      setModalVisible(true);
+      return;
+    }
+    onApply(job._id);
+  };
+
+  const handleAnalyze = () => {
+    if (!candidateId) {
+      setModalVisible(true);
+      return;
+    }
+    // Thêm logic cho phân tích hồ sơ AI nếu cần
+    message.info("Chức năng phân tích hồ sơ AI đang được phát triển!");
+  };
+
   const salary = `${(job.min_salary_range / 1000000).toFixed(0)}-${(
     job.max_salary_range / 1000000
   ).toFixed(0)} triệu`;
+
   return (
     <StyledCard>
       <Row>
@@ -219,31 +287,38 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           <ApplyButton
             type="primary"
             size="large"
-            onClick={() => onApply(job._id)} // Truyền jobId
+            onClick={handleApply}
             icon={<Send size={18} />}
           >
             Ứng tuyển ngay
           </ApplyButton>
         </Col>
         <Col span={6}>
-          <AnalyzeButton>Phân tích hồ sơ AI (Beta)</AnalyzeButton>
+          <AnalyzeButton onClick={handleAnalyze}>
+            Phân tích hồ sơ AI (Beta)
+          </AnalyzeButton>
         </Col>
         <Col span={5}>
           <SaveButton
             type="text"
             icon={
               isSaved ? (
-                <HeartFilled style={{ color: "#ff4d4f" }} />
+                <HeartFilled style={{ color: "#ff4d4f", fontSize: 20 }} />
               ) : (
-                <HeartOutlined />
+                <HeartOutlined style={{ fontSize: 20 }} />
               )
             }
-            onClick={onSaveJob}
+            onClick={handleSaveJob}
+            loading={isSaving || isUnSaving}
           >
             {isSaved ? "Đã lưu" : "Lưu việc làm"}
           </SaveButton>
         </Col>
       </Row>
+      <SigninRequiredModal
+        visible={modalVisible}
+        onCancel={handleModalCancel}
+      />
     </StyledCard>
   );
 };

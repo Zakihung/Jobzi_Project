@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
-const CandidateSaveJobPost = require("../models/cadidate_save_job_post.model");
+const CandidateSaveJobPost = require("../models/candidate_save_job_post.model");
 
 const candidateSaveJobPostService = async (saveData) => {
   const { candidate_id, job_post_id } = saveData;
