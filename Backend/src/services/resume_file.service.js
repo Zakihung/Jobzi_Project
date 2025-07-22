@@ -17,7 +17,7 @@ const createResumeFileService = async (candidate_id, name, file) => {
   let result = await ResumeFile.create({
     candidate_id,
     name,
-    path: file.path, // Lưu URL từ Cloudinary
+    path: file.path,
   });
 
   return result;
@@ -58,7 +58,6 @@ const updateResumeFileService = async (resume_file_id, updateData, file) => {
   }
 
   if (file) {
-    // Xóa file cũ trên Cloudinary nếu tồn tại
     if (resumeFile.path) {
       const publicId = resumeFile.path.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`resumes/${publicId}`, {
@@ -67,7 +66,7 @@ const updateResumeFileService = async (resume_file_id, updateData, file) => {
           : "raw",
       });
     }
-    resumeFile.path = file.path; // Cập nhật URL file mới từ Cloudinary
+    resumeFile.path = file.path;
   }
 
   resumeFile.name = name !== undefined ? name : resumeFile.name;
@@ -89,7 +88,7 @@ const deleteResumeFileService = async (resume_file_id) => {
         : "raw",
     });
   }
-  let result = await ResumeFile.deleteOne({ _id: resume_file_id }); // Xóa cứng khỏi database
+  let result = await ResumeFile.deleteOne({ _id: resume_file_id });
   return result;
 };
 

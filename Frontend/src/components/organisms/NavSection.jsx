@@ -46,7 +46,7 @@ const NavSection = () => {
 
   const menuCandidateItems = [
     { key: "home", label: "Trang chủ", path: "/" },
-    { key: "jobs", label: "Tìm kiếm", path: "/jobs" },
+    { key: "jobs", label: "Việc làm", path: "/jobs" },
     { key: "companies", label: "Công ty", path: "/companies" },
     { key: "about", label: "Về chúng tôi", path: "/about" },
   ];

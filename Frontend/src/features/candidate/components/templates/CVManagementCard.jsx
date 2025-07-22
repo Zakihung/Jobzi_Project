@@ -133,6 +133,8 @@ const UploadCVButton = styled(Button)`
     background: #4c6ef5 !important;
     border-color: #4c6ef5 !important;
     box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+ 2014-4c6ef5 !important;
+    box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
   }
 
   @media (max-width: 768px) {
@@ -143,19 +145,29 @@ const UploadCVButton = styled(Button)`
 const CVManagementCard = ({
   resumeFiles,
   isLoading,
-  // onPreviewFile,
+  onPreviewFile,
   onEditFile,
   onDeleteFile,
   onUploadFile,
 }) => {
+  const isPreviewable = (file) => {
+    if (!file.path) return false;
+    // Kiểm tra phần mở rộng file hoặc URL từ Cloudinary
+    const extension = file.path.split(".").pop()?.toLowerCase();
+    const supportedFormats = ["pdf", "jpg", "jpeg", "png"];
+    // Kiểm tra thêm trường hợp Cloudinary URL không có phần mở rộng rõ ràng
+    const isRawFile = file.path.includes("/raw/upload/");
+    return supportedFormats.includes(extension) || isRawFile;
+  };
+
   return (
     <StyledCard>
       <CVManagementTitle level={5}>
-        Quản lý tệp CV ({resumeFiles?.length || 0}/3)
+        Quản lý tệpCV ({resumeFiles?.length || 0}/3)
       </CVManagementTitle>
       {isLoading ? (
         <List
-          dataSource={[1]} // giả lập loading
+          dataSource={[1]}
           renderItem={() => (
             <CVItem>
               <List.Item.Meta
@@ -187,14 +199,17 @@ const CVManagementCard = ({
                   placement="bottomRight"
                   overlay={
                     <StyledMenu>
-                      {/* <Menu.Item
+                      <Menu.Item
                         key="preview"
-                        onClick={() => onPreviewFile(file)}
+                        onClick={() =>
+                          isPreviewable(file) && onPreviewFile(file)
+                        }
+                        disabled={!isPreviewable(file)}
                       >
                         Xem trước
-                      </Menu.Item> */}
+                      </Menu.Item>
                       <Menu.Item key="edit" onClick={() => onEditFile(file)}>
-                        Chỉnh sửa
+                        Sửa tên
                       </Menu.Item>
                       <Menu.Item
                         key="delete"

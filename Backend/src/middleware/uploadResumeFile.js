@@ -8,20 +8,40 @@ const storage = new CloudinaryStorage({
     const isImage = ["image/jpeg", "image/png", "image/jpg"].includes(
       file.mimetype
     );
+    const isPDF = file.mimetype === "application/pdf";
     return {
-      folder: "resumes", // Thư mục lưu trữ file resume trên Cloudinary
-      allowed_formats: ["pdf", "doc", "docx", "jpg", "png", "jpeg"], // Cho phép PDF, DOC, DOCX, JPG, PNG, JPEG
-      resource_type: isImage ? "image" : "raw", // Image cho ảnh, raw cho tài liệu
+      folder: "resumes",
+      allowed_formats: ["pdf", "jpg", "png", "jpeg"],
+      resource_type: isImage ? "image" : isPDF ? "raw" : null,
+      public_id: `resume_${Date.now()}.${
+        file.mimetype === "application/pdf"
+          ? "pdf"
+          : file.mimetype.split("/")[1]
+      }`,
       transformation: isImage
         ? [
-            { width: 1000, height: 1000, crop: "limit" }, // Giới hạn kích thước ảnh
-            { quality: "auto:best" }, // Tự động điều chỉnh chất lượng ảnh
+            { width: 1000, height: 1000, crop: "limit" },
+            { quality: "auto:best" },
           ]
-        : null, // Không áp dụng transformation cho tài liệu
+        : null,
     };
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+    ];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error("Chỉ hỗ trợ PDF, JPG, PNG, JPEG"), false);
+    }
+    cb(null, true);
+  },
+});
 
 module.exports = upload;

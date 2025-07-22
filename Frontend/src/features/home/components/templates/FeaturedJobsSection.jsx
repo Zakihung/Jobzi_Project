@@ -129,7 +129,7 @@ const FeaturedJobsSection = () => {
               Việc làm nổi bật
             </SectionTitle>
           </SectionTitleGroup>
-          <ViewAllBtn type="primary" ghost onClick={() => navigate("/search")}>
+          <ViewAllBtn type="primary" ghost onClick={() => navigate("/jobs")}>
             Xem tất cả <RightOutlined />
           </ViewAllBtn>
         </SectionHeader>
