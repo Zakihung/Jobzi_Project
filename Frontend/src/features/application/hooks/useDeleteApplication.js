@@ -9,12 +9,12 @@ const useDeleteApplication = () => {
   return useMutation({
     mutationFn: (id) => deleteApplicationApi(id),
     onSuccess: () => {
-      message.success("Xóa ứng tuyển thành công!");
+      message.success("Hủy ứng tuyển thành công!");
       queryClient.invalidateQueries(["applications"]);
       queryClient.invalidateQueries(["applicationsByCandidate"]);
     },
     onError: (error) => {
-      message.error(`Xóa ứng tuyển thất bại: ${error.message}`);
+      message.error(`Hủy ứng tuyển thất bại: ${error.message}`);
     },
   });
 };

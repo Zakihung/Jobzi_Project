@@ -304,12 +304,10 @@ const JobCard = ({ job }) => {
       <JobInfo>
         <JobDetails>
           <PostedTime type="secondary">{formatTime(job.posted)}</PostedTime>
-          {job.location != "Không xác định" && (
-            <DetailItem>
-              <DetailIcon as={EnvironmentOutlined} />
-              <DetailText>{job.location}</DetailText>
-            </DetailItem>
-          )}
+          <DetailItem>
+            <DetailIcon as={EnvironmentOutlined} />
+            <DetailText>{job.location}</DetailText>
+          </DetailItem>
           <DetailItem>
             <DetailIcon as={DollarOutlined} />
             <SalaryText>
