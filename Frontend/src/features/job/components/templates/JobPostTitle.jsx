@@ -219,7 +219,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           <ApplyButton
             type="primary"
             size="large"
-            onClick={onApply}
+            onClick={() => onApply(job._id)} // Truyền jobId
             icon={<Send size={18} />}
           >
             Ứng tuyển ngay

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Row, Col } from "antd";
+import { Layout, Row, Col, message } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
 import { useAuth } from "../../contexts/auth.context";
@@ -7,12 +7,17 @@ import JobPostTitle from "../../features/job/components/templates/JobPostTitle";
 import JobPostDetail from "../../features/job/components/templates/JobPostDetail";
 import JobPostCompany from "../../features/job/components/templates/JobPostCompany";
 import JobPostGeneralInfo from "../../features/job/components/templates/JobPostGeneralInfo";
-import styled from "styled-components";
+import ApplyJobModal from "../../features/job/components/organisms/ApplyJobModal";
 import useGetJobPostById from "../../features/postjob/hooks/Job_Post/useGetJobPostById";
+import useGetResumeFilesByCandidateId from "../../features/resume_file/hooks/useGetResumeFilesByCandidateId";
+import useCreateResumeFile from "../../features/resume_file/hooks/useCreateResumeFile";
+import useCreateApplication from "../../features/application/hooks/useCreateApplication";
+import useGetOnlineResume from "../../features/cv_online/hooks/useGetOnlineResume";
 import SkeletonJobPostTitle from "../../components/skeletons/SkeletonJobPostTitle";
 import SkeletonJobPostDetail from "../../components/skeletons/SkeletonJobPostDetail";
 import SkeletonJobPostCompany from "../../components/skeletons/SkeletonJobPostCompany";
 import SkeletonJobPostGeneralInfo from "../../components/skeletons/SkeletonJobPostGeneralInfo";
+import styled from "styled-components";
 
 const { Content } = Layout;
 
@@ -43,32 +48,86 @@ const JobPostDetailPage = () => {
   const navigate = useNavigate();
   const { jobPostId } = useParams();
   const [isSaved, setIsSaved] = useState(false);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, auth } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
+  const [applyModalVisible, setApplyModalVisible] = useState(false);
   const { data: jobPostData, isLoading: isLoadingJobPostData } =
     useGetJobPostById(jobPostId);
+  const { data: resumeFiles } = useGetResumeFilesByCandidateId(
+    auth?.user?.candidate_id
+  );
+  const { data: onlineResume } = useGetOnlineResume(auth?.user?.candidate_id);
+  const createResumeFile = useCreateResumeFile();
+  const createApplication = useCreateApplication();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const companyId = jobPostData?.employer_id?.company_id;
-
-  console.log("jobPostData: ", jobPostData);
+  const candidateId = auth?.user?.candidate_id;
 
   // Xử lý lưu công việc
   const handleSaveJob = () => {
     setIsSaved(!isSaved);
   };
 
-  // Xử lý ứng tuyển
+  // Xử lý hiển thị modal ứng tuyển
   const handleApply = () => {
     if (isLoggedIn) {
-      navigate("/apply");
+      setApplyModalVisible(true);
     } else {
       setModalVisible(true);
+    }
+  };
+
+  // Xử lý gửi hồ sơ
+  const handleSubmitApplication = async ({
+    selectedCV,
+    newFile,
+    newFileName,
+  }) => {
+    try {
+      setIsSubmitting(true);
+      let resumeData;
+
+      if (selectedCV === "new" && newFile) {
+        // Tải lên file mới
+        resumeData = await createResumeFile.mutateAsync({
+          candidateId,
+          data: { name: newFileName || newFile.name },
+          file: newFile,
+        });
+      } else if (selectedCV === "online" && onlineResume) {
+        resumeData = { _id: onlineResume.data?._id, type: "online" };
+      } else {
+        resumeData = resumeFiles?.find((file) => file._id === selectedCV);
+        if (!resumeData) {
+          message.error("CV không tồn tại!");
+          throw new Error("Invalid CV");
+        }
+      }
+
+      // Gửi yêu cầu ứng tuyển bằng hook useCreateApplication
+      await createApplication.mutateAsync({
+        job_post_id: jobPostId,
+        candidate_id: candidateId,
+        resume_file_id: selectedCV === "online" ? null : resumeData._id,
+        online_resume_id: selectedCV === "online" ? resumeData._id : null,
+      });
+
+      setApplyModalVisible(false);
+    } catch {
+      // Thông báo lỗi đã được xử lý trong useCreateApplication
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Handle modal cancel
   const handleModalCancel = () => {
     setModalVisible(false);
+  };
+
+  const handleApplyModalCancel = () => {
+    setApplyModalVisible(false);
   };
 
   if (isLoadingJobPostData) {
@@ -143,6 +202,14 @@ const JobPostDetailPage = () => {
             <SigninRequiredModal
               visible={modalVisible}
               onCancel={handleModalCancel}
+            />
+            <ApplyJobModal
+              visible={applyModalVisible}
+              onCancel={handleApplyModalCancel}
+              resumeFiles={resumeFiles}
+              onSubmit={handleSubmitApplication}
+              isSubmitting={isSubmitting}
+              hasOnlineResume={!!onlineResume}
             />
           </Col>
         </Row>
