@@ -1,19 +1,14 @@
 const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("../configs/cloudinary");
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "user_avatars", // Thư mục lưu trữ avatar của ứng viên trên Cloudinary
-    allowed_formats: ["jpg", "png", "jpeg"], // Định dạng ảnh cho phép
-    transformation: [
-      { width: 500, height: 500, crop: "limit" }, // Giới hạn kích thước
-      { quality: "auto:best" }, // Tự động điều chỉnh chất lượng ở mức tốt
-    ],
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error("Chỉ hỗ trợ JPG, PNG, JPEG"), false);
+    }
+    cb(null, true);
   },
 });
-
-const upload = multer({ storage });
 
 module.exports = upload;

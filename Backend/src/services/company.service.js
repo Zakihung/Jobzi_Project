@@ -146,12 +146,37 @@ const uploadLogoCompanyService = async (company_id, file) => {
     throw new AppError("Không tìm thấy công ty", 404);
   }
 
+  // Xóa logo cũ nếu có
   if (company.logo) {
     const publicId = company.logo.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(`company_avatars/${publicId}`);
+    await cloudinary.uploader.destroy(`company_avatars/${publicId}`, {
+      resource_type: "image",
+    });
   }
 
-  company.logo = file.path;
+  // Upload logo mới lên Cloudinary
+  const cloudinaryResult = await new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        {
+          resource_type: "image",
+          folder: "company_avatars",
+          public_id: `logo_${Date.now()}.${file.mimetype.split("/")[1]}`,
+          transformation: [
+            { width: 500, height: 500, crop: "limit" },
+            { quality: "auto:best" },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(new AppError("Cloudinary upload failed", 500));
+          resolve(result);
+        }
+      )
+      .end(file.buffer);
+  });
+
+  // Lưu URL logo mới
+  company.logo = cloudinaryResult.secure_url;
   let result = await company.save();
   return result;
 };

@@ -478,11 +478,34 @@ const uploadAvatarUserService = async (user_id, file) => {
   // Xóa avatar cũ trên Cloudinary nếu tồn tại
   if (user.avatar) {
     const publicId = user.avatar.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(`user_avatars/${publicId}`);
+    await cloudinary.uploader.destroy(`user_avatars/${publicId}`, {
+      resource_type: "image",
+    });
   }
 
-  // Lưu URL của ảnh mới từ Cloudinary
-  user.avatar = file.path; // file.path chứa URL từ Cloudinary sau khi upload
+  // Upload avatar mới lên Cloudinary
+  const cloudinaryResult = await new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        {
+          resource_type: "image",
+          folder: "user_avatars",
+          public_id: `avatar_${Date.now()}.${file.mimetype.split("/")[1]}`,
+          transformation: [
+            { width: 500, height: 500, crop: "limit" },
+            { quality: "auto:best" },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(new AppError("Cloudinary upload failed", 500));
+          resolve(result);
+        }
+      )
+      .end(file.buffer);
+  });
+
+  // Lưu URL của ảnh mới
+  user.avatar = cloudinaryResult.secure_url;
   await user.save();
 
   // Đồng bộ avatar với OnlineResume nếu người dùng là candidate
