@@ -163,7 +163,7 @@ const CVManagementCard = ({
   return (
     <StyledCard>
       <CVManagementTitle level={5}>
-        Quản lý tệpCV ({resumeFiles?.length || 0}/3)
+        Quản lý tệp CV ({resumeFiles?.length || 0} tệp)
       </CVManagementTitle>
       {isLoading ? (
         <List
@@ -234,7 +234,7 @@ const CVManagementCard = ({
                 description={
                   <Space direction="vertical" size={4}>
                     <Text type="secondary">
-                      Ngày tải lên: {dayjs(file.createdAt).format("YYYY-MM-DD")}
+                      Ngày tải lên: {dayjs(file.createdAt).format("DD-MM-YYYY")}
                     </Text>
                   </Space>
                 }
@@ -248,7 +248,7 @@ const CVManagementCard = ({
         icon={<UploadOutlined />}
         onClick={onUploadFile}
         block
-        disabled={resumeFiles?.length >= 3}
+        // disabled={resumeFiles?.length >= 3}
       >
         Đăng tải tệp CV
       </UploadCVButton>

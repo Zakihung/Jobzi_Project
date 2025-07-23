@@ -57,7 +57,7 @@ const ApplyJobModal = ({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedCV) {
       message.error("Vui lòng chọn một CV để ứng tuyển!");
       return;
@@ -66,16 +66,30 @@ const ApplyJobModal = ({
       message.error("Vui lòng chọn file CV mới trước khi gửi!");
       return;
     }
-    onSubmit({ selectedCV, newFile, newFileName });
+    try {
+      await onSubmit({ selectedCV, newFile, newFileName });
+      setSelectedCV(null);
+      setNewFile(null);
+      setNewFileName("");
+    } catch {
+      // Lỗi đã được xử lý trong onSubmit (useCreateApplication)
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedCV(null);
+    setNewFile(null);
+    setNewFileName("");
+    onCancel();
   };
 
   return (
     <StyledModal
       title="Chọn CV để ứng tuyển"
       open={visible}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       footer={[
-        <Button key="cancel" onClick={onCancel}>
+        <Button key="cancel" onClick={handleCancel}>
           Hủy
         </Button>,
         <Button
@@ -94,7 +108,9 @@ const ApplyJobModal = ({
         onChange={(e) => setSelectedCV(e.target.value)}
         value={selectedCV}
       >
-        {hasOnlineResume && <Radio value="online">CV trực tuyến</Radio>}
+        {hasOnlineResume && (
+          <Radio value="online">CV trực tuyến (do Jobzi cung cấp)</Radio>
+        )}
         {resumeFiles?.map((file) => (
           <Radio key={file._id} value={file._id}>
             {file.name} ({new Date(file.createdAt).toLocaleDateString("vi-VN")})

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Card, Menu, List, Typography, Space, Spin, Button } from "antd";
+import { Card, Menu, Typography, Space, Spin, Button } from "antd";
 import {
   FileTextOutlined,
   CalendarOutlined,
@@ -8,7 +8,9 @@ import {
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
 import useGetJobPostSaveByCandidate from "../../../candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
+import useGetApplicationsByCandidateId from "../../../application/hooks/useGetApplicationsByCandidateId";
 import JobGrid from "../../../job/components/templates/JobGrid";
+import ApplicationGrid from "../../../application/components/templates/ApplicationGrid";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
@@ -56,24 +58,6 @@ const MenuContent = styled.div`
   padding: 24px;
 `;
 
-const StyledListItem = styled(List.Item)`
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f0f0;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  @media (max-width: 576px) {
-    font-size: 14px;
-  }
-`;
-
-const ListIcon = styled.div`
-  color: #577cf6;
-  font-size: 20px;
-`;
-
 const EmptyState = styled.div`
   text-align: center;
   padding: 40px 0;
@@ -102,48 +86,58 @@ const ExploreButton = styled(Button)`
   }
 `;
 
-const JobMenuCard = ({
-  selectedMenu,
-  onMenuClick,
-  appliedJobs,
-  interviews,
-}) => {
+const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const candidateId = auth?.user?.candidate_id;
+
+  // Sử dụng hook để lấy danh sách đơn ứng tuyển
+  const {
+    data: applications,
+    isLoading: isLoadingApplications,
+    isError: isErrorApplications,
+  } = useGetApplicationsByCandidateId(candidateId);
+
+  // Sử dụng hook để lấy danh sách công việc đã lưu
   const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
     useGetJobPostSaveByCandidate(candidateId);
 
   // Sắp xếp savedJobPosts theo createdAt giảm dần (mới nhất trước)
-  const sortedJobPosts = [...savedJobPosts].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
+  const sortedJobPosts = Array.isArray(savedJobPosts)
+    ? [...savedJobPosts].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+    : [];
+
+  // Sắp xếp applications theo createdAt giảm dần (mới nhất trước)
+  const sortedApplications = Array.isArray(applications)
+    ? [...applications].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      )
+    : [];
 
   const renderContent = () => {
     switch (selectedMenu) {
       case "applied":
+        if (isLoadingApplications) {
+          return <Spin tip="Đang tải danh sách đơn ứng tuyển..." />;
+        }
+        if (
+          isErrorApplications ||
+          !sortedApplications ||
+          sortedApplications.length === 0
+        ) {
+          return (
+            <EmptyState>
+              <EmptyText>Bạn chưa ứng tuyển công việc nào!</EmptyText>
+              <ExploreButton onClick={() => navigate("/jobs")}>
+                Khám phá việc làm
+              </ExploreButton>
+            </EmptyState>
+          );
+        }
         return (
-          <List
-            dataSource={appliedJobs}
-            renderItem={(item) => (
-              <StyledListItem>
-                <List.Item.Meta
-                  avatar={
-                    <ListIcon>
-                      <FileTextOutlined />
-                    </ListIcon>
-                  }
-                  title={<Text strong>{item.title}</Text>}
-                  description={
-                    <Space direction="vertical" size={4}>
-                      <Text>{item.company}</Text>
-                      <Text type="secondary">Gửi CV: {item.date}</Text>
-                    </Space>
-                  }
-                />
-              </StyledListItem>
-            )}
-          />
+          <ApplicationGrid applications={sortedApplications} fullWidth={true} />
         );
       case "interviews":
         return (
@@ -175,7 +169,7 @@ const JobMenuCard = ({
         if (isLoadingSavedJobPosts) {
           return <Spin tip="Đang tải bài đăng đã lưu..." />;
         }
-        if (!savedJobPosts || savedJobPosts.length === 0) {
+        if (!sortedJobPosts || sortedJobPosts.length === 0) {
           return (
             <EmptyState>
               <EmptyText>Bạn chưa lưu việc làm nào!</EmptyText>
@@ -191,6 +185,7 @@ const JobMenuCard = ({
               sortedJobPosts?.map((item) => ({
                 _id: item.job_post_id._id,
                 title: item.job_post_id.title,
+                employer_id: item.job_post_id.employer_id,
                 locations: [
                   {
                     province:
