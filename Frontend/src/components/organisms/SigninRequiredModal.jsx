@@ -25,6 +25,7 @@ const SigninRequiredModal = ({ visible, onCancel }) => {
       closeIcon={<CloseOutlined className={styles.modalCloseIcon} />}
       className={styles.signinRequiredModal}
       wrapClassName={styles.modalWrapper}
+      wrapProps={{ onClick: (e) => e.stopPropagation() }}
     >
       <div className={styles.modalContent}>
         <div className={styles.modalIcon}>
