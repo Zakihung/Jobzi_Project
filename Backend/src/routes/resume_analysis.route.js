@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   createResumeAnalysis,
+  processResumeAnalysis,
   getListResumeAnalysis,
   getResumeAnalysisById,
   getResumeAnalysisByOnlineResumeId,
@@ -13,6 +14,8 @@ const router = express.Router();
 
 // Public routes
 router.post("/create", createResumeAnalysis);
+router.post("/process/resume-file/:resume_file_id", processResumeAnalysis);
+router.post("/process/online-resume/:online_resume_id", processResumeAnalysis);
 router.get("/", getListResumeAnalysis);
 router.get("/:id", getResumeAnalysisById);
 router.get(

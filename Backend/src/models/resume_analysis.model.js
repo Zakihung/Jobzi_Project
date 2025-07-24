@@ -18,17 +18,110 @@ const resume_analysisSchema = new mongoose.Schema(
       ref: "ResumeFile",
       default: null,
     },
-    strengths: {
-      type: String,
+    extraction: {
+      raw_text: {
+        type: String,
+        default: "",
+      },
+      extracted_at: {
+        type: Date,
+        default: null,
+      },
+      extraction_error: { type: String, default: null },
     },
-    weaknesses: {
-      type: String,
+    classification: {
+      education: [
+        {
+          institution: String,
+          degree: String,
+          major: String,
+          duration: String,
+          description: String,
+        },
+      ],
+      career_objective: {
+        type: String,
+        default: "",
+      },
+      skills: [
+        {
+          name: String,
+          proficiency: String,
+        },
+      ],
+      projects: [
+        {
+          name: String,
+          description: String,
+          role: String,
+          duration: String,
+        },
+      ],
+      work_experience: [
+        {
+          company: String,
+          position: String,
+          duration: String,
+          responsibilities: String,
+        },
+      ],
+      hobbies: [
+        {
+          name: String,
+          description: String,
+        },
+      ],
+      personal_info: {
+        name: String,
+        email: String,
+        phone: String,
+        address: String,
+        other: String,
+      },
+      classification_error: { type: String, default: null },
     },
-    match_score: {
-      type: Number,
-    },
-    suggestions: {
-      type: String,
+    analysis: {
+      strengths: [
+        {
+          description: String,
+          related_to: String, // Liên quan đến kỹ năng, kinh nghiệm, học vấn, v.v.
+        },
+      ],
+      weaknesses: [
+        {
+          description: String,
+          related_to: String,
+        },
+      ],
+      job_match: [
+        {
+          criteria: String, // Tiêu chí phù hợp với tin tuyển dụng
+          description: String,
+        },
+      ],
+      job_mismatch: [
+        {
+          criteria: String, // Tiêu chí chưa phù hợp với tin tuyển dụng
+          description: String,
+        },
+      ],
+      match_score: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+      },
+      suggestions: [
+        {
+          section: String, // Phần cần chỉnh sửa: education, skills, work_experience, v.v.
+          suggestion: String,
+        },
+      ],
+      analyzed_at: {
+        type: Date,
+        default: null,
+      },
+      analysis_error: { type: String, default: null },
     },
   },
   { timestamps: true }
@@ -36,8 +129,8 @@ const resume_analysisSchema = new mongoose.Schema(
 
 // Thêm plugin xóa mềm
 resume_analysisSchema.plugin(mongooseDelete, {
-  deletedAt: true, // Tự động thêm trường `deletedAt`
-  overrideMethods: "all", // Ghi đè các phương thức mặc định (find, findOne, count...)
+  deletedAt: true,
+  overrideMethods: "all",
   deleted: true,
 });
 

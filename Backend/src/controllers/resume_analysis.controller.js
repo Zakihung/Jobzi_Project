@@ -1,5 +1,6 @@
 const {
   createResumeAnalysisService,
+  processResumeAnalysisService,
   getListResumeAnalysisService,
   getResumeAnalysisByIdService,
   getResumeAnalysisByOnlineResumeIdService,
@@ -14,21 +15,34 @@ const createResumeAnalysis = async (req, res, next) => {
       job_post_id,
       online_resume_id,
       resume_file_id,
-      strengths,
-      weaknesses,
-      match_score,
-      suggestions,
+      extraction,
+      classification,
+      analysis,
     } = req.body;
     const data = await createResumeAnalysisService({
       job_post_id,
       online_resume_id,
       resume_file_id,
-      strengths,
-      weaknesses,
-      match_score,
-      suggestions,
+      extraction,
+      classification,
+      analysis,
     });
     res.status(201).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const processResumeAnalysis = async (req, res, next) => {
+  try {
+    const { resume_file_id, online_resume_id } = req.params;
+    const { job_post_id } = req.body;
+    const data = await processResumeAnalysisService(
+      resume_file_id,
+      online_resume_id,
+      job_post_id
+    );
+    res.status(200).json(data);
   } catch (error) {
     next(error);
   }
@@ -96,6 +110,7 @@ const deleteAllResumeAnalysis = async (req, res, next) => {
 
 module.exports = {
   createResumeAnalysis,
+  processResumeAnalysis,
   getListResumeAnalysis,
   getResumeAnalysisById,
   getResumeAnalysisByOnlineResumeId,
