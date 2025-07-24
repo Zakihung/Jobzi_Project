@@ -10,28 +10,29 @@ const createResumeFileService = async (candidate_id, name, file) => {
       400
     );
   }
+  if (typeof name !== "string" || name.trim() === "") {
+    throw new AppError("Tên file resume phải là chuỗi hợp lệ", 400);
+  }
   if (!file) {
     throw new AppError("Không có file resume được cung cấp", 400);
   }
+  if (!file.mimetype.includes("pdf")) {
+    throw new AppError("File phải là định dạng PDF", 400);
+  }
+
+  // Đảm bảo tên file có đuôi .pdf
+  const sanitizedName = name.toLowerCase().endsWith(".pdf")
+    ? name
+    : `${name}.pdf`;
 
   // Upload file lên Cloudinary
   const cloudinaryResult = await new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream(
         {
-          resource_type: file.mimetype.startsWith("image/") ? "image" : "raw",
+          resource_type: "raw",
           folder: "resumes",
-          public_id: `resume_${Date.now()}.${
-            file.mimetype === "application/pdf"
-              ? "pdf"
-              : file.mimetype.split("/")[1]
-          }`,
-          transformation: file.mimetype.startsWith("image/")
-            ? [
-                { width: 1000, height: 1000, crop: "limit" },
-                { quality: "auto:best" },
-              ]
-            : null,
+          public_id: `resume_${Date.now()}.pdf`,
         },
         (error, result) => {
           if (error) reject(new AppError("Cloudinary upload failed", 500));
@@ -44,7 +45,7 @@ const createResumeFileService = async (candidate_id, name, file) => {
   // Lưu metadata vào ResumeFile
   const resumeFile = await ResumeFile.create({
     candidate_id,
-    name,
+    name: sanitizedName,
     path: cloudinaryResult.secure_url,
   });
 
@@ -83,24 +84,29 @@ const updateResumeFileService = async (resume_file_id, updateData, file) => {
     throw new AppError("Không tìm thấy resume", 404);
   }
 
-  if (name !== undefined && !name) {
-    throw new AppError("Tên resume không được để trống", 400);
+  if (name !== undefined && (typeof name !== "string" || name.trim() === "")) {
+    throw new AppError("Tên file resume phải là chuỗi hợp lệ", 400);
   }
 
   if (file) {
+    if (!file.mimetype.includes("pdf")) {
+      throw new AppError("File phải là định dạng PDF", 400);
+    }
     if (resumeFile.path) {
       const publicId = resumeFile.path.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`resumes/${publicId}`, {
-        resource_type: resumeFile.path.match(/\.(jpg|png|jpeg)$/i)
-          ? "image"
-          : "raw",
+        resource_type: "raw",
       });
     }
 
     const cloudinaryResult = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { resource_type: "raw", folder: "resumes" },
+          {
+            resource_type: "raw",
+            folder: "resumes",
+            public_id: `resume_${Date.now()}.pdf`,
+          },
           (error, result) => {
             if (error) reject(new AppError("Cloudinary upload failed", 500));
             resolve(result);
@@ -111,7 +117,12 @@ const updateResumeFileService = async (resume_file_id, updateData, file) => {
     resumeFile.path = cloudinaryResult.secure_url;
   }
 
-  resumeFile.name = name !== undefined ? name : resumeFile.name;
+  resumeFile.name =
+    name !== undefined
+      ? name.toLowerCase().endsWith(".pdf")
+        ? name
+        : `${name}.pdf`
+      : resumeFile.name;
   const result = await resumeFile.save();
   return result;
 };
@@ -124,9 +135,7 @@ const deleteResumeFileService = async (resume_file_id) => {
   if (resumeFile.path) {
     const publicId = resumeFile.path.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(`resumes/${publicId}`, {
-      resource_type: resumeFile.path.match(/\.(jpg|png|jpeg)$/i)
-        ? "image"
-        : "raw",
+      resource_type: "raw",
     });
   }
   const result = await ResumeFile.deleteOne({ _id: resume_file_id });

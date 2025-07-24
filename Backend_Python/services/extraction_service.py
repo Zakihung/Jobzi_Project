@@ -1,45 +1,40 @@
+import io
+import PyPDF2
 import pdfplumber
-from io import BytesIO, StringIO
-from fastapi import HTTPException
+from fastapi import UploadFile, HTTPException
 from datetime import datetime
-from underthesea import text_normalize
-from pdfminer.high_level import extract_text_to_fp
 
 class ExtractionService:
     @staticmethod
-    async def extract_cv(file):
+    async def extract_cv(file: UploadFile) -> dict:
         try:
             # Kiểm tra định dạng file
             if not file.filename.lower().endswith('.pdf'):
                 raise HTTPException(status_code=400, detail="File phải là định dạng PDF")
 
-            # Đọc dữ liệu bytes từ file upload
-            file_content = await file.read()
+            # Đọc nội dung file
+            content = await file.read()
+            file_stream = io.BytesIO(content)
 
-            # Khởi tạo văn bản
+            # Kiểm tra xem file có phải PDF hợp lệ không
+            try:
+                PyPDF2.PdfReader(file_stream)
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=f"File PDF không hợp lệ: {str(e)}")
+
+            # Reset con trỏ file
+            file_stream.seek(0)
+
+            # Trích xuất văn bản bằng pdfplumber
             text = ""
-
-            # Sử dụng pdfplumber để trích xuất văn bản
-            with pdfplumber.open(BytesIO(file_content)) as pdf:
+            with pdfplumber.open(file_stream) as pdf:
                 for page in pdf.pages:
                     page_text = page.extract_text()
                     if page_text:
-                        text += page_text + " "
+                        text += page_text + "\n"
 
-            # Sử dụng pdfminer.six để trích xuất văn bản bổ sung
-            output_string = StringIO()
-            extract_text_to_fp(BytesIO(file_content), output_string)
-            pdfminer_text = output_string.getvalue()
-            if pdfminer_text:
-                text += " " + pdfminer_text
-
-            # Chuẩn hóa văn bản tiếng Việt
-            text = text_normalize(text)  # Chuẩn hóa với underthesea
-            text = ' '.join(text.split())  # Loại bỏ khoảng trắng thừa
-
-            # Kiểm tra nếu không trích xuất được văn bản
-            if not text:
-                raise ValueError("Không thể trích xuất nội dung từ PDF")
+            if not text.strip():
+                raise HTTPException(status_code=400, detail="Không thể trích xuất văn bản từ file PDF")
 
             return {
                 "raw_text": text,
@@ -47,15 +42,7 @@ class ExtractionService:
                 "status": "success"
             }
 
-        except ValueError as ve:
-            raise HTTPException(status_code=422, detail=str(ve))
+        except HTTPException as e:
+            raise e
         except Exception as e:
-            error_message = str(e)
-            if "Invalid PDF" in error_message:
-                error_message = "File PDF không hợp lệ hoặc bị hỏng"
-            elif "encrypted" in error_message:
-                error_message = "File PDF bị mã hóa, vui lòng cung cấp PDF không khóa"
-            raise HTTPException(status_code=500, detail={
-                "status": "failed",
-                "error_message": error_message
-            })
+            raise HTTPException(status_code=500, detail=f"Lỗi trích xuất CV: {str(e)}")

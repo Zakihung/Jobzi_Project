@@ -67,8 +67,7 @@ const resume_analysisSchema = new mongoose.Schema(
       ],
       hobbies: [
         {
-          name: String,
-          description: String,
+          type: String, // Sửa từ {name: String, description: String} thành mảng chuỗi
         },
       ],
       personal_info: {
@@ -76,7 +75,13 @@ const resume_analysisSchema = new mongoose.Schema(
         email: String,
         phone: String,
         address: String,
+        dob: String, // Thêm trường dob để khớp với classification_service.py
+        gender: String, // Thêm trường gender
         other: String,
+      },
+      total_experience: {
+        type: Number,
+        default: 0.0, // Thêm trường total_experience
       },
       classification_error: { type: String, default: null },
     },
@@ -84,7 +89,7 @@ const resume_analysisSchema = new mongoose.Schema(
       strengths: [
         {
           description: String,
-          related_to: String, // Liên quan đến kỹ năng, kinh nghiệm, học vấn, v.v.
+          related_to: String,
         },
       ],
       weaknesses: [
@@ -95,13 +100,13 @@ const resume_analysisSchema = new mongoose.Schema(
       ],
       job_match: [
         {
-          criteria: String, // Tiêu chí phù hợp với tin tuyển dụng
+          criteria: String,
           description: String,
         },
       ],
       job_mismatch: [
         {
-          criteria: String, // Tiêu chí chưa phù hợp với tin tuyển dụng
+          criteria: String,
           description: String,
         },
       ],
@@ -113,7 +118,7 @@ const resume_analysisSchema = new mongoose.Schema(
       },
       suggestions: [
         {
-          section: String, // Phần cần chỉnh sửa: education, skills, work_experience, v.v.
+          section: String,
           suggestion: String,
         },
       ],

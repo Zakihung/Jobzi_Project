@@ -5,6 +5,7 @@ const AppError = require("../utils/AppError");
 const ResumeAnalysis = require("../models/resume_analysis.model");
 const ResumeFile = require("../models/resume_file.model");
 const OnlineResume = require("../models/online_resume.model");
+require("dotenv").config();
 
 const createResumeAnalysisService = async (analysisData) => {
   const {
@@ -46,6 +47,7 @@ const createResumeAnalysisService = async (analysisData) => {
         work_experience: classification?.work_experience || [],
         hobbies: classification?.hobbies || [],
         personal_info: classification?.personal_info || {},
+        total_experience: classification?.total_experience || 0.0,
         classification_error: classification?.classification_error || null,
       },
       analysis: {
@@ -56,7 +58,7 @@ const createResumeAnalysisService = async (analysisData) => {
         match_score: analysis?.match_score || 0,
         suggestions: analysis?.suggestions || [],
         analyzed_at: analysis?.analyzed_at || null,
-        analysis_error: analysis?.analysis_error || null, // Thêm trường này
+        analysis_error: analysis?.analysis_error || null,
       },
     });
     console.log(`Created ResumeAnalysis with ID: ${result._id}`);
@@ -76,6 +78,7 @@ const processResumeAnalysisService = async (
   job_post_id
 ) => {
   let text, cv_id, analysis_id;
+  const pythonApiUrl = process.env.PYTHON_API_URL || "http://localhost:1213";
 
   try {
     // Bước 1: Kiểm tra và tạo bản ghi ResumeAnalysis
@@ -91,6 +94,21 @@ const processResumeAnalysisService = async (
       if (!resumeFile) {
         console.error(`ResumeFile not found for ID: ${resume_file_id}`);
         throw new AppError("Không tìm thấy resume file", 404);
+      }
+      if (typeof resumeFile.name !== "string" || !resumeFile.name) {
+        console.error(
+          `Invalid resumeFile.name for resume_file_id: ${resume_file_id}, name: ${resumeFile.name}`
+        );
+        throw new AppError(
+          "Tên file resume không hợp lệ hoặc không tồn tại",
+          400
+        );
+      }
+      if (!resumeFile.name.toLowerCase().endsWith(".pdf")) {
+        console.error(
+          `Invalid file format for resume_file_id: ${resume_file_id}, name: ${resumeFile.name}`
+        );
+        throw new AppError("File phải là định dạng PDF", 400);
       }
       cv_id = resume_file_id;
 
@@ -146,23 +164,33 @@ const processResumeAnalysisService = async (
         const fileBuffer = Buffer.from(response.data);
 
         const formData = new FormData();
-        formData.append("file", fileBuffer, resumeFile.name);
+        formData.append("file", fileBuffer, {
+          filename: resumeFile.name,
+          contentType: "application/pdf",
+        });
         console.log(
-          `Calling /cv/extract for resume_file_id: ${resume_file_id}`
+          `Calling ${pythonApiUrl}/cv/extract for resume_file_id: ${resume_file_id}`
         );
         const extractRes = await axios.post(
-          "http://localhost:1213/cv/extract",
+          `${pythonApiUrl}/cv/extract`,
           formData,
           {
             headers: { ...formData.getHeaders() },
           }
         );
         extractionData = extractRes.data;
-        console.log(`Extraction response: ${JSON.stringify(extractionData)}`);
+        console.log(
+          `Extraction response: ${JSON.stringify(extractionData, null, 2)}`
+        );
 
         text = extractionData.raw_text || "";
-        if (!text && !extractionData.status) {
-          throw new AppError("Không thể trích xuất văn bản từ file PDF", 400);
+        if (!text || extractionData.status === "failed") {
+          throw new AppError(
+            `Không thể trích xuất văn bản từ file PDF: ${
+              extractionData.error_message || "Unknown error"
+            }`,
+            400
+          );
         }
 
         // Cập nhật ResumeAnalysis với extraction
@@ -174,7 +202,7 @@ const processResumeAnalysisService = async (
               extracted_at: new Date(),
               extraction_error:
                 extractionData.status === "failed"
-                  ? extractionData.error_message
+                  ? String(extractionData.error_message)
                   : null,
             },
           },
@@ -185,19 +213,25 @@ const processResumeAnalysisService = async (
         );
       } catch (error) {
         console.error(`Error in extraction step: ${error.message}`);
+        console.error(
+          `Extraction error response: ${JSON.stringify(error.response?.data)}`
+        );
+        const errorMessage = error.response?.data?.detail
+          ? String(error.response.data.detail)
+          : String(error.message);
         await ResumeAnalysis.findOneAndUpdate(
           { _id: analysis_id },
           {
             extraction: {
               raw_text: "",
               extracted_at: new Date(),
-              extraction_error: error.message,
+              extraction_error: errorMessage,
             },
           },
           { new: true }
         );
         throw new AppError(
-          `Lỗi trích xuất CV: ${error.message}`,
+          `Lỗi trích xuất CV: ${errorMessage}`,
           error.response?.status || 500
         );
       }
@@ -255,23 +289,30 @@ const processResumeAnalysisService = async (
       );
     }
 
-    // Bước 3: Phân loại
+    // Bước 3: Phân loại CV
     console.log(
-      `Calling /cv/classify for cv_id: ${cv_id} with body: ${JSON.stringify({
-        text,
-      })}`
+      `Calling ${pythonApiUrl}/cv/classify/${cv_id} with body: ${JSON.stringify(
+        { text },
+        null,
+        2
+      )}`
     );
     try {
       const classifyRes = await axios.post(
-        `http://localhost:1213/cv/classify/${cv_id}`,
+        `${pythonApiUrl}/cv/classify/${cv_id}`,
         { text },
         { headers: { "Content-Type": "application/json" } }
       );
       const classificationData = classifyRes.data;
       console.log(
-        `Classification response: ${JSON.stringify(classificationData)}`
+        `Classification response: ${JSON.stringify(
+          classificationData,
+          null,
+          2
+        )}`
       );
 
+      // Cập nhật ResumeAnalysis với classification
       await ResumeAnalysis.findOneAndUpdate(
         { _id: analysis_id },
         {
@@ -283,7 +324,8 @@ const processResumeAnalysisService = async (
             work_experience: classificationData.work_experience || [],
             hobbies: classificationData.hobbies || [],
             personal_info: classificationData.personal_info || {},
-            classification_error: null,
+            total_experience: classificationData.total_experience || 0.0,
+            classification_error: classificationData.error || null,
           },
         },
         { new: true }
@@ -296,6 +338,9 @@ const processResumeAnalysisService = async (
       console.error(
         `Classification error response: ${JSON.stringify(error.response?.data)}`
       );
+      const errorMessage = error.response?.data?.detail
+        ? String(error.response.data.detail)
+        : String(error.message);
       await ResumeAnalysis.findOneAndUpdate(
         { _id: analysis_id },
         {
@@ -307,36 +352,38 @@ const processResumeAnalysisService = async (
             work_experience: [],
             hobbies: [],
             personal_info: {},
-            classification_error: error.response?.data?.detail || error.message,
+            total_experience: 0.0,
+            classification_error: errorMessage,
           },
         },
         { new: true }
       );
-      console.log(
-        `Updated ResumeAnalysis with classification error for ID: ${analysis_id}`
-      );
       throw new AppError(
-        `Lỗi phân loại CV: ${error.message}`,
+        `Lỗi phân loại CV: ${errorMessage}`,
         error.response?.status || 500
       );
     }
 
-    // Bước 4: Phân tích
+    // Bước 4: Phân tích CV
     console.log(
-      `Calling /cv/analyze for cv_id: ${cv_id} with body: ${JSON.stringify({
-        text,
-        job_post_id,
-      })}`
+      `Calling ${pythonApiUrl}/cv/analyze/${cv_id}/${job_post_id} with body: ${JSON.stringify(
+        { text },
+        null,
+        2
+      )}`
     );
     try {
       const analyzeRes = await axios.post(
-        `http://localhost:1213/cv/analyze/${cv_id}`,
-        { text, job_post_id },
+        `${pythonApiUrl}/cv/analyze/${cv_id}/${job_post_id}`,
+        { text },
         { headers: { "Content-Type": "application/json" } }
       );
       const analysisData = analyzeRes.data;
-      console.log(`Analysis response: ${JSON.stringify(analysisData)}`);
+      console.log(
+        `Analysis response: ${JSON.stringify(analysisData, null, 2)}`
+      );
 
+      // Cập nhật ResumeAnalysis với analysis
       const updatedAnalysis = await ResumeAnalysis.findOneAndUpdate(
         { _id: analysis_id },
         {
@@ -348,7 +395,10 @@ const processResumeAnalysisService = async (
             match_score: analysisData.match_score || 0,
             suggestions: analysisData.suggestions || [],
             analyzed_at: new Date(),
-            analysis_error: null,
+            analysis_error:
+              analysisData.status === "failed"
+                ? String(analysisData.error_message)
+                : null,
           },
         },
         { new: true }
@@ -364,6 +414,9 @@ const processResumeAnalysisService = async (
       console.error(
         `Analysis error response: ${JSON.stringify(error.response?.data)}`
       );
+      const errorMessage = error.response?.data?.detail
+        ? String(error.response.data.detail)
+        : String(error.message);
       await ResumeAnalysis.findOneAndUpdate(
         { _id: analysis_id },
         {
@@ -375,7 +428,7 @@ const processResumeAnalysisService = async (
             match_score: 0,
             suggestions: [],
             analyzed_at: new Date(),
-            analysis_error: error.response?.data?.detail || error.message,
+            analysis_error: errorMessage,
           },
         },
         { new: true }
@@ -384,12 +437,13 @@ const processResumeAnalysisService = async (
         `Updated ResumeAnalysis with analysis error for ID: ${analysis_id}`
       );
       throw new AppError(
-        `Lỗi phân tích CV: ${error.message}`,
+        `Lỗi phân tích CV: ${errorMessage}`,
         error.response?.status || 500
       );
     }
   } catch (error) {
     console.error(`Error in processResumeAnalysisService: ${error.message}`);
+    console.error(`Error stack: ${error.stack}`);
     throw new AppError(
       `Lỗi khi phân tích CV: ${error.message}`,
       error.response?.status || 500

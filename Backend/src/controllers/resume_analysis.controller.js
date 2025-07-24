@@ -37,6 +37,9 @@ const processResumeAnalysis = async (req, res, next) => {
   try {
     const { resume_file_id, online_resume_id } = req.params;
     const { job_post_id } = req.body;
+    if (!job_post_id) {
+      return res.status(400).json({ error: "job_post_id là bắt buộc" });
+    }
     const data = await processResumeAnalysisService(
       resume_file_id,
       online_resume_id,
