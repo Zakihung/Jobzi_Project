@@ -11,8 +11,6 @@ import AccountPage from "./pages/AccountPage.jsx";
 
 //Candidate
 import HomePage from "./pages/candidate/HomePage.jsx";
-// import ProfilePage from "./pages/candidate/ProfilePage";
-// import AccountPage from "./pages/candidate/AccountPage";
 import SignupCandidatePage from "./pages/candidate/SignupCandidatePage";
 import SigninCandidatePage from "./pages/candidate/SigninCandidatePage";
 import CompanyPage from "./pages/candidate/CompanyPage.jsx";
@@ -32,18 +30,18 @@ import { AuthWrapper } from "./contexts/auth.context.jsx";
 import JobEmployerPage from "./pages/employer/JobEmployerPage.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
 import CompanyDetailEmployerPage from "./pages/employer/CompanyDetailEmployerPage.jsx";
-// import CandidateSearchPage from "./pages/employer/CandidateSearchPage";
-// import EmployerProfilePage from "./pages/employer/EmployerProfilePage";
-// import EmployerAccountPage from "./pages/employer/EmployerAccountPage";
-// import EmployerCompanyPage from "./pages/employer/EmployerCompanyPage";
+
 // import EmployerJobPostListPage from "./pages/employer/EmployerJobPostListPage";
 // import EmployerJobPostDetailPage from "./pages/employer/EmployerJobPostDetailPage";
 
 //Admin
-// import AdminApp from "./AdminApp.jsx";
-// import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
-// import AdminJobPostManagementPage from "./pages/admin/AdminJobPostManagementPage";
-// import AdminAccountManagementPage from "./pages/admin/AdminAccountManagementPage";
+import AdminApp from "./AdminApp.jsx";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
+import AdminAccountManagementPage from "./pages/admin/AdminAccountManagementPage.jsx";
+import AdminJobPostManagementPage from "./pages/admin/AdminJobPostManagementPage.jsx";
+import AdminIndustryManagementPage from "./pages/admin/AdminIndustryManagementPage.jsx";
+import AdminPositionManagementPage from "./pages/admin/AdminPositionManagementPage.jsx";
+import AdminStatisticsPage from "./pages/admin/AdminStatisticsPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -157,24 +155,36 @@ const router = createBrowserRouter([
   },
 
   // Routes cho Admin
-  // {
-  //   path: "/admin",
-  //   element: <AdminApp />, // App với header, footer cho admin
-  //   children: [
-  //     {
-  //       index: true,
-  //       element: <AdminDashboardPage />,
-  //     },
-  //     {
-  //       path: "jobposts",
-  //       element: <AdminJobPostManagementPage />,
-  //     },
-  //     {
-  //       path: "accounts",
-  //       element: <AdminAccountManagementPage />,
-  //     },
-  //   ],
-  // },
+  {
+    path: "/admin",
+    element: <AdminApp />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "accounts",
+        element: <AdminAccountManagementPage />,
+      },
+      {
+        path: "jobposts",
+        element: <AdminJobPostManagementPage />,
+      },
+      {
+        path: "industries",
+        element: <AdminIndustryManagementPage />,
+      },
+      {
+        path: "positions",
+        element: <AdminPositionManagementPage />,
+      },
+      {
+        path: "statistics",
+        element: <AdminStatisticsPage />,
+      },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
