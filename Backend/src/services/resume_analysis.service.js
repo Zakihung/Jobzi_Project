@@ -495,6 +495,48 @@ const getResumeAnalysisByResumeFileIdService = async (resume_file_id) => {
   return result;
 };
 
+const getLatestResumeAnalysisService = async (
+  job_post_id,
+  resume_file_id,
+  online_resume_id
+) => {
+  if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
+    throw new AppError("ID bài đăng công việc không hợp lệ", 400);
+  }
+  if (!resume_file_id && !online_resume_id) {
+    throw new AppError(
+      "Phải cung cấp resume_file_id hoặc online_resume_id",
+      400
+    );
+  }
+  if (resume_file_id && !mongoose.Types.ObjectId.isValid(resume_file_id)) {
+    throw new AppError("ID file hồ sơ không hợp lệ", 400);
+  }
+  if (online_resume_id && !mongoose.Types.ObjectId.isValid(online_resume_id)) {
+    throw new AppError("ID hồ sơ online không hợp lệ", 400);
+  }
+
+  const query = {
+    job_post_id,
+    $or: [
+      resume_file_id ? { resume_file_id } : null,
+      online_resume_id ? { online_resume_id } : null,
+    ].filter(Boolean),
+  };
+
+  const analysis = await ResumeAnalysis.findOne(query)
+    .sort({ createdAt: -1 })
+    .populate("job_post_id")
+    .populate("online_resume_id")
+    .populate("resume_file_id");
+
+  if (!analysis) {
+    throw new AppError("Không tìm thấy phân tích hồ sơ phù hợp", 404);
+  }
+
+  return analysis;
+};
+
 const deleteResumeAnalysisService = async (analysis_id) => {
   if (!mongoose.Types.ObjectId.isValid(analysis_id)) {
     throw new AppError("ID phân tích không hợp lệ", 400);
@@ -517,6 +559,7 @@ module.exports = {
   processResumeAnalysisService,
   getListResumeAnalysisService,
   getResumeAnalysisByIdService,
+  getLatestResumeAnalysisService,
   getResumeAnalysisByOnlineResumeIdService,
   getResumeAnalysisByResumeFileIdService,
   deleteResumeAnalysisService,

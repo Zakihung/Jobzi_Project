@@ -6,6 +6,7 @@ const {
   getResumeAnalysisById,
   getResumeAnalysisByOnlineResumeId,
   getResumeAnalysisByResumeFileId,
+  getLatestResumeAnalysis,
   deleteResumeAnalysis,
   deleteAllResumeAnalysis,
 } = require("../controllers/resume_analysis.controller");
@@ -23,6 +24,7 @@ router.get(
   getResumeAnalysisByOnlineResumeId
 );
 router.get("/resume-file/:resume_file_id", getResumeAnalysisByResumeFileId);
+router.get("/latest", getLatestResumeAnalysis);
 router.delete("/:id", deleteResumeAnalysis);
 router.delete("/", deleteAllResumeAnalysis);
 

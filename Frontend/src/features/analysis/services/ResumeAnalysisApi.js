@@ -42,6 +42,18 @@ const getResumeAnalysisByResumeFileIdApi = (resume_file_id) => {
   return axios.get(URL_API);
 };
 
+// API để lấy resume analysis gần nhất theo job_post_id và resume_file_id hoặc online_resume_id
+const getLatestResumeAnalysisApi = (
+  job_post_id,
+  resume_file_id,
+  online_resume_id
+) => {
+  const URL_API = `/api/resume-analysis/latest?job_post_id=${job_post_id}${
+    resume_file_id ? `&resume_file_id=${resume_file_id}` : ""
+  }${online_resume_id ? `&online_resume_id=${online_resume_id}` : ""}`;
+  return axios.get(URL_API);
+};
+
 // API để xóa resume analysis theo ID
 const deleteResumeAnalysisApi = (id) => {
   const URL_API = `/api/resume-analysis/${id}`;
@@ -62,6 +74,7 @@ export {
   getResumeAnalysisByIdApi,
   getResumeAnalysisByOnlineResumeIdApi,
   getResumeAnalysisByResumeFileIdApi,
+  getLatestResumeAnalysisApi,
   deleteResumeAnalysisApi,
   deleteAllResumeAnalysisApi,
 };
