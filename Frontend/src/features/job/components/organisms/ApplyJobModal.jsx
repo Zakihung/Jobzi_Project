@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Modal, Radio, Upload, Button, message, Space, Typography } from "antd";
+import { Modal, Radio, Upload, Button, App, Typography, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
@@ -31,6 +32,20 @@ const UploadWrapper = styled.div`
   margin-top: 16px;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+`;
+
+const LoadingText = styled(Text)`
+  margin-top: 16px;
+  font-size: 16px;
+  color: #1a1a1a;
+`;
+
 const ApplyJobModal = ({
   visible,
   onCancel,
@@ -39,9 +54,12 @@ const ApplyJobModal = ({
   isSubmitting,
   hasOnlineResume,
 }) => {
+  const { message } = App.useApp();
   const [selectedCV, setSelectedCV] = useState(null);
   const [newFile, setNewFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const navigate = useNavigate();
 
   const handleUploadChange = ({ file }) => {
     if (file.status === "done") {
@@ -66,8 +84,13 @@ const ApplyJobModal = ({
       message.error("Vui lòng chọn file CV mới trước khi gửi!");
       return;
     }
+
     try {
       await onSubmit({ selectedCV, newFile, newFileName });
+      setIsRedirecting(true);
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1000); // Chuyển hướng sau 1 giây
       setSelectedCV(null);
       setNewFile(null);
       setNewFileName("");
@@ -80,6 +103,7 @@ const ApplyJobModal = ({
     setSelectedCV(null);
     setNewFile(null);
     setNewFileName("");
+    setIsRedirecting(false);
     onCancel();
   };
 
@@ -88,47 +112,68 @@ const ApplyJobModal = ({
       title="Chọn CV để ứng tuyển"
       open={visible}
       onCancel={handleCancel}
-      footer={[
-        <Button key="cancel" onClick={handleCancel}>
-          Hủy
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={handleSubmit}
-          loading={isSubmitting}
-        >
-          Gửi
-        </Button>,
-      ]}
+      footer={
+        isSubmitting || isRedirecting
+          ? null
+          : [
+              <Button key="cancel" onClick={handleCancel}>
+                Hủy
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                onClick={handleSubmit}
+                disabled={isSubmitting || isRedirecting}
+              >
+                Gửi
+              </Button>,
+            ]
+      }
       width={600}
       centered
     >
-      <RadioGroup
-        onChange={(e) => setSelectedCV(e.target.value)}
-        value={selectedCV}
-      >
-        {hasOnlineResume && (
-          <Radio value="online">CV trực tuyến (do Jobzi cung cấp)</Radio>
-        )}
-        {resumeFiles?.map((file) => (
-          <Radio key={file._id} value={file._id}>
-            {file.name} ({new Date(file.createdAt).toLocaleDateString("vi-VN")})
-          </Radio>
-        ))}
-        <Radio value="new">Tải lên CV mới</Radio>
-      </RadioGroup>
-      {selectedCV === "new" && (
-        <UploadWrapper>
-          <Upload
-            accept=".pdf"
-            beforeUpload={() => false} // Ngăn upload tự động
-            onChange={handleUploadChange}
-            fileList={newFile ? [{ uid: newFile.uid, name: newFile.name }] : []}
+      {isRedirecting ? (
+        <LoadingContainer>
+          <Spin size="large" />
+          <LoadingText>Đang chuyển hướng</LoadingText>
+        </LoadingContainer>
+      ) : isSubmitting ? (
+        <LoadingContainer>
+          <Spin size="large" />
+          <LoadingText>Đang xử lý ứng tuyển</LoadingText>
+        </LoadingContainer>
+      ) : (
+        <>
+          <RadioGroup
+            onChange={(e) => setSelectedCV(e.target.value)}
+            value={selectedCV}
           >
-            <Button icon={<UploadOutlined />}>Chọn file PDF</Button>
-          </Upload>
-        </UploadWrapper>
+            {hasOnlineResume && (
+              <Radio value="online">CV trực tuyến (do Jobzi cung cấp)</Radio>
+            )}
+            {resumeFiles?.map((file) => (
+              <Radio key={file._id} value={file._id}>
+                {file.name} (
+                {new Date(file.createdAt).toLocaleDateString("vi-VN")})
+              </Radio>
+            ))}
+            <Radio value="new">Tải lên CV mới</Radio>
+          </RadioGroup>
+          {selectedCV === "new" && (
+            <UploadWrapper>
+              <Upload
+                accept=".pdf"
+                beforeUpload={() => false} // Ngăn upload tự động
+                onChange={handleUploadChange}
+                fileList={
+                  newFile ? [{ uid: newFile.uid, name: newFile.name }] : []
+                }
+              >
+                <Button icon={<UploadOutlined />}>Chọn file PDF</Button>
+              </Upload>
+            </UploadWrapper>
+          )}
+        </>
       )}
     </StyledModal>
   );

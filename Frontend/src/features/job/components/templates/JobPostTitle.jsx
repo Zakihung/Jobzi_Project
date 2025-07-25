@@ -163,7 +163,7 @@ const TagContent = styled.div`
   flex-direction: column;
 `;
 
-const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
+const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
   const { auth } = useContext(AuthContext);
   const candidateId = auth?.user?.candidate_id;
   const { message } = App.useApp();
@@ -223,8 +223,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
       setModalVisible(true);
       return;
     }
-    // Thêm logic cho phân tích hồ sơ AI nếu cần
-    message.info("Chức năng phân tích hồ sơ AI đang được phát triển!");
+    onAnalyze(job._id);
   };
 
   const salary = `${(job.min_salary_range / 1000000).toFixed(0)}-${(
@@ -294,7 +293,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply }) => {
           </ApplyButton>
         </Col>
         <Col span={6}>
-          <AnalyzeButton onClick={handleAnalyze}>
+          <AnalyzeButton type="primary" onClick={handleAnalyze}>
             Phân tích hồ sơ AI (Beta)
           </AnalyzeButton>
         </Col>

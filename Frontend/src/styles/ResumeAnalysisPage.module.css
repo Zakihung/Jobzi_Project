@@ -1,0 +1,609 @@
+.analysisLayout {
+  background: #ffffff;
+  padding: 0;
+}
+
+.analysisContent {
+  background: #ffffff;
+  padding: 0;
+}
+
+.analysisRow {
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.menu {
+  position: sticky;
+  top: 76px;
+  z-index: 100;
+}
+
+.backButton {
+  background: #577cf6 !important;
+  border-color: #577cf6 !important;
+  color: #fff !important;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 40px;
+  margin-bottom: 16px;
+  width: 100%;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #4c6ef5 !important;
+    border-color: #4c6ef5 !important;
+    box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+  }
+}
+
+.menuCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  padding: 5px;
+  margin-bottom: 16px;
+}
+
+.menuHeader {
+  font-weight: 600;
+  font-size: 18px;
+  padding: 8px 16px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.analysisMenu {
+  border: none;
+}
+
+.analysisMenu :global(.ant-menu-item-icon) {
+  font-size: 18px;
+  color: #577cf6;
+}
+
+.analysisMenu :global(.ant-menu-item-selected .ant-menu-item-icon) {
+  color: #ffffff !important;
+}
+
+.analysisMenu :global(.ant-menu-item) {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.analysisMenu :global(.ant-menu-item:not(.ant-menu-item-selected):hover) {
+  background-color: #f5f9ff !important;
+  color: #577cf6 !important;
+}
+
+.analysisMenu :global(.ant-menu-item-selected) {
+  background: #577cf6 !important;
+  color: #ffffff !important;
+}
+
+.analysisMenu :global(.ant-menu-item .anticon) {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.contentCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: white;
+  padding: 16px;
+}
+
+.contentSection {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sectionTitle {
+  color: #1a1a1a !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 24px !important;
+}
+
+/* Score Card Styles */
+.scoreCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+}
+
+.scoreHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.scoreIcon {
+  font-size: 32px;
+  color: #ffd700;
+}
+
+.scoreTitle {
+  color: white !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+}
+
+.scoreStatus {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.scoreText {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+/* Stats Card Styles */
+.statsCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.successIcon {
+  font-size: 28px;
+  color: #52c41a;
+}
+
+.warningIcon {
+  font-size: 28px;
+  color: #faad14;
+}
+
+.errorIcon {
+  font-size: 20px;
+  color: #f5222d;
+}
+
+/* Analysis Cards */
+.analysisStrengthCard {
+  border-radius: 16px;
+  padding: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #52c41a;
+  height: 100%;
+}
+
+.analysisWeaknessCard {
+  border-radius: 16px;
+  padding: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #faad14;
+  height: 100%;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px !important;
+  color: #1a1a1a !important;
+  font-size: 20px !important;
+}
+
+.listItem {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 0;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.relatedTag {
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+/* Info Cards */
+.infoCard {
+  border-radius: 16px;
+  border: none;
+}
+
+.infoCard :global(.ant-descriptions-item-label) {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.infoCard :global(.ant-descriptions-item-content) {
+  color: #666;
+}
+
+/* Education Card */
+.educationCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.eduAvatar {
+  background-color: #577cf6 !important;
+}
+
+.workAvatar {
+  background-color: #52c41a !important;
+}
+
+/* Work Experience Card */
+.workCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+/* Skills Card */
+.skillsCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.skillTag {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.hobbiesCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+/* Match Cards */
+.matchCard {
+  border-radius: 16px;
+  border: none;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #52c41a;
+  height: 100%;
+}
+
+.mismatchCard {
+  border-radius: 16px;
+  border: none;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #f5222d;
+  height: 100%;
+}
+
+.matchItem {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 0;
+}
+
+.matchItem:last-child {
+  border-bottom: none;
+}
+
+.mismatchItem {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 0;
+}
+
+.mismatchItem:last-child {
+  border-bottom: none;
+}
+
+.moreText {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* Suggestions Card */
+.suggestionsCard {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.suggestionItem {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 0;
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+.suggestionIcon {
+  font-size: 24px;
+  color: #faad14;
+  background: #fff7e6;
+  padding: 12px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Progress Bars */
+.scoreCard :global(.ant-progress-bg) {
+  background: linear-gradient(to right, #ffd700, #ffed4e) !important;
+}
+
+.scoreCard :global(.ant-progress-inner) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .analysisRow {
+    padding: 1rem;
+  }
+
+  .contentCard {
+    padding: 24px;
+  }
+
+  .sectionTitle {
+    font-size: 20px !important;
+  }
+
+  .scoreCard,
+  .statsCard,
+  .analysisCard,
+  .infoCard,
+  .educationCard,
+  .skillsCard,
+  .hobbiesCard,
+  .matchCard,
+  .mismatchCard,
+  .suggestionsCard {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .analysisContent {
+    padding: 0.5rem 0;
+  }
+
+  .menuCard,
+  .contentCard {
+    padding: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 18px !important;
+  }
+
+  .analysisMenu :global(.ant-menu-item) {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .scoreHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .scoreIcon {
+    font-size: 28px;
+  }
+
+  .statNumber {
+    font-size: 28px;
+  }
+
+  .cardTitle {
+    font-size: 16px !important;
+  }
+
+  .scoreCard,
+  .statsCard,
+  .analysisCard,
+  .infoCard,
+  .educationCard,
+  .skillsCard,
+  .hobbiesCard,
+  .matchCard,
+  .mismatchCard,
+  .suggestionsCard {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .analysisRow {
+    padding: 0 16px;
+  }
+
+  .menuCard,
+  .contentCard {
+    padding: 12px;
+  }
+
+  .menuHeader {
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  .sectionTitle {
+    font-size: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .scoreTitle {
+    font-size: 16px !important;
+  }
+
+  .scoreText {
+    font-size: 16px !important;
+  }
+
+  .statNumber {
+    font-size: 24px;
+  }
+
+  .cardTitle {
+    font-size: 14px !important;
+  }
+
+  .skillTag {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .suggestionIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    padding: 10px;
+  }
+
+  .scoreCard,
+  .statsCard,
+  .analysisCard,
+  .infoCard,
+  .educationCard,
+  .skillsCard,
+  .hobbiesCard,
+  .matchCard,
+  .mismatchCard,
+  .suggestionsCard {
+    padding: 12px;
+  }
+
+  .infoCard :global(.ant-descriptions) {
+    font-size: 14px;
+  }
+
+  .listItem,
+  .matchItem,
+  .mismatchItem,
+  .suggestionItem {
+    padding: 8px 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .analysisLayout {
+    background: #141414;
+  }
+
+  .analysisContent {
+    background: #141414;
+  }
+
+  .menuCard,
+  .contentCard,
+  .analysisCard,
+  .infoCard,
+  .educationCard,
+  .skillsCard,
+  .hobbiesCard,
+  .matchCard,
+  .mismatchCard,
+  .suggestionsCard {
+    background: #1f1f1f;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .sectionTitle,
+  .cardTitle,
+  .menuHeader {
+    color: #ffffff !important;
+  }
+
+  .statNumber {
+    color: #ffffff;
+  }
+
+  .statLabel {
+    color: #a0a0a0;
+  }
+
+  .listItem,
+  .matchItem,
+  .mismatchItem,
+  .suggestionItem {
+    border-bottom-color: #333;
+  }
+}
+
+/* Custom scrollbar */
+.contentSection {
+  scrollbar-width: thin;
+  scrollbar-color: #577cf6 #f1f1f1;
+}
+
+.contentSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.contentSection::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.contentSection::-webkit-scrollbar-thumb {
+  background: #577cf6;
+  border-radius: 3px;
+}
+
+.contentSection::-webkit-scrollbar-thumb:hover {
+  background: #4c6ef5;
+}

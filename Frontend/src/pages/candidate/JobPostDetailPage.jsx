@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Row, Col, message } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SigninRequiredModal from "../../components/organisms/SigninRequiredModal";
 import { useAuth } from "../../contexts/auth.context";
 import JobPostTitle from "../../features/job/components/templates/JobPostTitle";
@@ -8,12 +8,15 @@ import JobPostDetail from "../../features/job/components/templates/JobPostDetail
 import JobPostCompany from "../../features/job/components/templates/JobPostCompany";
 import JobPostGeneralInfo from "../../features/job/components/templates/JobPostGeneralInfo";
 import ApplyJobModal from "../../features/job/components/organisms/ApplyJobModal";
+import ResumeAnalysisModal from "../../features/analysis/components/templates/ResumeAnalysisModal";
 import useGetJobPostById from "../../features/postjob/hooks/Job_Post/useGetJobPostById";
 import useGetResumeFilesByCandidateId from "../../features/resume_file/hooks/useGetResumeFilesByCandidateId";
 import useCreateResumeFile from "../../features/resume_file/hooks/useCreateResumeFile";
 import useCreateApplication from "../../features/application/hooks/useCreateApplication";
 import useGetOnlineResume from "../../features/cv_online/hooks/useGetOnlineResume";
 import useGetJobPostSaveByCandidate from "../../features/candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
+import useProcessResumeAnalysisByOnline from "../../features/analysis/hooks/useProcessResumeAnalysisByOnline";
+import useProcessResumeAnalysisByFile from "../../features/analysis/hooks/useProcessResumeAnalysisByFile";
 import SkeletonJobPostTitle from "../../components/skeletons/SkeletonJobPostTitle";
 import SkeletonJobPostDetail from "../../components/skeletons/SkeletonJobPostDetail";
 import SkeletonJobPostCompany from "../../components/skeletons/SkeletonJobPostCompany";
@@ -46,12 +49,12 @@ const NoResults = styled.div`
 `;
 
 const JobPostDetailPage = () => {
-  const navigate = useNavigate();
   const { jobPostId } = useParams();
   const { isLoggedIn, auth } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [applyModalVisible, setApplyModalVisible] = useState(false);
+  const [analysisModalVisible, setAnalysisModalVisible] = useState(false);
   const { data: jobPostData, isLoading: isLoadingJobPostData } =
     useGetJobPostById(jobPostId);
   const { data: resumeFiles } = useGetResumeFilesByCandidateId(
@@ -62,7 +65,10 @@ const JobPostDetailPage = () => {
     useGetJobPostSaveByCandidate(auth?.user?.candidate_id);
   const createResumeFile = useCreateResumeFile();
   const createApplication = useCreateApplication();
+  const { mutateAsync: processByOnline } = useProcessResumeAnalysisByOnline();
+  const { mutateAsync: processByFile } = useProcessResumeAnalysisByFile();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnalysisSubmitting, setIsAnalysisSubmitting] = useState(false);
 
   const companyId = jobPostData?.employer_id?.company_id;
   const candidateId = auth?.user?.candidate_id;
@@ -91,7 +97,16 @@ const JobPostDetailPage = () => {
     }
   };
 
-  // Xử lý gửi hồ sơ
+  // Xử lý hiển thị modal phân tích
+  const handleAnalyze = () => {
+    if (isLoggedIn) {
+      setAnalysisModalVisible(true);
+    } else {
+      setModalVisible(true);
+    }
+  };
+
+  // Xử lý gửi hồ sơ ứng tuyển
   const handleSubmitApplication = async ({
     selectedCV,
     newFile,
@@ -102,7 +117,6 @@ const JobPostDetailPage = () => {
       let resumeData;
 
       if (selectedCV === "new" && newFile) {
-        // Tải lên file mới
         resumeData = await createResumeFile.mutateAsync({
           candidateId,
           data: { name: newFileName || newFile.name },
@@ -118,7 +132,6 @@ const JobPostDetailPage = () => {
         }
       }
 
-      // Gửi yêu cầu ứng tuyển bằng hook useCreateApplication
       await createApplication.mutateAsync({
         job_post_id: jobPostId,
         candidate_id: candidateId,
@@ -134,13 +147,47 @@ const JobPostDetailPage = () => {
     }
   };
 
-  // Handle modal cancel
+  // Xử lý gửi yêu cầu phân tích CV
+  const handleSubmitAnalysis = async ({ selectedCV, jobPostId }) => {
+    try {
+      setIsAnalysisSubmitting(true);
+      if (selectedCV === "online" && onlineResume) {
+        await processByOnline({
+          online_resume_id: onlineResume.data?._id,
+          data: { job_post_id: jobPostId },
+        });
+      } else {
+        const resumeFile = resumeFiles?.find((file) => file._id === selectedCV);
+        if (!resumeFile) {
+          message.error("File CV không hợp lệ!");
+          throw new Error("Invalid resume file");
+        }
+        await processByFile({
+          resume_file_id: resumeFile._id,
+          data: { job_post_id: jobPostId },
+        });
+      }
+      message.success("Phân tích CV thành công!");
+      setAnalysisModalVisible(false);
+    } catch (error) {
+      message.error(`Phân tích CV thất bại: ${error.message}`);
+      throw error;
+    } finally {
+      setIsAnalysisSubmitting(false);
+    }
+  };
+
+  // Handle modal cancels
   const handleModalCancel = () => {
     setModalVisible(false);
   };
 
   const handleApplyModalCancel = () => {
     setApplyModalVisible(false);
+  };
+
+  const handleAnalysisModalCancel = () => {
+    setAnalysisModalVisible(false);
   };
 
   if (isLoadingJobPostData && isLoadingSavedJobPosts) {
@@ -196,6 +243,7 @@ const JobPostDetailPage = () => {
                   isSaved={isSaved}
                   onSaveJob={handleSaveJob}
                   onApply={handleApply}
+                  onAnalyze={handleAnalyze}
                 />
 
                 {/* Row 2 Col 1: Job Detail */}
@@ -223,6 +271,15 @@ const JobPostDetailPage = () => {
               onSubmit={handleSubmitApplication}
               isSubmitting={isSubmitting}
               hasOnlineResume={!!onlineResume}
+            />
+            <ResumeAnalysisModal
+              visible={analysisModalVisible}
+              onCancel={handleAnalysisModalCancel}
+              resumeFiles={resumeFiles}
+              jobPostId={jobPostId}
+              isSubmitting={isAnalysisSubmitting}
+              hasOnlineResume={!!onlineResume}
+              onSubmit={handleSubmitAnalysis}
             />
           </Col>
         </Row>

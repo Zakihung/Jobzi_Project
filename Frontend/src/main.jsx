@@ -22,6 +22,7 @@ import CompanyDetailPage from "./pages/candidate/CompanyDetailPage.jsx";
 import ProfileCandidatePage from "./pages/candidate/ProfileCandidatePage.jsx";
 import OnlineResumePage from "./pages/candidate/OnlineResumePage.jsx";
 import JobCadidatePage from "./pages/candidate/JobCandidatePage.jsx";
+import ResumeAnalysisPage from "./pages/candidate/ResumeAnalysisPage.jsx";
 
 //Employer
 import SignupEmployerPage from "./pages/employer/SignupEmployerPage.jsx";
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: "online-resume",
         element: <OnlineResumePage />,
+      },
+      {
+        path: "analysis",
+        element: <ResumeAnalysisPage />,
       },
     ],
   },
