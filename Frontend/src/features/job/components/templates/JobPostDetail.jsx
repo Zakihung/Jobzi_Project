@@ -143,7 +143,7 @@ const InfoIcon = styled.span`
 
 const JobPostDetail = ({ job }) => {
   const detailedLocations =
-    job.locations?.map((loc) => {
+    job?.locations?.map((loc) => {
       const address = loc.address?.trim() || "";
       const province = loc.province?.trim() || "";
       return [address, province].filter(Boolean).join(", ");
@@ -156,9 +156,9 @@ const JobPostDetail = ({ job }) => {
         </JobHeader>
       </Row>
       <Row>
-        {job.skills && job.skills.length > 0 && (
+        {job?.skills && job?.skills.length > 0 && (
           <TagList>
-            {job.skills.map((skill, index) => (
+            {job?.skills.map((skill, index) => (
               <TagItem key={index}>{skill}</TagItem>
             ))}
           </TagList>
@@ -167,20 +167,22 @@ const JobPostDetail = ({ job }) => {
       <JobSection>
         <SectionTitle level={4}>Mô tả công việc</SectionTitle>
         <HtmlContent
-          dangerouslySetInnerHTML={{ __html: job.description || "" }}
+          dangerouslySetInnerHTML={{ __html: job?.description || "" }}
         />
       </JobSection>
 
       <JobSection>
         <SectionTitle level={4}>Yêu cầu ứng viên</SectionTitle>
         <HtmlContent
-          dangerouslySetInnerHTML={{ __html: job.requirements || "" }}
+          dangerouslySetInnerHTML={{ __html: job?.requirements || "" }}
         />
       </JobSection>
 
       <JobSection>
         <SectionTitle level={4}>Quyền lợi ứng viên</SectionTitle>
-        <HtmlContent dangerouslySetInnerHTML={{ __html: job.benefits || "" }} />
+        <HtmlContent
+          dangerouslySetInnerHTML={{ __html: job?.benefits || "" }}
+        />
       </JobSection>
 
       <JobSection>
@@ -200,7 +202,7 @@ const JobPostDetail = ({ job }) => {
             <InfoIcon>
               <ClockCircleOutlined />
             </InfoIcon>
-            <Text>Thời gian làm việc: {job.workingHours}</Text>
+            <Text>Thời gian làm việc: {job?.workingHours}</Text>
           </InfoItem>
         </AdditionalInfo> */}
       </JobSection>

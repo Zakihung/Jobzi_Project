@@ -42,36 +42,36 @@ const JobCandidatePage = () => {
 
     return jobPosts.map((job) => {
       const company = companies.find(
-        (c) => c._id === job.employer_id?.company_id
+        (c) => c._id === job?.employer_id?.company_id
       );
       const locations =
-        job.locations
+        job?.locations
           ?.map((loc) => loc.province)
           .filter(Boolean)
           .join(", ") || "Không xác định";
       return {
-        id: job._id,
-        title: job.title,
+        id: job?._id,
+        title: job?.title,
         company: company ? company.name : "Công ty không xác định",
         logo:
           company?.logo ||
           "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
         location: locations,
         salary:
-          job.salary_type === "negotiable"
+          job?.salary_type === "negotiable"
             ? "Thỏa thuận"
-            : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
-                job.max_salary_range / 1000000
+            : `${(job?.min_salary_range / 1000000).toFixed(0)}-${(
+                job?.max_salary_range / 1000000
               ).toFixed(0)} triệu`,
-        work_type: job.work_type || "Không xác định",
-        min_years_experience: job.min_years_experience || 0,
-        education_level: job.education_level || "Không yêu cầu",
-        tags: job.skills || [],
+        work_type: job?.work_type || "Không xác định",
+        min_years_experience: job?.min_years_experience || 0,
+        education_level: job?.education_level || "Không yêu cầu",
+        tags: job?.skills || [],
         urgent: false,
         saved: false,
-        posted: job.createdAt,
-        min_salary_range: job.min_salary_range || 0,
-        max_salary_range: job.max_salary_range || 0,
+        posted: job?.createdAt,
+        min_salary_range: job?.min_salary_range || 0,
+        max_salary_range: job?.max_salary_range || 0,
       };
     });
   }, [jobPosts, companies]);
@@ -80,20 +80,20 @@ const JobCandidatePage = () => {
     return allJobs.filter((job) => {
       const matchesKeyword =
         page === "jobs" && searchKeyword
-          ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-            job.tags.some((tag) =>
+          ? job?.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+            job?.tags.some((tag) =>
               tag.toLowerCase().includes(searchKeyword.toLowerCase())
             )
           : true;
 
       const matchesLocation =
         selectedLocation && selectedLocation !== "Toàn quốc"
-          ? job.location.toLowerCase().includes(selectedLocation.toLowerCase())
+          ? job?.location.toLowerCase().includes(selectedLocation.toLowerCase())
           : true;
 
       const matchesJobType =
         filters.jobType.length > 0
-          ? filters.jobType.includes(job.work_type)
+          ? filters.jobType.includes(job?.work_type)
           : true;
 
       const matchesExperience =
@@ -106,23 +106,23 @@ const JobCandidatePage = () => {
                   ? 5
                   : parseInt(expFilter);
               return (
-                (expFilter === "none" && job.min_years_experience === 0) ||
-                (expFilter === "over-5" && job.min_years_experience >= 5) ||
-                job.min_years_experience === expValue
+                (expFilter === "none" && job?.min_years_experience === 0) ||
+                (expFilter === "over-5" && job?.min_years_experience >= 5) ||
+                job?.min_years_experience === expValue
               );
             })
           : true;
 
       const matchesEducation =
         filters.education.length > 0
-          ? filters.education.includes(job.education_level)
+          ? filters.education.includes(job?.education_level)
           : true;
 
       const matchesSalary =
         filters.salary.length > 0
           ? filters.salary.some((salaryFilter) => {
               if (salaryFilter === "negotiable") {
-                return job.salary_type === "negotiable";
+                return job?.salary_type === "negotiable";
               }
               const [filterMin, filterMax] = salaryFilter
                 .replace("under-", "")
@@ -130,8 +130,8 @@ const JobCandidatePage = () => {
                 .replace("m", "")
                 .split("-")
                 .map((val) => parseFloat(val) * 1000000 || Infinity);
-              const jobMin = job.min_salary_range;
-              const jobMax = job.max_salary_range;
+              const jobMin = job?.min_salary_range;
+              const jobMax = job?.max_salary_range;
               return (
                 (jobMin >= filterMin &&
                   (filterMax === Infinity || jobMin <= filterMax)) ||

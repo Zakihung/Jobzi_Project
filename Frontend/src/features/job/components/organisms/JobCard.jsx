@@ -163,10 +163,18 @@ const SalaryText = styled(Text)`
   font-size: 14px;
 `;
 
+const JobTagsWrapper = styled.div`
+  overflow: hidden;
+  max-width: 100%;
+`;
+
 const JobTags = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const SkillTag = styled(Tag)`
@@ -177,6 +185,8 @@ const SkillTag = styled(Tag)`
   font-size: 12px;
   padding: 4px 12px;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 `;
 
 const PostedTime = styled(Text)`
@@ -204,13 +214,13 @@ const JobCard = ({ job }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    if (savedJobPosts && job.id) {
+    if (savedJobPosts && job?.id) {
       const isJobSaved = savedJobPosts.some(
-        (savedJob) => savedJob.job_post_id._id === job.id
+        (savedJob) => savedJob.job_post_id?._id === job?.id
       );
       setIsSaved(isJobSaved);
     }
-  }, [savedJobPosts, job.id]);
+  }, [savedJobPosts, job?.id]);
 
   const handleSaveJob = () => {
     if (!candidateId) {
@@ -218,7 +228,7 @@ const JobCard = ({ job }) => {
       return;
     }
 
-    const data = { candidate_id: candidateId, job_post_id: job.id };
+    const data = { candidate_id: candidateId, job_post_id: job?.id };
     if (isSaved) {
       unSaveJobPost(data, {
         onSuccess: () => {
@@ -265,12 +275,12 @@ const JobCard = ({ job }) => {
   }
 
   return (
-    <JobCardWrapper onClick={() => navigate(`/jobpost/${job.id}`)}>
+    <JobCardWrapper onClick={() => navigate(`/jobpost/${job?.id}`)}>
       <JobHeader>
-        <CompanyLogo src={job.logo} size={70} />
+        <CompanyLogo src={job?.logo} size={70} />
         <JobContent>
-          <JobTitle className="job-title">{job.title}</JobTitle>
-          <CompanyName>{job.company}</CompanyName>
+          <JobTitle className="job-title">{job?.title}</JobTitle>
+          <CompanyName>{job?.company}</CompanyName>
         </JobContent>
         <JobActions>
           <SaveBtn
@@ -293,23 +303,25 @@ const JobCard = ({ job }) => {
       </JobHeader>
       <JobInfo>
         <JobDetails>
-          <PostedTime type="secondary">{formatTime(job.posted)}</PostedTime>
+          <PostedTime type="secondary">{formatTime(job?.posted)}</PostedTime>
           <DetailItem>
             <DetailIcon as={EnvironmentOutlined} />
-            <DetailText>{job.location}</DetailText>
+            <DetailText>{job?.location}</DetailText>
           </DetailItem>
           <DetailItem>
             <DetailIcon as={DollarOutlined} />
             <SalaryText>
-              {job.salary === "0-0 triệu" ? "Thỏa thuận" : job.salary}
+              {job?.salary === "0-0 triệu" ? "Thỏa thuận" : job?.salary}
             </SalaryText>
           </DetailItem>
         </JobDetails>
-        <JobTags>
-          {job.tags.map((tag, index) => (
-            <SkillTag key={`${job.id}-${index}`}>{tag}</SkillTag>
-          ))}
-        </JobTags>
+        <JobTagsWrapper>
+          <JobTags>
+            {job?.tags.map((tag, index) => (
+              <SkillTag key={`${job?.id}-${index}`}>{tag}</SkillTag>
+            ))}
+          </JobTags>
+        </JobTagsWrapper>
       </JobInfo>
       <SigninRequiredModal
         visible={modalVisible}

@@ -10,19 +10,19 @@ const JobGrid = ({ jobs, fullWidth = false }) => {
           xs={24}
           md={fullWidth ? 24 : 12}
           xl={fullWidth ? 24 : 8}
-          key={job.id}
+          key={job?.id}
         >
           <JobCard
             job={{
-              id: job.id,
-              title: job.title,
-              company: job.company,
-              location: job.location,
-              salary: job.salary,
-              tags: job.tags,
-              saved: job.saved,
-              posted: job.posted,
-              logo: job.logo,
+              id: job?.id,
+              title: job?.title,
+              company: job?.company,
+              location: job?.location,
+              salary: job?.salary,
+              tags: job?.tags,
+              saved: job?.saved,
+              posted: job?.posted,
+              logo: job?.logo,
             }}
           />
         </Col>

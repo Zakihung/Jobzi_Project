@@ -95,7 +95,7 @@ const CompanyJobPosition = ({ jobs, loading, onViewJob }) => {
                   actions={[
                     <ViewJobButton
                       type="primary"
-                      onClick={() => onViewJob(job.id)}
+                      onClick={() => onViewJob(job?.id)}
                     >
                       Xem chi tiết
                     </ViewJobButton>,
@@ -103,13 +103,13 @@ const CompanyJobPosition = ({ jobs, loading, onViewJob }) => {
                 >
                   <List.Item.Meta
                     avatar={<Avatar icon={<CheckCircleOutlined />} />}
-                    title={<Text strong>{job.title}</Text>}
+                    title={<Text strong>{job?.title}</Text>}
                     description={
                       <Space direction="vertical" size={4}>
-                        <Text>{job.location}</Text>
-                        <Text>{job.salary}</Text>
-                        <Text>{job.type}</Text>
-                        <Text type="secondary">Đăng {job.posted}</Text>
+                        <Text>{job?.location}</Text>
+                        <Text>{job?.salary}</Text>
+                        <Text>{job?.type}</Text>
+                        <Text type="secondary">Đăng {job?.posted}</Text>
                       </Space>
                     }
                   />

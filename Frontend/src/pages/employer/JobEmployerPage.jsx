@@ -40,20 +40,20 @@ const JobEmployerPage = () => {
   const jobs =
     jobsData
       ?.map((job) => {
-        const expiryDate = new Date(job.expired_date);
-        const postDate = new Date(job.createdAt);
+        const expiryDate = new Date(job?.expired_date);
+        const postDate = new Date(job?.createdAt);
         const today = new Date();
         const daysLeft = Math.ceil(
           (expiryDate - today) / (1000 * 60 * 60 * 24)
         );
 
         return {
-          id: job._id,
-          title: job.title,
-          location: `${job.locations[0]?.address}, ${job.locations[0]?.province}`,
+          id: job?._id,
+          title: job?.title,
+          location: `${job?.locations[0]?.address}, ${job?.locations[0]?.province}`,
           postDate: postDate.toLocaleDateString("vi-VN"),
           expiryDate: expiryDate.toLocaleDateString("vi-VN"),
-          status: job.status,
+          status: job?.status,
           daysLeft,
           createdAt: postDate,
         };

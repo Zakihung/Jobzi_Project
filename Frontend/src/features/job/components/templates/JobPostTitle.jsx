@@ -182,7 +182,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
       return;
     }
 
-    const data = { candidate_id: candidateId, job_post_id: job._id };
+    const data = { candidate_id: candidateId, job_post_id: job?._id };
     if (isSaved) {
       unSaveJobPost(data, {
         onSuccess: () => {
@@ -215,7 +215,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
       setModalVisible(true);
       return;
     }
-    onApply(job._id);
+    onApply(job?._id);
   };
 
   const handleAnalyze = () => {
@@ -223,18 +223,18 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
       setModalVisible(true);
       return;
     }
-    onAnalyze(job._id);
+    onAnalyze(job?._id);
   };
 
-  const salary = `${(job.min_salary_range / 1000000).toFixed(0)}-${(
-    job.max_salary_range / 1000000
+  const salary = `${(job?.min_salary_range / 1000000).toFixed(0)}-${(
+    job?.max_salary_range / 1000000
   ).toFixed(0)} triệu`;
 
   return (
     <StyledCard>
       <Row>
         <JobHeader>
-          <JobTitle level={2}>{job.title}</JobTitle>
+          <JobTitle level={2}>{job?.title}</JobTitle>
         </JobHeader>
       </Row>
       <Row justify={"space-between"}>
@@ -254,7 +254,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           <TagContent>
             <Text>Địa điểm</Text>
             <Text strong>
-              {job.locations?.map((loc) => loc.province).join(", ")}
+              {job?.locations?.map((loc) => loc.province).join(", ")}
             </Text>
           </TagContent>
         </JobTag>
@@ -265,9 +265,9 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           <TagContent>
             <Text>Kinh nghiệm tối thiểu</Text>
             <Text strong>
-              {job.min_years_experience === 0
+              {job?.min_years_experience === 0
                 ? "Không yêu cầu"
-                : job.min_years_experience + " năm"}
+                : job?.min_years_experience + " năm"}
             </Text>
           </TagContent>
         </JobTag>
@@ -277,7 +277,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           </IconWrapper>
           <TagContent>
             <Text>Hạn nộp</Text>
-            <Text strong>{formatDate(job.createdAt)}</Text>
+            <Text strong>{formatDate(job?.createdAt)}</Text>
           </TagContent>
         </JobTag>
       </Row>

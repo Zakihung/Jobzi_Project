@@ -77,7 +77,7 @@ const JobPostDetailPage = () => {
   useEffect(() => {
     if (savedJobPosts && jobPostId) {
       const isJobSaved = savedJobPosts.some(
-        (savedJob) => savedJob.job_post_id._id === jobPostId
+        (savedJob) => savedJob.job_post_id?._id === jobPostId
       );
       setIsSaved(isJobSaved);
     }
@@ -211,16 +211,6 @@ const JobPostDetailPage = () => {
               </StyledRow>
             </Col>
           </Row>
-        </StyledContent>
-      </StyledLayout>
-    );
-  }
-
-  if (!jobPostData) {
-    return (
-      <StyledLayout>
-        <StyledContent>
-          <NoResults>Không tìm thấy thông tin việc làm</NoResults>
         </StyledContent>
       </StyledLayout>
     );

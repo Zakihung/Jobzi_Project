@@ -113,30 +113,30 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
       .map((item) => {
         const job = item.job_post_id;
         const company = companies.find(
-          (c) => c._id === job.employer_id?.company_id
+          (c) => c._id === job?.employer_id?.company_id
         );
         const locations =
-          job.locations
+          job?.locations
             ?.map((loc) => loc.province)
             .filter(Boolean)
             .join(", ") || "Không xác định";
         return {
-          id: job._id,
-          title: job.title,
+          id: job?._id,
+          title: job?.title,
           company: company ? company.name : "Công ty không xác định",
           logo:
             company?.logo ||
             "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
           location: locations,
           salary:
-            job.salary_type === "negotiable"
+            job?.salary_type === "negotiable"
               ? "Thỏa thuận"
-              : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
-                  job.max_salary_range / 1000000
+              : `${(job?.min_salary_range / 1000000).toFixed(0)}-${(
+                  job?.max_salary_range / 1000000
                 ).toFixed(0)} triệu`,
-          tags: job.skills || [],
+          tags: job?.skills || [],
           saved: true, // Công việc đã lưu nên mặc định true
-          posted: job.createdAt,
+          posted: job?.createdAt,
         };
       });
   }, [savedJobPosts, companies]);

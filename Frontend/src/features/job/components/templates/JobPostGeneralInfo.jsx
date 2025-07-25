@@ -124,33 +124,34 @@ const JobPostGeneralInfo = ({ job }) => {
     {
       icon: <TrophyOutlined />,
       label: "Cấp bậc",
-      value: roleOrganizationData[job.role_organization] || "Không rõ",
+      value: roleOrganizationData[job?.role_organization] || "Không rõ",
     },
     {
       icon: <StarOutlined />,
       label: "Cấp độ chuyên môn",
       value:
-        experienceLevelData[job.experience_level] + " trở lên" || "Không rõ",
+        experienceLevelData[job?.experience_level] + " trở lên" || "Không rõ",
     },
     {
       icon: <BookOutlined />,
       label: "Học vấn",
-      value: educationLevelData[job.education_level] + " trở lên" || "Không rõ",
+      value:
+        educationLevelData[job?.education_level] + " trở lên" || "Không rõ",
     },
     {
       icon: <TeamOutlined />,
       label: "Số lượng tuyển",
-      value: job.number || "Không rõ",
+      value: job?.number || "Không rõ",
     },
     {
       icon: <ClockCircleOutlined />,
       label: "Hình thức làm việc",
-      value: workTypeData[job.work_type] || "Không rõ",
+      value: workTypeData[job?.work_type] || "Không rõ",
     },
     {
       icon: <VenusAndMars />,
       label: "Giới tính",
-      value: genderData[job.gender] || "Không rõ",
+      value: genderData[job?.gender] || "Không rõ",
     },
   ];
 

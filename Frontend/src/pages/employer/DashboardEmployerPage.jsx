@@ -37,22 +37,22 @@ const DashboardEmployerPage = () => {
   const jobPostings = jobsData
     ? jobsData
         .map((job) => {
-          const createdAt = new Date(job.createdAt);
+          const createdAt = new Date(job?.createdAt);
           // Kiểm tra createdAt hợp lệ
           if (isNaN(createdAt.getTime())) {
-            console.warn(`Invalid createdAt for job ${job._id}`);
+            console.warn(`Invalid createdAt for job ${job?._id}`);
             return null;
           }
           return {
-            id: job._id,
-            title: job.title || "Không có tiêu đề", // Xử lý trường hợp title rỗng
+            id: job?._id,
+            title: job?.title || "Không có tiêu đề", // Xử lý trường hợp title rỗng
             status:
-              job.status === "active"
+              job?.status === "active"
                 ? "Đang tuyển"
-                : job.status === "inactive"
+                : job?.status === "inactive"
                 ? "Tạm dừng"
                 : "Đã đóng",
-            applications: job.applications?.length || 0, // Số lượng ứng tuyển
+            applications: job?.applications?.length || 0, // Số lượng ứng tuyển
             postedDate: createdAt.toLocaleDateString("vi-VN"), // Định dạng ngày
             createdAt: createdAt,
           };

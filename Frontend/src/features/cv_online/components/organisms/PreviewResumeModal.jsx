@@ -165,21 +165,21 @@ const PreviewResumeModal = ({
 
     return resume.jobExpectations.map((job, index) => (
       <ExperienceCard key={index}>
-        <Title level={5}>{job.position}</Title>
+        <Title level={5}>{job?.position}</Title>
         <Space direction="vertical" size="small">
           <Text>
-            <strong>Hình thức:</strong> {job.jobType}
+            <strong>Hình thức:</strong> {job?.jobType}
           </Text>
           <Text>
             <strong>Mức lương:</strong>{" "}
             {formatSalary(
-              job.min_salary_range,
-              job.max_salary_range,
-              job.salary_type
+              job?.min_salary_range,
+              job?.max_salary_range,
+              job?.salary_type
             )}
           </Text>
           <Text>
-            <strong>Địa điểm:</strong> {job.province}
+            <strong>Địa điểm:</strong> {job?.province}
           </Text>
         </Space>
       </ExperienceCard>

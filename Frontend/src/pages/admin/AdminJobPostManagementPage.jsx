@@ -304,21 +304,21 @@ const AdminJobPostManagementPage = () => {
     );
 
     return {
-      key: job._id,
+      key: job?._id,
       id: index + 1,
-      title: job.title,
+      title: job?.title,
       company: company?.name || "—",
-      location: job.locations?.[0]?.province || "—",
+      location: job?.locations?.[0]?.province || "—",
       salary:
-        job.salary_type === "negotiable"
+        job?.salary_type === "negotiable"
           ? "Thỏa thuận"
-          : `${(job.min_salary_range / 1e6).toFixed(0)}–${(
-              job.max_salary_range / 1e6
+          : `${(job?.min_salary_range / 1e6).toFixed(0)}–${(
+              job?.max_salary_range / 1e6
             ).toFixed(0)} triệu`,
-      status: job.status,
-      applicants: job.applicants || 0,
-      posted_date: dayjs(job.createdAt).format("DD/MM/YYYY"),
-      expiry_date: dayjs(job.expired_date).format("DD/MM/YYYY"),
+      status: job?.status,
+      applicants: job?.applicants || 0,
+      posted_date: dayjs(job?.createdAt).format("DD/MM/YYYY"),
+      expiry_date: dayjs(job?.expired_date).format("DD/MM/YYYY"),
     };
   });
 
