@@ -97,6 +97,7 @@ const CompanyCard = ({ company }) => {
   const employerId = employerData?.data._id;
   const { data: jobpostData } = useGetJobPostsByEmployerId(employerId);
   const navigate = useNavigate();
+
   return (
     <CompanyCardWrapper onClick={() => navigate(`/company/${company._id}`)}>
       <CompanyHeader>
@@ -109,9 +110,12 @@ const CompanyCard = ({ company }) => {
         />
         <CompanyContent>
           <CompanyName className="company-name">{company.name}</CompanyName>
-          <CompanyIndustry>{company.company_industry_id?.name}</CompanyIndustry>
+          <CompanyIndustry>
+            {company.company_industry_id?.name || "Không xác định"}
+          </CompanyIndustry>
           <DetailText>
-            <EnvironmentOutlined /> {company.province_id?.name}{" "}
+            <EnvironmentOutlined />{" "}
+            {company.province_id?.name || "Không xác định"}
           </DetailText>
         </CompanyContent>
       </CompanyHeader>

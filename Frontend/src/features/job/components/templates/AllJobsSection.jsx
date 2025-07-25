@@ -5,7 +5,6 @@ import ResetFilterButton from "../../../../components/organisms/ResetFilterButto
 import PaginationSection from "../../../../components/organisms/PaginationSection";
 import NoResults from "../../../../components/organisms/NoResults";
 import FilterPopover from "../../../../components/organisms/FilterPopover";
-import useGetAllJobPosts from "../../../postjob/hooks/Job_Post/useGetAllJobPosts";
 import JobGrid from "./JobGrid";
 
 const AllJobsSectionWrapper = styled.section`
@@ -28,87 +27,17 @@ const AllJobsSection = ({
   filters,
   handleFilterChange,
   handleResetFilters,
+  filteredJobs,
   currentPage,
   pageSize,
   handlePageChange,
 }) => {
-  const { data: jobs, isLoading } = useGetAllJobPosts();
-
-  // Sắp xếp jobs theo ngày đăng (createdAt) mới nhất
-  const sortedJobs = jobs
-    ? [...jobs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  const sortedJobs = filteredJobs
+    ? [...filteredJobs].sort((a, b) => new Date(b.posted) - new Date(a.posted))
     : [];
 
-  if (isLoading) {
-    return (
-      <AllJobsSectionWrapper>
-        <SectionContainer>
-          <Row
-            align="middle"
-            justify="space-between"
-            style={{ gap: "8px", marginBottom: "24px" }}
-          >
-            <Col>
-              <Row style={{ gap: "8px" }}>
-                {Array(6)
-                  .fill()
-                  .map((_, index) => (
-                    <Skeleton.Button key={index} active size="large" />
-                  ))}
-              </Row>
-            </Col>
-            <Col>
-              <Skeleton.Button active size="large" />
-            </Col>
-          </Row>
-          <SkeletonContainer>
-            <Row gutter={[16, 16]}>
-              {Array(6)
-                .fill()
-                .map((_, index) => (
-                  <Col key={index} xs={24} sm={12} md={8}>
-                    <Skeleton
-                      active
-                      avatar={{ size: 70, shape: "square" }}
-                      paragraph={{ rows: 3 }}
-                    />
-                  </Col>
-                ))}
-            </Row>
-          </SkeletonContainer>
-          <Skeleton.Button active size="large" style={{ marginTop: 16 }} />
-        </SectionContainer>
-      </AllJobsSectionWrapper>
-    );
-  }
-
-  // Áp dụng bộ lọc cho jobs
-  const filteredAndSortedJobs = sortedJobs.filter((job) => {
-    const matchesJobType = filters.jobType.length
-      ? filters.jobType.includes(job.type.toLowerCase())
-      : true;
-    const matchesSalary = filters.salary.length
-      ? filters.salary.some((range) => {
-          const [min, max] = job.salary
-            .split("-")
-            .map((val) => parseFloat(val.replace(" triệu", "")));
-          if (range === "negotiable") return job.salary === "Thỏa thuận";
-          if (range === "under-5m") return max <= 5;
-          if (range === "over-50m") return min >= 50;
-          const [filterMin, filterMax] = range
-            .split("-")
-            .map((val) => parseFloat(val.replace("m", "")));
-          return min <= filterMax && max >= filterMin;
-        })
-      : true;
-    return matchesJobType && matchesSalary;
-  });
-
   const startIndex = (currentPage - 1) * pageSize;
-  const currentJobs = filteredAndSortedJobs.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  const currentJobs = sortedJobs.slice(startIndex, startIndex + pageSize);
 
   const filterOptions = {
     jobType: [
@@ -159,6 +88,49 @@ const AllJobsSection = ({
       { label: "Trên 50 triệu", value: "over-50m" },
     ],
   };
+
+  if (!filteredJobs) {
+    return (
+      <AllJobsSectionWrapper>
+        <SectionContainer>
+          <Row
+            align="middle"
+            justify="space-between"
+            style={{ gap: "8px", marginBottom: "24px" }}
+          >
+            <Col>
+              <Row style={{ gap: "8px" }}>
+                {Array(6)
+                  .fill()
+                  .map((_, index) => (
+                    <Skeleton.Button key={index} active size="large" />
+                  ))}
+              </Row>
+            </Col>
+            <Col>
+              <Skeleton.Button active size="large" />
+            </Col>
+          </Row>
+          <SkeletonContainer>
+            <Row gutter={[16, 16]}>
+              {Array(6)
+                .fill()
+                .map((_, index) => (
+                  <Col key={index} xs={24} sm={12} md={8}>
+                    <Skeleton
+                      active
+                      avatar={{ size: 70, shape: "square" }}
+                      paragraph={{ rows: 3 }}
+                    />
+                  </Col>
+                ))}
+            </Row>
+          </SkeletonContainer>
+          <Skeleton.Button active size="large" style={{ marginTop: 16 }} />
+        </SectionContainer>
+      </AllJobsSectionWrapper>
+    );
+  }
 
   return (
     <AllJobsSectionWrapper>
@@ -226,7 +198,7 @@ const AllJobsSection = ({
         <PaginationSection
           currentPage={currentPage}
           pageSize={pageSize}
-          totalJobs={filteredAndSortedJobs.length}
+          totalJobs={sortedJobs.length}
           onChange={handlePageChange}
         />
       </SectionContainer>

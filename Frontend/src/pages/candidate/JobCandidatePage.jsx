@@ -3,6 +3,9 @@ import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
 import AllJobsSection from "../../features/job/components/templates/AllJobsSection";
+import { useLocation } from "react-router-dom";
+import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
+import useGetListCompany from "../../features/company/hooks/Company/useGetListCompany";
 
 const { Content } = Layout;
 
@@ -18,11 +21,12 @@ const JobpageContent = styled(Content)`
 
 const JobCadidatePage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const page = "jobs";
+  const [selectedLocation, setSelectedLocation] = useState("Toàn quốc");
+  const location = useLocation();
+  const page = location.pathname === "/jobs" ? "jobs" : "companies";
   const [filters, setFilters] = useState({
     jobType: [],
-    salary: [], // Mảng rỗng để chứa các chuỗi như ["negotiable", "5-10m"]
+    salary: [],
     experience: [],
     education: [],
     industry: [],
@@ -31,66 +35,56 @@ const JobCadidatePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 16;
 
-  const allJobs = useMemo(
-    () =>
-      Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        title: `Vị trí công việc ${index + 1}`,
-        company: `Công ty ${String.fromCharCode(65 + (index % 26))}`,
-        logo: `https://via.placeholder.com/60/${Math.floor(
-          Math.random() * 16777215
-        ).toString(16)}/ffffff?text=C${index % 10}`,
-        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"][index % 5],
-        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`, // Ví dụ: "10-20 triệu"
-        type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
-        tags: [
-          ["React", "Node.js", "JavaScript"],
-          ["Python", "Django", "Flask"],
-          ["Java", "Spring", "Hibernate"],
-          ["Marketing", "SEO", "Analytics"],
-          ["Design", "Figma", "Sketch"],
-        ][index % 5],
-        urgent: index % 3 === 0,
-        saved: index % 4 === 0,
-        posted: `${index % 24} giờ trước`,
-      })),
-    []
-  );
+  const { data: jobPosts, isLoading: isLoadingJobs } = useGetAllJobPosts();
+  const { data: companies, isLoading: isLoadingCompanies } =
+    useGetListCompany();
 
-  // Hàm ánh xạ giá trị salary từ filterOptions.salary sang khoảng số
-  const salaryRanges = {
-    negotiable: [0, Infinity], // Thỏa thuận: bất kỳ mức lương nào
-    "under-5m": [0, 5], // Dưới 5 triệu
-    "5-10m": [5, 10],
-    "10-15m": [10, 15],
-    "15-20m": [15, 20],
-    "20-25m": [20, 25],
-    "25-30m": [25, 30],
-    "30-35m": [30, 35],
-    "35-40m": [35, 40],
-    "40-45m": [40, 45],
-    "45-50m": [45, 50],
-    "over-50m": [50, Infinity], // Trên 50 triệu
-  };
+  const allJobs = useMemo(() => {
+    if (!jobPosts || !companies) return [];
+
+    return jobPosts.map((job) => {
+      const company = companies.find(
+        (c) => c._id === job.employer_id?.company_id
+      );
+      const locations =
+        job.locations
+          ?.map((loc) => loc.province)
+          .filter(Boolean)
+          .join(", ") || "Không xác định";
+      return {
+        id: job._id,
+        title: job.title,
+        company: company ? company.name : "Công ty không xác định",
+        logo:
+          company?.logo ||
+          "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+        location: locations,
+        salary:
+          job.salary_type === "negotiable"
+            ? "Thỏa thuận"
+            : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
+                job.max_salary_range / 1000000
+              ).toFixed(0)} triệu`,
+        type: job.work_type,
+        tags: job.skills,
+        urgent: false,
+        saved: false,
+        posted: job.createdAt,
+      };
+    });
+  }, [jobPosts, companies]);
 
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
-      const matchesKeyword = searchKeyword
-        ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-          job.tags.some((tag) =>
-            tag.toLowerCase().includes(searchKeyword.toLowerCase())
-          )
-        : true;
+      const matchesKeyword =
+        page === "jobs" && searchKeyword
+          ? job.title.toLowerCase().includes(searchKeyword.toLowerCase())
+          : true;
 
-      const matchesLocation = selectedLocation
-        ? job.location.toLowerCase() ===
-          selectedLocation
-            .replace("ho-chi-minh", "Hồ Chí Minh")
-            .replace("ha-noi", "Hà Nội")
-            .replace("da-nang", "Đà Nẵng")
-            .replace("can-tho", "Cần Thơ")
-            .toLowerCase()
-        : true;
+      const matchesLocation =
+        selectedLocation && selectedLocation !== "Toàn quốc"
+          ? job.location.toLowerCase().includes(selectedLocation.toLowerCase())
+          : true;
 
       const matchesJobType =
         filters.jobType.length > 0
@@ -100,12 +94,24 @@ const JobCadidatePage = () => {
       const matchesSalary =
         filters.salary.length > 0
           ? filters.salary.some((salaryFilter) => {
-              const [min, max] = salaryRanges[salaryFilter] || [0, Infinity];
-              const [jobMin] = job.salary
-                .replace(" triệu", "")
+              if (salaryFilter === "negotiable") {
+                return job.salary === "Thỏa thuận";
+              }
+              const [filterMin, filterMax] = salaryFilter
+                .replace("m", "")
                 .split("-")
-                .map((s) => parseInt(s));
-              return jobMin >= min && (max === Infinity || jobMin <= max);
+                .map((val) => parseFloat(val) || Infinity);
+              const [jobMin, jobMax] =
+                job.salary === "Thỏa thuận"
+                  ? [0, Infinity]
+                  : job.salary
+                      .replace(" triệu", "")
+                      .split("-")
+                      .map((val) => parseFloat(val));
+              return (
+                jobMin >= filterMin &&
+                (filterMax === Infinity || jobMax <= filterMax)
+              );
             })
           : true;
 
@@ -113,7 +119,7 @@ const JobCadidatePage = () => {
         matchesKeyword && matchesLocation && matchesJobType && matchesSalary
       );
     });
-  }, [allJobs, searchKeyword, selectedLocation, filters]);
+  }, [allJobs, searchKeyword, selectedLocation, filters, page]);
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -129,7 +135,7 @@ const JobCadidatePage = () => {
       companySize: [],
     });
     setSearchKeyword("");
-    setSelectedLocation("");
+    setSelectedLocation("Toàn quốc");
     setCurrentPage(1);
   };
 
@@ -163,7 +169,9 @@ const JobCadidatePage = () => {
               filters={filters}
               handleFilterChange={handleFilterChange}
               handleResetFilters={handleResetFilters}
-              filteredJobs={filteredJobs}
+              filteredJobs={
+                isLoadingJobs || isLoadingCompanies ? [] : filteredJobs
+              }
               currentPage={currentPage}
               pageSize={pageSize}
               handlePageChange={handlePageChange}

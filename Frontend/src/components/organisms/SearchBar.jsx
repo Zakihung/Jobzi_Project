@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { useLocation } from "react-router-dom";
+import useGetAllProvinceAlphabet from "../../features/company/hooks/Province/useGetAllProvinceAlphabet";
 
 const SearchContainer = styled.div`
   display: flex;
@@ -141,25 +142,32 @@ const SearchButton = styled(Button)`
   }
 `;
 
-const SearchBar = () => {
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("Toàn quốc");
+const SearchBar = ({
+  searchKeyword,
+  setSearchKeyword,
+  selectedLocation,
+  setSelectedLocation,
+  handleSearch,
+}) => {
+  const { data: provincesData, isLoading: isProvinceLoading } =
+    useGetAllProvinceAlphabet();
+
+  const locationOptions = [
+    {
+      items: [{ label: "Toàn quốc", value: "toan-quoc" }],
+    },
+    ...(provincesData || []).map((group) => ({
+      group: group.letter,
+      items: group.provinces.map((province) => ({
+        label: province.name,
+        value: province.name.toLowerCase().replace(/\s/g, "-"),
+      })),
+    })),
+  ];
   const [popoverVisible, setPopoverVisible] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
-
-  const locationOptions = [
-    { value: "toan-quoc", label: "Toàn quốc" },
-    { value: "ho-chi-minh", label: "Hồ Chí Minh" },
-    { value: "ha-noi", label: "Hà Nội" },
-    { value: "da-nang", label: "Đà Nẵng" },
-    { value: "can-tho", label: "Cần Thơ" },
-    { value: "ba-ria", label: "Bà Rịa - Vũng Tàu" },
-  ];
-
-  const handleSearch = () => {
-    console.log("Search:", searchKeyword, selectedLocation);
-  };
+  const isCompaniesPage = location.pathname === "/companies";
 
   const handleLocationSelect = (location) => {
     setSelectedLocation(location.label);
@@ -167,21 +175,86 @@ const SearchBar = () => {
   };
 
   const locationContent = (
-    <div style={{ width: 250 }}>
-      <LocationList
-        size="small"
-        dataSource={locationOptions}
-        renderItem={(item) => (
-          <List.Item
-            className={selectedLocation === item.label ? "selected" : ""}
-            onClick={() => handleLocationSelect(item)}
+    <div
+      style={{
+        width: 520,
+        maxHeight: 300,
+        overflowY: "auto",
+        padding: "4px 12px",
+      }}
+    >
+      {locationOptions.map((group) => (
+        <div
+          key={group.group}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px 12px",
+            paddingLeft: 12,
+            marginBottom: 12,
+          }}
+        >
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>{group.group}</div>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px 12px",
+              paddingLeft: 12,
+            }}
           >
-            {item.label}
-          </List.Item>
-        )}
-      />
+            {group.items.map((item) => (
+              <div
+                key={item.value}
+                style={{
+                  cursor: "pointer",
+                  color:
+                    selectedLocation === item.label ? "#577cf6" : "inherit",
+                  fontWeight: selectedLocation === item.label ? 600 : 400,
+                }}
+                onClick={() => handleLocationSelect(item)}
+                onMouseEnter={(e) => {
+                  if (selectedLocation !== item.label) {
+                    e.target.style.color = "#577cf6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedLocation !== item.label) {
+                    e.target.style.color = "inherit";
+                  }
+                }}
+              >
+                {item.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
+
+  if (isProvinceLoading) {
+    return (
+      <SearchContainer>
+        <LocationInputGroup>
+          <Input
+            size="large"
+            placeholder="Đang tải vị trí..."
+            disabled
+            style={{ width: "100%" }}
+          />
+        </LocationInputGroup>
+        <DividerVer type="vertical" />
+        <SearchInputGroup>
+          <SearchInput size="large" placeholder="Nhập từ khóa..." disabled />
+        </SearchInputGroup>
+        <DividerVer type="vertical" />
+        <SearchButton type="primary" size="large" disabled>
+          <SearchOutlined /> Tìm kiếm
+        </SearchButton>
+      </SearchContainer>
+    );
+  }
 
   return (
     <SearchContainer>
@@ -211,7 +284,9 @@ const SearchBar = () => {
       <SearchInputGroup>
         <SearchInput
           size="large"
-          placeholder="Nhập vị trí công việc, kỹ năng..."
+          placeholder={
+            isCompaniesPage ? "Nhập tên công ty" : "Nhập tên việc làm"
+          }
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
           onPressEnter={handleSearch}

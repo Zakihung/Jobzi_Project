@@ -8,6 +8,7 @@ import {
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
 import useGetJobPostSaveByCandidate from "../../../candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
+import useGetListCompany from "../../../company/hooks/Company/useGetListCompany";
 import useGetApplicationsByCandidateId from "../../../application/hooks/useGetApplicationsByCandidateId";
 import JobGrid from "../../../job/components/templates/JobGrid";
 import ApplicationGrid from "../../../application/components/templates/ApplicationGrid";
@@ -91,25 +92,55 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
   const { auth } = useContext(AuthContext);
   const candidateId = auth?.user?.candidate_id;
 
-  // Sử dụng hook để lấy danh sách đơn ứng tuyển
   const {
     data: applications,
     isLoading: isLoadingApplications,
     isError: isErrorApplications,
   } = useGetApplicationsByCandidateId(candidateId);
 
-  // Sử dụng hook để lấy danh sách công việc đã lưu
   const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
     useGetJobPostSaveByCandidate(candidateId);
 
-  // Sắp xếp savedJobPosts theo createdAt giảm dần (mới nhất trước)
-  const sortedJobPosts = Array.isArray(savedJobPosts)
-    ? [...savedJobPosts].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      )
-    : [];
+  const { data: companies, isLoading: isLoadingCompanies } =
+    useGetListCompany();
 
-  // Sắp xếp applications theo createdAt giảm dần (mới nhất trước)
+  // Chuẩn hóa dữ liệu savedJobPosts
+  const sortedJobPosts = React.useMemo(() => {
+    if (!savedJobPosts || !companies) return [];
+
+    return savedJobPosts
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map((item) => {
+        const job = item.job_post_id;
+        const company = companies.find(
+          (c) => c._id === job.employer_id?.company_id
+        );
+        const locations =
+          job.locations
+            ?.map((loc) => loc.province)
+            .filter(Boolean)
+            .join(", ") || "Không xác định";
+        return {
+          id: job._id,
+          title: job.title,
+          company: company ? company.name : "Công ty không xác định",
+          logo:
+            company?.logo ||
+            "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+          location: locations,
+          salary:
+            job.salary_type === "negotiable"
+              ? "Thỏa thuận"
+              : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
+                  job.max_salary_range / 1000000
+                ).toFixed(0)} triệu`,
+          tags: job.skills || [],
+          saved: true, // Công việc đã lưu nên mặc định true
+          posted: job.createdAt,
+        };
+      });
+  }, [savedJobPosts, companies]);
+
   const sortedApplications = Array.isArray(applications)
     ? [...applications].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -141,32 +172,15 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
         );
       case "interviews":
         return (
-          <List
-            dataSource={interviews}
-            renderItem={(item) => (
-              <StyledListItem>
-                <List.Item.Meta
-                  avatar={
-                    <ListIcon>
-                      <CalendarOutlined />
-                    </ListIcon>
-                  }
-                  title={<Text strong>{item.title}</Text>}
-                  description={
-                    <Space direction="vertical" size={4}>
-                      <Text>{item.company}</Text>
-                      <Text type="secondary">
-                        Lịch phỏng vấn: {item.date}, {item.time}
-                      </Text>
-                    </Space>
-                  }
-                />
-              </StyledListItem>
-            )}
-          />
+          <EmptyState>
+            <EmptyText>Chưa có lịch phỏng vấn!</EmptyText>
+            <ExploreButton onClick={() => navigate("/jobs")}>
+              Khám phá việc làm
+            </ExploreButton>
+          </EmptyState>
         );
       case "saved":
-        if (isLoadingSavedJobPosts) {
+        if (isLoadingSavedJobPosts || isLoadingCompanies) {
           return <Spin tip="Đang tải bài đăng đã lưu..." />;
         }
         if (!sortedJobPosts || sortedJobPosts.length === 0) {
@@ -179,29 +193,7 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
             </EmptyState>
           );
         }
-        return (
-          <JobGrid
-            jobs={
-              sortedJobPosts?.map((item) => ({
-                _id: item.job_post_id._id,
-                title: item.job_post_id.title,
-                employer_id: item.job_post_id.employer_id,
-                locations: [
-                  {
-                    province:
-                      item.job_post_id.locations?.[0]?.province ||
-                      "Không xác định",
-                  },
-                ],
-                min_salary_range: item.job_post_id.min_salary_range || 0,
-                max_salary_range: item.job_post_id.max_salary_range || 0,
-                skills: item.job_post_id.skills || [],
-                createdAt: item.createdAt,
-              })) || []
-            }
-            fullWidth={true}
-          />
-        );
+        return <JobGrid jobs={sortedJobPosts} fullWidth={true} />;
       default:
         return null;
     }

@@ -10,20 +10,19 @@ const JobGrid = ({ jobs, fullWidth = false }) => {
           xs={24}
           md={fullWidth ? 24 : 12}
           xl={fullWidth ? 24 : 8}
-          key={job._id}
+          key={job.id}
         >
           <JobCard
             job={{
-              id: job._id,
+              id: job.id,
               title: job.title,
-              company: job.employer_id?.company_id,
-              location: `${job.locations[0]?.province}`,
-              salary: `${(job.min_salary_range / 1000000).toFixed(0)}-${(
-                job.max_salary_range / 1000000
-              ).toFixed(0)} triệu`,
-              tags: job.skills,
-              saved: false,
-              posted: job.createdAt,
+              company: job.company,
+              location: job.location,
+              salary: job.salary,
+              tags: job.tags,
+              saved: job.saved,
+              posted: job.posted,
+              logo: job.logo,
             }}
           />
         </Col>

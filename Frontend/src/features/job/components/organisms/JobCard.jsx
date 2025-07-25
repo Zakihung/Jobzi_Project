@@ -8,7 +8,6 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { formatTime } from "../../../../constants/formatTime";
-import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
 import { useNavigate } from "react-router-dom";
 import useSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useSaveJobPost";
 import useUnSaveJobPost from "../../../candidate/hooks/Candidate_Save_Job_Post/useUnSaveJobPost";
@@ -47,7 +46,7 @@ const JobHeader = styled.div`
 const CompanyLogo = styled(Avatar)`
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  jutify: flex-start;
+  justify: flex-start;
 `;
 
 const JobActions = styled.div`
@@ -197,7 +196,6 @@ const JobCard = ({ job }) => {
   const candidateId = auth?.user?.candidate_id;
   const { message } = App.useApp();
   const navigate = useNavigate();
-  const { data: companyData, isLoading } = useGetCompanyById(job.company);
   const { mutate: saveJobPost, isLoading: isSaving } = useSaveJobPost();
   const { mutate: unSaveJobPost, isLoading: isUnSaving } = useUnSaveJobPost();
   const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
@@ -205,7 +203,6 @@ const JobCard = ({ job }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Kiểm tra trạng thái lưu bài đăng công việc từ backend
   useEffect(() => {
     if (savedJobPosts && job.id) {
       const isJobSaved = savedJobPosts.some(
@@ -226,7 +223,7 @@ const JobCard = ({ job }) => {
       unSaveJobPost(data, {
         onSuccess: () => {
           message.success("Đã hủy lưu việc làm này");
-          setIsSaved(false); // Cập nhật trạng thái giao diện
+          setIsSaved(false);
         },
         onError: (error) => {
           message.error(
@@ -238,7 +235,7 @@ const JobCard = ({ job }) => {
       saveJobPost(data, {
         onSuccess: () => {
           message.success("Đã lưu việc làm này");
-          setIsSaved(true); // Cập nhật trạng thái giao diện
+          setIsSaved(true);
         },
         onError: (error) => {
           message.error(
@@ -249,12 +246,11 @@ const JobCard = ({ job }) => {
     }
   };
 
-  // Handle modal cancel
   const handleModalCancel = () => {
     setModalVisible(false);
   };
 
-  if (isLoading && isLoadingSavedJobPosts) {
+  if (isLoadingSavedJobPosts) {
     return (
       <JobCardWrapper>
         <SkeletonContainer>
@@ -271,16 +267,10 @@ const JobCard = ({ job }) => {
   return (
     <JobCardWrapper onClick={() => navigate(`/jobpost/${job.id}`)}>
       <JobHeader>
-        <CompanyLogo
-          src={
-            companyData?.logo ||
-            "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png"
-          }
-          size={70}
-        />
+        <CompanyLogo src={job.logo} size={70} />
         <JobContent>
           <JobTitle className="job-title">{job.title}</JobTitle>
-          <CompanyName>{companyData?.name}</CompanyName>
+          <CompanyName>{job.company}</CompanyName>
         </JobContent>
         <JobActions>
           <SaveBtn
@@ -294,7 +284,7 @@ const JobCard = ({ job }) => {
             }
             className={isSaved ? "saved" : ""}
             onClick={(e) => {
-              e.stopPropagation(); // Ngăn sự kiện click lan sang JobCardWrapper
+              e.stopPropagation();
               handleSaveJob();
             }}
             loading={isSaving || isUnSaving}

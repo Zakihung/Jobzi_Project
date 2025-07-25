@@ -3,6 +3,8 @@ import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
 import AllCompaniesSection from "../../features/company/components/templates/AllCompaniesSection";
+import { useLocation } from "react-router-dom";
+import useGetListCompany from "../../features/company/hooks/Company/useGetListCompany";
 
 const { Content } = Layout;
 
@@ -17,9 +19,10 @@ const CompanypageContent = styled(Content)`
 `;
 
 const CompanyPage = () => {
-  const page = "companies";
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("Toàn quốc");
+  const location = useLocation();
+  const page = location.pathname === "/companies" ? "companies" : "jobs";
   const [filters, setFilters] = useState({
     industry: [],
     companySize: [],
@@ -27,54 +30,72 @@ const CompanyPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 16;
 
-  const allCompanies = useMemo(
-    () =>
-      Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        title: `Vị trí công việc ${index + 1}`,
-        company: `Công ty ${String.fromCharCode(65 + (index % 26))}`,
-        logo: `https://via.placeholder.com/60/${Math.floor(
-          Math.random() * 16777215
-        ).toString(16)}/ffffff?text=C${index % 10}`,
-        location: ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ"][index % 5],
-        salary: `${10 + (index % 40)}-${20 + (index % 40)} triệu`, // Ví dụ: "10-20 triệu"
-        type: ["Full-time", "Part-time", "Remote", "Freelance"][index % 4],
-        tags: [
-          ["React", "Node.js", "JavaScript"],
-          ["Python", "Django", "Flask"],
-          ["Java", "Spring", "Hibernate"],
-          ["Marketing", "SEO", "Analytics"],
-          ["Design", "Figma", "Sketch"],
-        ][index % 5],
-        urgent: index % 3 === 0,
-        saved: index % 4 === 0,
-        posted: `${index % 24} giờ trước`,
-      })),
-    []
-  );
+  const { data: companies, isLoading: isLoadingCompanies } =
+    useGetListCompany();
+
+  const allCompanies = useMemo(() => {
+    if (!companies) return [];
+    return companies.map((company) => ({
+      _id: company._id,
+      name: company.name,
+      logo:
+        company.logo ||
+        "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+      province_id: company.province_id || { name: "Không xác định" },
+      company_industry_id: company.company_industry_id || {
+        name: "Không xác định",
+      },
+      min_size: company.min_size,
+      max_size: company.max_size,
+      createdAt: company.createdAt,
+    }));
+  }, [companies]);
 
   const filteredCompanies = useMemo(() => {
-    return allCompanies.filter((job) => {
-      const matchesKeyword = searchKeyword
-        ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-          job.tags.some((tag) =>
-            tag.toLowerCase().includes(searchKeyword.toLowerCase())
-          )
-        : true;
+    return allCompanies.filter((company) => {
+      const matchesKeyword =
+        page === "companies" && searchKeyword
+          ? company.name.toLowerCase().includes(searchKeyword.toLowerCase())
+          : true;
 
-      const matchesLocation = selectedLocation
-        ? job.location.toLowerCase() ===
-          selectedLocation
-            .replace("ho-chi-minh", "Hồ Chí Minh")
-            .replace("ha-noi", "Hà Nội")
-            .replace("da-nang", "Đà Nẵng")
-            .replace("can-tho", "Cần Thơ")
-            .toLowerCase()
-        : true;
+      const matchesLocation =
+        selectedLocation && selectedLocation !== "Toàn quốc"
+          ? company.province_id.name.toLowerCase() ===
+            selectedLocation.toLowerCase()
+          : true;
 
-      return matchesKeyword && matchesLocation;
+      const matchesIndustry =
+        filters.industry.length > 0
+          ? filters.industry.includes(
+              company.company_industry_id.name.toLowerCase()
+            )
+          : true;
+
+      const matchesCompanySize =
+        filters.companySize.length > 0
+          ? filters.companySize.some((sizeFilter) => {
+              const [filterMin, filterMax] = sizeFilter
+                .replace("under-", "")
+                .replace("over-", "")
+                .split("-")
+                .map((val) => parseInt(val) || Infinity);
+              const companyMin = company.min_size || 0;
+              const companyMax = company.max_size || Infinity;
+              return (
+                companyMin >= filterMin &&
+                (filterMax === Infinity || companyMax <= filterMax)
+              );
+            })
+          : true;
+
+      return (
+        matchesKeyword &&
+        matchesLocation &&
+        matchesIndustry &&
+        matchesCompanySize
+      );
     });
-  }, [allCompanies, searchKeyword, selectedLocation, filters]);
+  }, [allCompanies, searchKeyword, selectedLocation, filters, page]);
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -86,7 +107,7 @@ const CompanyPage = () => {
       companySize: [],
     });
     setSearchKeyword("");
-    setSelectedLocation("");
+    setSelectedLocation("Toàn quốc");
     setCurrentPage(1);
   };
 
@@ -120,7 +141,7 @@ const CompanyPage = () => {
               filters={filters}
               handleFilterChange={handleFilterChange}
               handleResetFilters={handleResetFilters}
-              filteredCompanies={filteredCompanies}
+              filteredCompanies={isLoadingCompanies ? [] : filteredCompanies}
               currentPage={currentPage}
               pageSize={pageSize}
               handlePageChange={handlePageChange}

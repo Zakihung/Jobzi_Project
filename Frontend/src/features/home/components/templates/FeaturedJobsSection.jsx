@@ -2,10 +2,10 @@ import React from "react";
 import { Row, Col, Typography, Button, Skeleton } from "antd";
 import { FireOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import JobCard from "../../../job/components/organisms/JobCard";
+import JobGrid from "../../../job/components/templates/JobGrid";
 import { useNavigate } from "react-router-dom";
 import useGetAllJobPosts from "../../../postjob/hooks/Job_Post/useGetAllJobPosts";
-import JobGrid from "../../../job/components/templates/JobGrid";
+import useGetListCompany from "../../../company/hooks/Company/useGetListCompany";
 
 const { Title, Text } = Typography;
 
@@ -82,14 +82,48 @@ const SkeletonContainer = styled.div`
 
 const FeaturedJobsSection = () => {
   const navigate = useNavigate();
-  const { data: jobs, isLoading } = useGetAllJobPosts();
+  const { data: jobPosts, isLoading: isLoadingJobs } = useGetAllJobPosts();
+  const { data: companies, isLoading: isLoadingCompanies } =
+    useGetListCompany();
 
-  // Sắp xếp jobs theo ngày đăng (createdAt) mới nhất
-  const sortedJobs = jobs
-    ? [...jobs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    : [];
+  // Chuẩn hóa dữ liệu cho JobGrid
+  const featuredJobs = React.useMemo(() => {
+    if (!jobPosts || !companies) return [];
 
-  if (isLoading) {
+    return jobPosts
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 6) // Lấy 6 việc làm nổi bật
+      .map((job) => {
+        const company = companies.find(
+          (c) => c._id === job.employer_id?.company_id
+        );
+        const locations =
+          job.locations
+            ?.map((loc) => loc.province)
+            .filter(Boolean)
+            .join(", ") || "Không xác định";
+        return {
+          id: job._id,
+          title: job.title,
+          company: company ? company.name : "Công ty không xác định",
+          logo:
+            company?.logo ||
+            "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+          location: locations,
+          salary:
+            job.salary_type === "negotiable"
+              ? "Thỏa thuận"
+              : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
+                  job.max_salary_range / 1000000
+                ).toFixed(0)} triệu`,
+          tags: job.skills,
+          saved: false,
+          posted: job.createdAt,
+        };
+      });
+  }, [jobPosts, companies]);
+
+  if (isLoadingJobs || isLoadingCompanies) {
     return (
       <FeaturedJobsSectionWrapper>
         <SectionContainer>
@@ -133,7 +167,7 @@ const FeaturedJobsSection = () => {
             Xem tất cả <RightOutlined />
           </ViewAllBtn>
         </SectionHeader>
-        <JobGrid jobs={sortedJobs || []} />
+        <JobGrid jobs={featuredJobs} />
       </SectionContainer>
     </FeaturedJobsSectionWrapper>
   );

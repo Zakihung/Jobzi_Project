@@ -5,7 +5,6 @@ import ResetFilterButton from "../../../../components/organisms/ResetFilterButto
 import PaginationSection from "../../../../components/organisms/PaginationSection";
 import NoResults from "../../../../components/organisms/NoResults";
 import FilterPopover from "../../../../components/organisms/FilterPopover";
-import useGetListCompany from "../../../company/hooks/Company/useGetListCompany";
 import CompanyGrid from "./CompanyGrid";
 
 const AllCompaniesSectionWrapper = styled.section`
@@ -28,22 +27,40 @@ const AllCompaniesSection = ({
   filters,
   handleFilterChange,
   handleResetFilters,
+  filteredCompanies,
   currentPage,
   pageSize,
   handlePageChange,
 }) => {
-  const { data: companies, isLoading } = useGetListCompany();
-
-  const companyList = Array.isArray(companies) ? companies : [];
-
-  // Sắp xếp companies theo ngày đăng (createdAt) mới nhất
-  const sortedCompanies = companyList
-    ? [...companyList].sort(
+  const sortedCompanies = filteredCompanies
+    ? [...filteredCompanies].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
     : [];
 
-  if (isLoading) {
+  const startIndex = (currentPage - 1) * pageSize;
+  const currentCompanies = sortedCompanies.slice(
+    startIndex,
+    startIndex + pageSize
+  );
+
+  const filterOptions = {
+    industry: [
+      { label: "Công nghệ thông tin", value: "công nghệ thông tin" },
+      { label: "Tài chính", value: "tài chính" },
+      { label: "Marketing", value: "marketing" },
+      { label: "Sản xuất", value: "sản xuất" },
+      { label: "Y tế", value: "y tế" },
+    ],
+    companySize: [
+      { label: "Dưới 50 nhân viên", value: "under-50" },
+      { label: "50-100 nhân viên", value: "50-100" },
+      { label: "100-500 nhân viên", value: "100-500" },
+      { label: "Trên 500 nhân viên", value: "over-500" },
+    ],
+  };
+
+  if (!filteredCompanies) {
     return (
       <AllCompaniesSectionWrapper>
         <SectionContainer>
@@ -83,22 +100,6 @@ const AllCompaniesSection = ({
     );
   }
 
-  const filterOptions = {
-    industry: [
-      { label: "Công nghệ thông tin", value: "it" },
-      { label: "Tài chính", value: "finance" },
-      { label: "Marketing", value: "marketing" },
-      { label: "Sản xuất", value: "manufacturing" },
-      { label: "Y tế", value: "healthcare" },
-    ],
-    companySize: [
-      { label: "Dưới 50 nhân viên", value: "under-50" },
-      { label: "50-100 nhân viên", value: "50-100" },
-      { label: "100-500 nhân viên", value: "100-500" },
-      { label: "Trên 500 nhân viên", value: "over-500" },
-    ],
-  };
-
   return (
     <AllCompaniesSectionWrapper>
       <SectionContainer>
@@ -129,8 +130,8 @@ const AllCompaniesSection = ({
             <ResetFilterButton onClick={handleResetFilters} />
           </Col>
         </Row>
-        {sortedCompanies.length > 0 ? (
-          <CompanyGrid companies={sortedCompanies} />
+        {currentCompanies.length > 0 ? (
+          <CompanyGrid companies={currentCompanies} />
         ) : (
           <NoResults />
         )}

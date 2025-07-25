@@ -13,7 +13,14 @@ const NoResultsText = styled(Text)`
 `;
 
 const NoResults = () => {
-  return <NoResultsText>Không tìm thấy công việc phù hợp</NoResultsText>;
+  const isCompaniesPage = location.pathname === "/companies";
+  return (
+    <NoResultsText>
+      {isCompaniesPage
+        ? "Không tìm thấy công ty phù hợp"
+        : "Không tìm thấy công việc phù hợp"}
+    </NoResultsText>
+  );
 };
 
 export default NoResults;
