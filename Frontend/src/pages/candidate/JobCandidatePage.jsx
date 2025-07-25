@@ -19,18 +19,16 @@ const JobpageContent = styled(Content)`
   background: #ffffff;
 `;
 
-const JobCadidatePage = () => {
+const JobCandidatePage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("Toàn quốc");
   const location = useLocation();
   const page = location.pathname === "/jobs" ? "jobs" : "companies";
   const [filters, setFilters] = useState({
     jobType: [],
-    salary: [],
     experience: [],
     education: [],
-    industry: [],
-    companySize: [],
+    salary: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 16;
@@ -65,11 +63,15 @@ const JobCadidatePage = () => {
             : `${(job.min_salary_range / 1000000).toFixed(0)}-${(
                 job.max_salary_range / 1000000
               ).toFixed(0)} triệu`,
-        type: job.work_type,
-        tags: job.skills,
+        work_type: job.work_type || "Không xác định",
+        min_years_experience: job.min_years_experience || 0,
+        education_level: job.education_level || "Không yêu cầu",
+        tags: job.skills || [],
         urgent: false,
         saved: false,
         posted: job.createdAt,
+        min_salary_range: job.min_salary_range || 0,
+        max_salary_range: job.max_salary_range || 0,
       };
     });
   }, [jobPosts, companies]);
@@ -78,7 +80,10 @@ const JobCadidatePage = () => {
     return allJobs.filter((job) => {
       const matchesKeyword =
         page === "jobs" && searchKeyword
-          ? job.title.toLowerCase().includes(searchKeyword.toLowerCase())
+          ? job.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+            job.tags.some((tag) =>
+              tag.toLowerCase().includes(searchKeyword.toLowerCase())
+            )
           : true;
 
       const matchesLocation =
@@ -88,35 +93,61 @@ const JobCadidatePage = () => {
 
       const matchesJobType =
         filters.jobType.length > 0
-          ? filters.jobType.includes(job.type.toLowerCase())
+          ? filters.jobType.includes(job.work_type)
+          : true;
+
+      const matchesExperience =
+        filters.experience.length > 0
+          ? filters.experience.some((expFilter) => {
+              const expValue =
+                expFilter === "none"
+                  ? 0
+                  : expFilter === "over-5"
+                  ? 5
+                  : parseInt(expFilter);
+              return (
+                (expFilter === "none" && job.min_years_experience === 0) ||
+                (expFilter === "over-5" && job.min_years_experience >= 5) ||
+                job.min_years_experience === expValue
+              );
+            })
+          : true;
+
+      const matchesEducation =
+        filters.education.length > 0
+          ? filters.education.includes(job.education_level)
           : true;
 
       const matchesSalary =
         filters.salary.length > 0
           ? filters.salary.some((salaryFilter) => {
               if (salaryFilter === "negotiable") {
-                return job.salary === "Thỏa thuận";
+                return job.salary_type === "negotiable";
               }
               const [filterMin, filterMax] = salaryFilter
+                .replace("under-", "")
+                .replace("over-", "")
                 .replace("m", "")
                 .split("-")
-                .map((val) => parseFloat(val) || Infinity);
-              const [jobMin, jobMax] =
-                job.salary === "Thỏa thuận"
-                  ? [0, Infinity]
-                  : job.salary
-                      .replace(" triệu", "")
-                      .split("-")
-                      .map((val) => parseFloat(val));
+                .map((val) => parseFloat(val) * 1000000 || Infinity);
+              const jobMin = job.min_salary_range;
+              const jobMax = job.max_salary_range;
               return (
-                jobMin >= filterMin &&
-                (filterMax === Infinity || jobMax <= filterMax)
+                (jobMin >= filterMin &&
+                  (filterMax === Infinity || jobMin <= filterMax)) ||
+                (jobMax >= filterMin &&
+                  (filterMax === Infinity || jobMax <= filterMax))
               );
             })
           : true;
 
       return (
-        matchesKeyword && matchesLocation && matchesJobType && matchesSalary
+        matchesKeyword &&
+        matchesLocation &&
+        matchesJobType &&
+        matchesExperience &&
+        matchesEducation &&
+        matchesSalary
       );
     });
   }, [allJobs, searchKeyword, selectedLocation, filters, page]);
@@ -128,11 +159,9 @@ const JobCadidatePage = () => {
   const handleResetFilters = () => {
     setFilters({
       jobType: [],
-      salary: [],
       experience: [],
       education: [],
-      industry: [],
-      companySize: [],
+      salary: [],
     });
     setSearchKeyword("");
     setSelectedLocation("Toàn quốc");
@@ -183,4 +212,4 @@ const JobCadidatePage = () => {
   );
 };
 
-export default JobCadidatePage;
+export default JobCandidatePage;

@@ -66,9 +66,7 @@ const CompanyPage = () => {
 
       const matchesIndustry =
         filters.industry.length > 0
-          ? filters.industry.includes(
-              company.company_industry_id.name.toLowerCase()
-            )
+          ? filters.industry.includes(company.company_industry_id.name)
           : true;
 
       const matchesCompanySize =
@@ -82,8 +80,10 @@ const CompanyPage = () => {
               const companyMin = company.min_size || 0;
               const companyMax = company.max_size || Infinity;
               return (
-                companyMin >= filterMin &&
-                (filterMax === Infinity || companyMax <= filterMax)
+                (companyMin >= filterMin &&
+                  (filterMax === Infinity || companyMin <= filterMax)) ||
+                (companyMax >= filterMin &&
+                  (filterMax === Infinity || companyMax <= filterMax))
               );
             })
           : true;

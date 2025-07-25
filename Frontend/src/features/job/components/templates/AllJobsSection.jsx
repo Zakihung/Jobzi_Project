@@ -41,37 +41,27 @@ const AllJobsSection = ({
 
   const filterOptions = {
     jobType: [
-      { label: "Toàn thời gian", value: "full-time" },
-      { label: "Bán thời gian", value: "part-time" },
+      { label: "Toàn thời gian", value: "full_time" },
+      { label: "Bán thời gian", value: "part_time" },
       { label: "Thực tập", value: "intern" },
     ],
     experience: [
       { label: "Không yêu cầu", value: "none" },
-      { label: "1-2 năm", value: "1-2-years" },
-      { label: "2-3 năm", value: "2-3-years" },
-      { label: "3-4 năm", value: "3-4-years" },
-      { label: "4-5 năm", value: "4-5-years" },
-      { label: "Trên 5 năm", value: "over-5-years" },
+      { label: "1 năm", value: "1" },
+      { label: "2 năm", value: "2" },
+      { label: "3 năm", value: "3" },
+      { label: "4 năm", value: "4" },
+      { label: "5 năm", value: "5" },
+      { label: "Trên 5 năm", value: "over-5" },
     ],
     education: [
-      { label: "Không yêu cầu", value: "none" },
-      { label: "Trung cấp", value: "intermediate" },
-      { label: "Cao đẳng", value: "college" },
-      { label: "Đại học", value: "university" },
-      { label: "Sau đại học", value: "postgraduate" },
-    ],
-    industry: [
-      { label: "Công nghệ thông tin", value: "it" },
-      { label: "Tài chính", value: "finance" },
-      { label: "Marketing", value: "marketing" },
-      { label: "Sản xuất", value: "manufacturing" },
-      { label: "Y tế", value: "healthcare" },
-    ],
-    companySize: [
-      { label: "Dưới 50 nhân viên", value: "under-50" },
-      { label: "50-100 nhân viên", value: "50-100" },
-      { label: "100-500 nhân viên", value: "100-500" },
-      { label: "Trên 500 nhân viên", value: "over-500" },
+      { label: "Không yêu cầu", value: "Không yêu cầu" },
+      { label: "Trung học phổ thông", value: "Trung học phổ thông" },
+      { label: "Trung cấp", value: "Trung cấp" },
+      { label: "Cao đẳng", value: "Cao đẳng" },
+      { label: "Đại học", value: "Đại học" },
+      { label: "Thạc sĩ", value: "Thạc sĩ" },
+      { label: "Tiến sĩ", value: "Tiến sĩ" },
     ],
     salary: [
       { label: "Thỏa thuận", value: "negotiable" },
@@ -100,7 +90,7 @@ const AllJobsSection = ({
           >
             <Col>
               <Row style={{ gap: "8px" }}>
-                {Array(6)
+                {Array(4)
                   .fill()
                   .map((_, index) => (
                     <Skeleton.Button key={index} active size="large" />
@@ -162,20 +152,6 @@ const AllJobsSection = ({
                 options={filterOptions.education}
                 value={filters.education}
                 onChange={(values) => handleFilterChange("education", values)}
-              />
-              <FilterPopover
-                filterKey="industry"
-                title="Lĩnh vực"
-                options={filterOptions.industry}
-                value={filters.industry}
-                onChange={(values) => handleFilterChange("industry", values)}
-              />
-              <FilterPopover
-                filterKey="companySize"
-                title="Quy mô"
-                options={filterOptions.companySize}
-                value={filters.companySize}
-                onChange={(values) => handleFilterChange("companySize", values)}
               />
               <FilterPopover
                 filterKey="salary"

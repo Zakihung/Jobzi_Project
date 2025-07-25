@@ -6,6 +6,7 @@ import PaginationSection from "../../../../components/organisms/PaginationSectio
 import NoResults from "../../../../components/organisms/NoResults";
 import FilterPopover from "../../../../components/organisms/FilterPopover";
 import CompanyGrid from "./CompanyGrid";
+import useGetListCompanyIndustry from "../../hooks/Company_Industry/useGetListCompanyIndustry";
 
 const AllCompaniesSectionWrapper = styled.section`
   padding: 1.5rem 0;
@@ -32,6 +33,9 @@ const AllCompaniesSection = ({
   pageSize,
   handlePageChange,
 }) => {
+  const { data: industries, isLoading: isLoadingIndustries } =
+    useGetListCompanyIndustry();
+
   const sortedCompanies = filteredCompanies
     ? [...filteredCompanies].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -45,13 +49,14 @@ const AllCompaniesSection = ({
   );
 
   const filterOptions = {
-    industry: [
-      { label: "Công nghệ thông tin", value: "công nghệ thông tin" },
-      { label: "Tài chính", value: "tài chính" },
-      { label: "Marketing", value: "marketing" },
-      { label: "Sản xuất", value: "sản xuất" },
-      { label: "Y tế", value: "y tế" },
-    ],
+    industry: industries
+      ? industries
+          .filter((industry) => industry.status === "open" && !industry.deleted)
+          .map((industry) => ({
+            label: industry.name,
+            value: industry.name,
+          }))
+      : [],
     companySize: [
       { label: "Dưới 50 nhân viên", value: "under-50" },
       { label: "50-100 nhân viên", value: "50-100" },
@@ -60,7 +65,7 @@ const AllCompaniesSection = ({
     ],
   };
 
-  if (!filteredCompanies) {
+  if (!filteredCompanies || isLoadingIndustries) {
     return (
       <AllCompaniesSectionWrapper>
         <SectionContainer>
