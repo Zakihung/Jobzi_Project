@@ -32,144 +32,69 @@ import {
   ArrowLeftOutlined,
 } from "@ant-design/icons";
 import styles from "../../styles/ResumeAnalysisPage.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useGetLatestResumeAnalysis from "../../features/analysis/hooks/useGetLatestResumeAnalysis";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 
 const ResumeAnalysisPage = () => {
   const navigate = useNavigate();
+  const { job_post_id, resume_file_id, online_resume_id } = useParams(); // Lấy tham số từ URL (nếu có)
   const [selectedMenu, setSelectedMenu] = useState("overview");
 
-  // Dữ liệu cứng để test
-  const analysisData = {
-    classification: {
-      personal_info: {
-        address: "Đông Đa, Hà Nội",
-        name: "Front End Developer Developer Submit App THAM GIA CÂU LẠC BỘ HIT CỦA TRƯỜNG",
-        phone: "0342002210",
-        dob: "24/08/1997",
-        gender: "Nam",
-        other: "",
-      },
-      education: [
-        {
-          institution: "Đại học TopCV • Tốt nghiệp loại Giỏi • Đạt học bổng",
-          degree: "bachelor",
-          major: "Đại học TopCV • Tốt nghiệp loại Giỏi • Đạt học bổng",
-          duration: "2016",
-          description: "",
-          _id: "68820f13058f7d0b5e485760",
-        },
-      ],
-      career_objective:
-        "• Nghiên cứu , phát triển công nghệ mới để ứng dụng xây dựng các sản phẩm dịch vụ mới Với 6 năm trong nghề lập trình , • Hỗ trợ các thành viên trong nhóm với các chức năng phức tạp , tham gia triển khai trực tiếp hơn 30",
-      skills: [
-        {
-          name: "thuyết trình",
-          proficiency: "Trung bình",
-          _id: "68820f13058f7d0b5e48575f",
-        },
-      ],
-      projects: [],
-      work_experience: [
-        {
-          company: "Công ty T",
-          position: "Front End Developer",
-          duration: "2021",
-          responsibilities: "NHH MTV SVT Lê Dương Tùng •",
-          _id: "68820f13058f7d0b5e48575e",
-        },
-      ],
-      hobbies: [
-        "Thực hiện bảo trì và cập nhật cho các trang web khách hàng hiện tại .",
-        "Thực hiện thiết kế layout website , cắt HTML & CSS các sản phẩm Đọc sách ● Marketing",
-        "Viết và hệ thống tài liệu phần mềm và thông số kỹ thuật . Nấu ăn ●",
-        "Làm nhiều",
-      ],
-      total_experience: 0,
-      classification_error: null,
-    },
-    analysis: {
-      strengths: [
-        {
-          description: "Sở hữu kỹ năng react phù hợp với yêu cầu công việc",
-          related_to: "skills",
-          _id: "68820f18058f7d0b5e48577c",
-        },
-      ],
-      weaknesses: [
-        {
-          description: "Thiếu kỹ năng node.js theo yêu cầu công việc",
-          related_to: "skills",
-          _id: "68820f18058f7d0b5e485779",
-        },
-        {
-          description: "Chỉ có 0.0 năm kinh nghiệm, không đạt yêu cầu 2 năm",
-          related_to: "work_experience",
-          _id: "68820f18058f7d0b5e48577a",
-        },
-        {
-          description: "Trình độ học vấn không đáp ứng yêu cầu (đại học)",
-          related_to: "education",
-          _id: "68820f18058f7d0b5e48577b",
-        },
-      ],
-      job_match: [
-        {
-          criteria: "Kỹ năng react",
-          description: "Kỹ năng react phù hợp với yêu cầu công việc",
-          _id: "68820f18058f7d0b5e485778",
-        },
-      ],
-      job_mismatch: [
-        {
-          criteria: "Kỹ năng thuyết trình",
-          description:
-            "Kỹ năng thuyết trình không được yêu cầu trong công việc",
-          _id: "68820f18058f7d0b5e485768",
-        },
-        {
-          criteria: "Kỹ năng java",
-          description: "Kỹ năng java không được yêu cầu trong công việc",
-          _id: "68820f18058f7d0b5e485769",
-        },
-        {
-          criteria: "Kinh nghiệm làm việc",
-          description: "Kinh nghiệm 0.0 năm không đạt yêu cầu 2 năm",
-          _id: "68820f18058f7d0b5e485776",
-        },
-        {
-          criteria: "Trình độ học vấn",
-          description: "Trình độ học vấn không đáp ứng yêu cầu (đại học)",
-          _id: "68820f18058f7d0b5e485777",
-        },
-      ],
-      match_score: 30,
-      suggestions: [
-        {
-          section: "skills",
-          suggestion:
-            "Bổ sung kỹ năng năng vào CV hoặc tham gia khóa học để cải thiện",
-          _id: "68820f18058f7d0b5e485765",
-        },
-        {
-          section: "work_experience",
-          suggestion:
-            "Tích lũy thêm kinh nghiệm làm việc hoặc bổ sung các dự án liên quan",
-          _id: "68820f18058f7d0b5e485766",
-        },
-        {
-          section: "education",
-          suggestion:
-            "Bổ sung trình độ học vấn (đại học) hoặc các chứng chỉ tương đương",
-          _id: "68820f18058f7d0b5e485767",
-        },
-      ],
-      analyzed_at: "2025-07-24T10:46:48.003Z",
-      analysis_error: null,
-    },
-  };
+  const {
+    data: analysisData,
+    isLoading,
+    isError,
+    error,
+  } = useGetLatestResumeAnalysis(job_post_id, resume_file_id, online_resume_id);
+
+  if (isLoading) {
+    return (
+      <Layout className={styles.analysisLayout}>
+        <Content className={styles.analysisContent}>
+          <Row justify="center">
+            <Col span={21}>
+              <Card>Đang tải dữ liệu phân tích...</Card>
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Layout className={styles.analysisLayout}>
+        <Content className={styles.analysisContent}>
+          <Row justify="center">
+            <Col span={21}>
+              <Card>
+                <Text type="danger">Lỗi khi tải dữ liệu: {error.message}</Text>
+              </Card>
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    );
+  }
+
+  if (!analysisData) {
+    return (
+      <Layout className={styles.analysisLayout}>
+        <Content className={styles.analysisContent}>
+          <Row justify="center">
+            <Col span={21}>
+              <Card>
+                <Text>Không tìm thấy dữ liệu phân tích CV.</Text>
+              </Card>
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    );
+  }
 
   const handleMenuClick = (e) => {
     setSelectedMenu(e.key);

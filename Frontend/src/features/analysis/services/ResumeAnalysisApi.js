@@ -48,9 +48,14 @@ const getLatestResumeAnalysisApi = (
   resume_file_id,
   online_resume_id
 ) => {
-  const URL_API = `/api/resume-analysis/latest?job_post_id=${job_post_id}${
-    resume_file_id ? `&resume_file_id=${resume_file_id}` : ""
-  }${online_resume_id ? `&online_resume_id=${online_resume_id}` : ""}`;
+  const queryParams = [];
+  if (job_post_id) queryParams.push(`job_post_id=${job_post_id}`);
+  if (resume_file_id && resume_file_id !== "null")
+    queryParams.push(`resume_file_id=${resume_file_id}`);
+  if (online_resume_id && online_resume_id !== "null")
+    queryParams.push(`online_resume_id=${online_resume_id}`);
+
+  const URL_API = `/api/resume-analysis/latest?${queryParams.join("&")}`;
   return axios.get(URL_API);
 };
 

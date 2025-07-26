@@ -18,13 +18,13 @@ router.post("/create", createResumeAnalysis);
 router.post("/process/resume-file/:resume_file_id", processResumeAnalysis);
 router.post("/process/online-resume/:online_resume_id", processResumeAnalysis);
 router.get("/", getListResumeAnalysis);
-router.get("/:id", getResumeAnalysisById);
 router.get(
   "/online-resume/:online_resume_id",
   getResumeAnalysisByOnlineResumeId
 );
 router.get("/resume-file/:resume_file_id", getResumeAnalysisByResumeFileId);
 router.get("/latest", getLatestResumeAnalysis);
+router.get("/:id", getResumeAnalysisById);
 router.delete("/:id", deleteResumeAnalysis);
 router.delete("/", deleteAllResumeAnalysis);
 

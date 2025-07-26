@@ -62,12 +62,22 @@ const ResumeAnalysisModal = ({
     }
 
     try {
-      await onSubmit({ selectedCV, jobPostId });
+      const result = await onSubmit({ selectedCV, jobPostId });
       setIsRedirecting(true);
-      navigate("/analysis");
+
+      // Xác định resume_file_id và online_resume_id dựa trên selectedCV
+      const resume_file_id = selectedCV !== "online" ? selectedCV : "null";
+      const online_resume_id =
+        selectedCV === "online" ? result.online_resume_id : "null";
+
+      // Chuyển hướng đến ResumeAnalysisPage với các tham số
+      navigate(
+        `/resume-analysis/${jobPostId}/${resume_file_id}/${online_resume_id}`
+      );
       setSelectedCV(null);
-    } catch {
+    } catch (error) {
       // Lỗi đã được xử lý trong onSubmit
+      message.error(`Phân tích CV thất bại: ${error.message}`);
     }
   };
 

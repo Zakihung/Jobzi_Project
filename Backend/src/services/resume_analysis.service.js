@@ -509,18 +509,29 @@ const getLatestResumeAnalysisService = async (
       400
     );
   }
-  if (resume_file_id && !mongoose.Types.ObjectId.isValid(resume_file_id)) {
+  // Chỉ kiểm tra ObjectId nếu resume_file_id hoặc online_resume_id không phải null hoặc "null"
+  if (
+    resume_file_id &&
+    resume_file_id !== "null" &&
+    !mongoose.Types.ObjectId.isValid(resume_file_id)
+  ) {
     throw new AppError("ID file hồ sơ không hợp lệ", 400);
   }
-  if (online_resume_id && !mongoose.Types.ObjectId.isValid(online_resume_id)) {
+  if (
+    online_resume_id &&
+    online_resume_id !== "null" &&
+    !mongoose.Types.ObjectId.isValid(online_resume_id)
+  ) {
     throw new AppError("ID hồ sơ online không hợp lệ", 400);
   }
 
   const query = {
     job_post_id,
     $or: [
-      resume_file_id ? { resume_file_id } : null,
-      online_resume_id ? { online_resume_id } : null,
+      resume_file_id && resume_file_id !== "null" ? { resume_file_id } : null,
+      online_resume_id && online_resume_id !== "null"
+        ? { online_resume_id }
+        : null,
     ].filter(Boolean),
   };
 

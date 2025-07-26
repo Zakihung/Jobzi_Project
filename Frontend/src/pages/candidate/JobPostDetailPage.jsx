@@ -152,23 +152,23 @@ const JobPostDetailPage = () => {
     try {
       setIsAnalysisSubmitting(true);
       if (selectedCV === "online" && onlineResume) {
-        await processByOnline({
+        const _result = await processByOnline({
           online_resume_id: onlineResume.data?._id,
           data: { job_post_id: jobPostId },
         });
+        return { online_resume_id: onlineResume.data?._id };
       } else {
         const resumeFile = resumeFiles?.find((file) => file._id === selectedCV);
         if (!resumeFile) {
           message.error("File CV không hợp lệ!");
           throw new Error("Invalid resume file");
         }
-        await processByFile({
+        const _result = await processByFile({
           resume_file_id: resumeFile._id,
           data: { job_post_id: jobPostId },
         });
+        return { resume_file_id: resumeFile._id };
       }
-      message.success("Phân tích CV thành công!");
-      setAnalysisModalVisible(false);
     } catch (error) {
       message.error(`Phân tích CV thất bại: ${error.message}`);
       throw error;

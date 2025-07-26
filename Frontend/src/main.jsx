@@ -94,7 +94,7 @@ const router = createBrowserRouter([
         element: <OnlineResumePage />,
       },
       {
-        path: "analysis",
+        path: "resume-analysis/:job_post_id/:resume_file_id/:online_resume_id",
         element: <ResumeAnalysisPage />,
       },
     ],
