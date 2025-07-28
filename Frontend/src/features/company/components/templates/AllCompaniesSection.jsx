@@ -29,6 +29,7 @@ const AllCompaniesSection = ({
   handleFilterChange,
   handleResetFilters,
   filteredCompanies,
+  isLoading,
   currentPage,
   pageSize,
   handlePageChange,
@@ -67,7 +68,7 @@ const AllCompaniesSection = ({
     ],
   };
 
-  if (!filteredCompanies || isLoadingIndustries) {
+  if (isLoading || isLoadingIndustries) {
     return (
       <AllCompaniesSectionWrapper>
         <SectionContainer>

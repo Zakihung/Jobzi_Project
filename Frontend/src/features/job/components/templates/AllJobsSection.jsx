@@ -28,6 +28,7 @@ const AllJobsSection = ({
   handleFilterChange,
   handleResetFilters,
   filteredJobs,
+  isLoading,
   currentPage,
   pageSize,
   handlePageChange,
@@ -81,7 +82,7 @@ const AllJobsSection = ({
     ],
   };
 
-  if (!filteredJobs) {
+  if (isLoading) {
     return (
       <AllJobsSectionWrapper>
         <SectionContainer>

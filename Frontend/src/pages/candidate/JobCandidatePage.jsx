@@ -206,9 +206,8 @@ const JobCandidatePage = () => {
               filters={filters}
               handleFilterChange={handleFilterChange}
               handleResetFilters={handleResetFilters}
-              filteredJobs={
-                isLoadingJobs || isLoadingCompanies ? [] : filteredJobs
-              }
+              filteredJobs={filteredJobs || []}
+              isLoading={isLoadingJobs || isLoadingCompanies}
               currentPage={currentPage}
               pageSize={pageSize}
               handlePageChange={handlePageChange}

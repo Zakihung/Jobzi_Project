@@ -60,6 +60,7 @@ const JobPostDetailPage = () => {
   const { data: resumeFiles } = useGetResumeFilesByCandidateId(
     auth?.user?.candidate_id
   );
+  console.log("jobpostdta: ", jobPostData);
   const { data: onlineResume } = useGetOnlineResume(auth?.user?.candidate_id);
   const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
     useGetJobPostSaveByCandidate(auth?.user?.candidate_id);
@@ -190,7 +191,7 @@ const JobPostDetailPage = () => {
     setAnalysisModalVisible(false);
   };
 
-  if (isLoadingJobPostData && isLoadingSavedJobPosts) {
+  if (isLoadingJobPostData || isLoadingSavedJobPosts) {
     return (
       <StyledLayout>
         <StyledContent>

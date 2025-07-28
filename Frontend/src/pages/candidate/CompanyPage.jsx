@@ -141,7 +141,8 @@ const CompanyPage = () => {
               filters={filters}
               handleFilterChange={handleFilterChange}
               handleResetFilters={handleResetFilters}
-              filteredCompanies={isLoadingCompanies ? [] : filteredCompanies}
+              filteredCompanies={filteredCompanies || []}
+              isLoading={isLoadingCompanies}
               currentPage={currentPage}
               pageSize={pageSize}
               handlePageChange={handlePageChange}
