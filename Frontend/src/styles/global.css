@@ -85,3 +85,8 @@ body {
   border-radius: 0 0 16px 16px;
   padding: 0;
 }
+
+.ant-input-affix-wrapper:focus-within {
+  box-shadow: none;
+  border-color: none;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
@@ -31,7 +31,15 @@ const JobCandidatePage = () => {
     salary: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 16;
+  const pageSize = 6;
+
+  useEffect(() => {
+    const savedKeyword = localStorage.getItem("searchKeyword");
+    if (savedKeyword) {
+      setSearchKeyword(savedKeyword);
+      localStorage.removeItem("searchKeyword");
+    }
+  }, []);
 
   const { data: jobPosts, isLoading: isLoadingJobs } = useGetAllJobPosts();
   const { data: companies, isLoading: isLoadingCompanies } =

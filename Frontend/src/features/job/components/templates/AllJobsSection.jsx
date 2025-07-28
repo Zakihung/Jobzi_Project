@@ -36,6 +36,8 @@ const AllJobsSection = ({
     ? [...filteredJobs].sort((a, b) => new Date(b.posted) - new Date(a.posted))
     : [];
 
+  const totalItems = sortedJobs?.length || 0;
+
   const startIndex = (currentPage - 1) * pageSize;
   const currentJobs = sortedJobs.slice(startIndex, startIndex + pageSize);
 
@@ -171,12 +173,14 @@ const AllJobsSection = ({
         ) : (
           <NoResults />
         )}
-        <PaginationSection
-          currentPage={currentPage}
-          pageSize={pageSize}
-          totalJobs={sortedJobs.length}
-          onChange={handlePageChange}
-        />
+        {(totalItems > 0 || currentJobs.length > 0) && (
+          <PaginationSection
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+          />
+        )}
       </SectionContainer>
     </AllJobsSectionWrapper>
   );

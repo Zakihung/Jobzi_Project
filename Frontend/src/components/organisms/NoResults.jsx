@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography } from "antd";
+import { Empty, Typography } from "antd";
 import styled from "styled-components";
 
 const { Text } = Typography;
@@ -13,12 +13,10 @@ const NoResultsText = styled(Text)`
 `;
 
 const NoResults = () => {
-  const isCompaniesPage = location.pathname === "/companies";
   return (
     <NoResultsText>
-      {isCompaniesPage
-        ? "Không tìm thấy công ty phù hợp"
-        : "Không tìm thấy công việc phù hợp"}
+      <Empty description={false} />
+      Không tìm thấy kết quả phù hợp
     </NoResultsText>
   );
 };

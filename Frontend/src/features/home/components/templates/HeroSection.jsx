@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Row, Col, Typography, Space, Tag, Button } from "antd";
 import { TrophyOutlined, SearchOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import HeroCarousel from "../organisms/HeroCarousel";
 import SearchBar from "../../../../components/organisms/SearchBar";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -108,14 +109,13 @@ const QuickTag = styled(Tag)`
   transition: all 0.3s ease;
   &:hover {
     background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
   }
 `;
 
 const HeroStats = styled.div`
   display: flex;
   gap: 48px;
-  margin-top: 20px;
+  margin-top: 16px;
 `;
 
 const StatItem = styled.div`
@@ -150,6 +150,18 @@ const HeroSection = () => {
     "Remote",
   ];
 
+  const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const handleSearch = () => {
+    if (searchKeyword.trim()) {
+      localStorage.setItem("searchKeyword", searchKeyword);
+    } else {
+      localStorage.removeItem("searchKeyword");
+    }
+    navigate("/jobs");
+  };
+
   return (
     <HeroSectionWrapper>
       <HeroBackground />
@@ -168,10 +180,16 @@ const HeroSection = () => {
               trình sự nghiệp của bạn ngay hôm nay với mức lương cạnh tranh và
               môi trường làm việc chuyên nghiệp!
             </HeroDescription>
-            <SearchBar />
+            <SearchBar
+              searchKeyword={searchKeyword}
+              setSearchKeyword={setSearchKeyword}
+              handleSearch={handleSearch}
+              selectedLocation=""
+              setSelectedLocation={() => {}}
+            />
             <QuickTags>
               <TagsLabel>Từ khóa phổ biến:</TagsLabel>
-              <Space wrap>
+              <Space wrap style={{ marginTop: 8 }}>
                 {quickTags.map((tag) => (
                   <QuickTag key={tag}>{tag}</QuickTag>
                 ))}

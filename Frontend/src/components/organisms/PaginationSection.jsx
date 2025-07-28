@@ -13,7 +13,7 @@ const PaginationContainer = styled.div`
 const PaginationSection = ({
   currentPage,
   pageSize,
-  totalJobs,
+  totalItems,
   onPageChange,
 }) => {
   return (
@@ -21,7 +21,7 @@ const PaginationSection = ({
       <Pagination
         current={currentPage}
         pageSize={pageSize}
-        total={totalJobs}
+        total={totalItems}
         onChange={onPageChange}
         showSizeChanger={false}
       />

@@ -42,6 +42,8 @@ const AllCompaniesSection = ({
       )
     : [];
 
+  const totalItems = sortedCompanies?.length || 0;
+
   const startIndex = (currentPage - 1) * pageSize;
   const currentCompanies = sortedCompanies.slice(
     startIndex,
@@ -140,12 +142,14 @@ const AllCompaniesSection = ({
         ) : (
           <NoResults />
         )}
-        <PaginationSection
-          currentPage={currentPage}
-          pageSize={pageSize}
-          totalJobs={sortedCompanies.length}
-          onChange={handlePageChange}
-        />
+        {totalItems > 0 && (
+          <PaginationSection
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+          />
+        )}
       </SectionContainer>
     </AllCompaniesSectionWrapper>
   );

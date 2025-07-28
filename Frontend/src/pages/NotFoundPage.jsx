@@ -87,7 +87,6 @@ const NotFoundPage = () => {
         .home-button:hover {
           background: #4c6ef5 !important;
           border-color: #4c6ef5 !important;
-          transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
         }
 
