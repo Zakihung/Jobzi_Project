@@ -77,378 +77,129 @@ const processResumeAnalysisService = async (
   online_resume_id,
   job_post_id
 ) => {
-  let text, cv_id, analysis_id;
   const pythonApiUrl = process.env.PYTHON_API_URL || "http://localhost:1213";
 
-  try {
-    // Bước 1: Kiểm tra và tạo bản ghi ResumeAnalysis
-    console.log(
-      `Starting processResumeAnalysisService with resume_file_id: ${resume_file_id}, online_resume_id: ${online_resume_id}, job_post_id: ${job_post_id}`
-    );
-
-    if (resume_file_id) {
-      if (!mongoose.Types.ObjectId.isValid(resume_file_id)) {
-        throw new AppError("resume_file_id không hợp lệ", 400);
-      }
-      const resumeFile = await ResumeFile.findById(resume_file_id);
-      if (!resumeFile) {
-        console.error(`ResumeFile not found for ID: ${resume_file_id}`);
-        throw new AppError("Không tìm thấy resume file", 404);
-      }
-      if (typeof resumeFile.name !== "string" || !resumeFile.name) {
-        console.error(
-          `Invalid resumeFile.name for resume_file_id: ${resume_file_id}, name: ${resumeFile.name}`
-        );
-        throw new AppError(
-          "Tên file resume không hợp lệ hoặc không tồn tại",
-          400
-        );
-      }
-      if (!resumeFile.name.toLowerCase().endsWith(".pdf")) {
-        console.error(
-          `Invalid file format for resume_file_id: ${resume_file_id}, name: ${resumeFile.name}`
-        );
-        throw new AppError("File phải là định dạng PDF", 400);
-      }
-      cv_id = resume_file_id;
-
-      // Tạo bản ghi ResumeAnalysis
-      const resumeAnalysis = await ResumeAnalysis.create({
-        job_post_id,
-        resume_file_id,
-        online_resume_id: null,
-        extraction: {},
-        classification: {},
-        analysis: {},
-      });
-      analysis_id = resumeAnalysis._id;
-      console.log(`Initial ResumeAnalysis created with ID: ${analysis_id}`);
-    } else if (online_resume_id) {
-      if (!mongoose.Types.ObjectId.isValid(online_resume_id)) {
-        throw new AppError("online_resume_id không hợp lệ", 400);
-      }
-      const onlineResume = await OnlineResume.findById(online_resume_id);
-      if (!onlineResume) {
-        console.error(`OnlineResume not found for ID: ${online_resume_id}`);
-        throw new AppError("Không tìm thấy online resume", 404);
-      }
-      cv_id = online_resume_id;
-
-      // Tạo bản ghi ResumeAnalysis
-      const resumeAnalysis = await ResumeAnalysis.create({
-        job_post_id,
-        resume_file_id: null,
-        online_resume_id,
-        extraction: {},
-        classification: {},
-        analysis: {},
-      });
-      analysis_id = resumeAnalysis._id;
-      console.log(`Initial ResumeAnalysis created with ID: ${analysis_id}`);
-    } else {
-      throw new AppError(
-        "Phải cung cấp resume_file_id hoặc online_resume_id",
-        400
-      );
-    }
-
-    // Bước 2: Trích xuất văn bản
-    let extractionData;
-    if (resume_file_id) {
-      const resumeFile = await ResumeFile.findById(resume_file_id);
-      console.log(`Fetching file from Cloudinary: ${resumeFile.path}`);
-      try {
-        const response = await axios.get(resumeFile.path, {
-          responseType: "arraybuffer",
-        });
-        const fileBuffer = Buffer.from(response.data);
-
-        const formData = new FormData();
-        formData.append("file", fileBuffer, {
-          filename: resumeFile.name,
-          contentType: "application/pdf",
-        });
-        console.log(
-          `Calling ${pythonApiUrl}/cv/extract for resume_file_id: ${resume_file_id}`
-        );
-        const extractRes = await axios.post(
-          `${pythonApiUrl}/cv/extract`,
-          formData,
-          {
-            headers: { ...formData.getHeaders() },
-          }
-        );
-        extractionData = extractRes.data;
-        console.log(
-          `Extraction response: ${JSON.stringify(extractionData, null, 2)}`
-        );
-
-        text = extractionData.raw_text || "";
-        if (!text || extractionData.status === "failed") {
-          throw new AppError(
-            `Không thể trích xuất văn bản từ file PDF: ${
-              extractionData.error_message || "Unknown error"
-            }`,
-            400
-          );
-        }
-
-        // Cập nhật ResumeAnalysis với extraction
-        await ResumeAnalysis.findOneAndUpdate(
-          { _id: analysis_id },
-          {
-            extraction: {
-              raw_text: text,
-              extracted_at: new Date(),
-              extraction_error:
-                extractionData.status === "failed"
-                  ? String(extractionData.error_message)
-                  : null,
-            },
-          },
-          { new: true }
-        );
-        console.log(
-          `Updated ResumeAnalysis with extraction for ID: ${analysis_id}`
-        );
-      } catch (error) {
-        console.error(`Error in extraction step: ${error.message}`);
-        console.error(
-          `Extraction error response: ${JSON.stringify(error.response?.data)}`
-        );
-        const errorMessage = error.response?.data?.detail
-          ? String(error.response.data.detail)
-          : String(error.message);
-        await ResumeAnalysis.findOneAndUpdate(
-          { _id: analysis_id },
-          {
-            extraction: {
-              raw_text: "",
-              extracted_at: new Date(),
-              extraction_error: errorMessage,
-            },
-          },
-          { new: true }
-        );
-        throw new AppError(
-          `Lỗi trích xuất CV: ${errorMessage}`,
-          error.response?.status || 500
-        );
-      }
-    } else if (online_resume_id) {
-      const onlineResume = await OnlineResume.findById(online_resume_id);
-      const textParts = [
-        `Personal Info: ${onlineResume.personalInfo.full_name}, ${onlineResume.personalInfo.email}, ${onlineResume.personalInfo.phone_number}, ${onlineResume.personalInfo.address}`,
-        `Job Expectations: ${onlineResume.jobExpectations
-          .map(
-            (j) =>
-              `${j.position}, ${j.jobType}, ${j.min_salary_range}-${j.max_salary_range} triệu, ${j.province}`
-          )
-          .join("; ")}`,
-        `Education: ${onlineResume.education
-          .map(
-            (e) =>
-              `${e.school}, ${e.major}, ${e.education}, ${e.startYear}-${e.endYear}`
-          )
-          .join("; ")}`,
-        `Work Experience: ${onlineResume.workExperience
-          .map(
-            (w) =>
-              `${w.company}, ${w.position}, ${w.industry}, ${w.description}, ${w.startYear}-${w.endYear}`
-          )
-          .join("; ")}`,
-        `Projects: ${onlineResume.projects
-          .map(
-            (p) =>
-              `${p.projectName}, ${p.role}, ${p.description}, ${p.startYear}-${p.endYear}`
-          )
-          .join("; ")}`,
-        `Skills: ${onlineResume.skills
-          .map((s) => `${s.skillName}, ${s.experience}, ${s.proficiency}`)
-          .join("; ")}`,
-        `Highlights: ${onlineResume.highlights
-          .map((h) => `${h.title}, ${h.description}`)
-          .join("; ")}`,
-      ].filter((part) => part.includes(": "));
-      text = textParts.join("\n");
-
-      // Cập nhật ResumeAnalysis với extraction
-      await ResumeAnalysis.findOneAndUpdate(
-        { _id: analysis_id },
-        {
-          extraction: {
-            raw_text: text,
-            extracted_at: new Date(),
-            extraction_error: null,
-          },
-        },
-        { new: true }
-      );
-      console.log(
-        `Updated ResumeAnalysis with extraction for ID: ${analysis_id}`
-      );
-    }
-
-    // Bước 3: Phân loại CV
-    console.log(
-      `Calling ${pythonApiUrl}/cv/classify/${cv_id} with body: ${JSON.stringify(
-        { text },
-        null,
-        2
-      )}`
-    );
-    try {
-      const classifyRes = await axios.post(
-        `${pythonApiUrl}/cv/classify/${cv_id}`,
-        { text },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      const classificationData = classifyRes.data;
-      console.log(
-        `Classification response: ${JSON.stringify(
-          classificationData,
-          null,
-          2
-        )}`
-      );
-
-      // Cập nhật ResumeAnalysis với classification
-      await ResumeAnalysis.findOneAndUpdate(
-        { _id: analysis_id },
-        {
-          classification: {
-            education: classificationData.education || [],
-            career_objective: classificationData.career_objective || "",
-            skills: classificationData.skills || [],
-            projects: classificationData.projects || [],
-            work_experience: classificationData.work_experience || [],
-            hobbies: classificationData.hobbies || [],
-            personal_info: classificationData.personal_info || {},
-            total_experience: classificationData.total_experience || 0.0,
-            classification_error: classificationData.error || null,
-          },
-        },
-        { new: true }
-      );
-      console.log(
-        `Updated ResumeAnalysis with classification for ID: ${analysis_id}`
-      );
-    } catch (error) {
-      console.error(`Error in classification step: ${error.message}`);
-      console.error(
-        `Classification error response: ${JSON.stringify(error.response?.data)}`
-      );
-      const errorMessage = error.response?.data?.detail
-        ? String(error.response.data.detail)
-        : String(error.message);
-      await ResumeAnalysis.findOneAndUpdate(
-        { _id: analysis_id },
-        {
-          classification: {
-            education: [],
-            career_objective: "",
-            skills: [],
-            projects: [],
-            work_experience: [],
-            hobbies: [],
-            personal_info: {},
-            total_experience: 0.0,
-            classification_error: errorMessage,
-          },
-        },
-        { new: true }
-      );
-      throw new AppError(
-        `Lỗi phân loại CV: ${errorMessage}`,
-        error.response?.status || 500
-      );
-    }
-
-    // Bước 4: Phân tích CV
-    console.log(
-      `Calling ${pythonApiUrl}/cv/analyze/${cv_id}/${job_post_id} with body: ${JSON.stringify(
-        { text },
-        null,
-        2
-      )}`
-    );
-    try {
-      const analyzeRes = await axios.post(
-        `${pythonApiUrl}/cv/analyze/${cv_id}/${job_post_id}`,
-        { text },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      const analysisData = analyzeRes.data;
-      console.log(
-        `Analysis response: ${JSON.stringify(analysisData, null, 2)}`
-      );
-
-      // Cập nhật ResumeAnalysis với analysis
-      const updatedAnalysis = await ResumeAnalysis.findOneAndUpdate(
-        { _id: analysis_id },
-        {
-          analysis: {
-            strengths: analysisData.strengths || [],
-            weaknesses: analysisData.weaknesses || [],
-            job_match: analysisData.job_match || [],
-            job_mismatch: analysisData.job_mismatch || [],
-            match_score: analysisData.match_score || 0,
-            suggestions: analysisData.suggestions || [],
-            analyzed_at: new Date(),
-            analysis_error:
-              analysisData.status === "failed"
-                ? String(analysisData.error_message)
-                : null,
-          },
-        },
-        { new: true }
-      )
-        .populate("job_post_id")
-        .populate("online_resume_id")
-        .populate("resume_file_id");
-      console.log(`Final ResumeAnalysis updated for ID: ${analysis_id}`);
-
-      return updatedAnalysis;
-    } catch (error) {
-      console.error(`Error in analysis step: ${error.message}`);
-      console.error(
-        `Analysis error response: ${JSON.stringify(error.response?.data)}`
-      );
-      const errorMessage = error.response?.data?.detail
-        ? String(error.response.data.detail)
-        : String(error.message);
-      await ResumeAnalysis.findOneAndUpdate(
-        { _id: analysis_id },
-        {
-          analysis: {
-            strengths: [],
-            weaknesses: [],
-            job_match: [],
-            job_mismatch: [],
-            match_score: 0,
-            suggestions: [],
-            analyzed_at: new Date(),
-            analysis_error: errorMessage,
-          },
-        },
-        { new: true }
-      );
-      console.log(
-        `Updated ResumeAnalysis with analysis error for ID: ${analysis_id}`
-      );
-      throw new AppError(
-        `Lỗi phân tích CV: ${errorMessage}`,
-        error.response?.status || 500
-      );
-    }
-  } catch (error) {
-    console.error(`Error in processResumeAnalysisService: ${error.message}`);
-    console.error(`Error stack: ${error.stack}`);
-    throw new AppError(
-      `Lỗi khi phân tích CV: ${error.message}`,
-      error.response?.status || 500
-    );
+  if (!mongoose.Types.ObjectId.isValid(resume_file_id)) {
+    throw new AppError("resume_file_id không hợp lệ", 400);
   }
+  if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
+    throw new AppError("job_post_id không hợp lệ", 400);
+  }
+
+  const resumeFile = await ResumeFile.findById(resume_file_id);
+
+  if (!resumeFile) {
+    throw new AppError("Không tìm thấy file CV", 404);
+  }
+
+  const resumeAnalysis = await ResumeAnalysis.create({
+    resume_file_id,
+    job_post_id,
+    online_resume_id: null,
+    extracted_text: "",
+    extracted_fields: {},
+    jd_matching: {},
+    strengths: [],
+    weaknesses: [],
+    match_score: 0,
+    suggestions: [],
+  });
+
+  const analysis_id = resumeAnalysis._id;
+
+  // Step 1: Gửi file PDF sang Python để trích xuất text
+  try {
+    const response = await axios.get(resumeFile.path, {
+      responseType: "arraybuffer",
+    });
+
+    const fileBuffer = Buffer.from(response.data);
+    const formData = new FormData();
+    formData.append("file", fileBuffer, {
+      filename: resumeFile.name,
+      contentType: "application/pdf",
+    });
+
+    const extractRes = await axios.post(
+      `${pythonApiUrl}/cv/extract`,
+      formData,
+      { headers: { ...formData.getHeaders() } }
+    );
+
+    const raw_text = extractRes.data.raw_text;
+    if (!raw_text) throw new Error("Không trích xuất được nội dung CV");
+
+    // Cập nhật extracted_text
+    await ResumeAnalysis.findByIdAndUpdate(analysis_id, {
+      extracted_text: raw_text,
+    });
+
+    // Step 2: Gửi sang Python để phân loại các phần thông tin
+    const classifyRes = await axios.post(
+      `${pythonApiUrl}/cv/classify/${resume_file_id}`,
+      { text: raw_text }
+    );
+
+    const extracted_fields = classifyRes.data;
+    await ResumeAnalysis.findByIdAndUpdate(analysis_id, {
+      extracted_fields,
+    });
+
+    // Step 3: Phân tích mức độ phù hợp, điểm mạnh/yếu, đề xuất
+    const analyzeRes = await axios.post(
+      `${pythonApiUrl}/cv/analyze/${resume_file_id}/${job_post_id}`,
+      { text: raw_text }
+    );
+
+    const {
+      strengths = [],
+      weaknesses = [],
+      jd_matching = {},
+      match_score = 0,
+      suggestions = [],
+    } = analyzeRes.data;
+
+    const finalResult = await ResumeAnalysis.findByIdAndUpdate(
+      analysis_id,
+      {
+        strengths,
+        weaknesses,
+        jd_matching,
+        match_score,
+        suggestions,
+      },
+      { new: true }
+    )
+      .populate("job_post_id")
+      .populate("resume_file_id")
+      .populate("online_resume_id");
+
+    return finalResult;
+  } catch (error) {
+    console.error("Lỗi phân tích CV:", error.message);
+    throw new AppError(`Lỗi phân tích CV: ${error.message}`, 500);
+  }
+};
+
+const updateResumeAnalysisService = async (analysis_id, updateData) => {
+  if (!mongoose.Types.ObjectId.isValid(analysis_id)) {
+    throw new AppError("ID phân tích không hợp lệ", 400);
+  }
+
+  const updated = await ResumeAnalysis.findByIdAndUpdate(
+    analysis_id,
+    updateData,
+    { new: true }
+  )
+    .populate("job_post_id")
+    .populate("online_resume_id")
+    .populate("resume_file_id");
+
+  if (!updated) {
+    throw new AppError("Không tìm thấy phân tích để cập nhật", 404);
+  }
+
+  return updated;
 };
 
 const getListResumeAnalysisService = async () => {
@@ -568,6 +319,7 @@ const deleteAllResumeAnalysisService = async () => {
 module.exports = {
   createResumeAnalysisService,
   processResumeAnalysisService,
+  updateResumeAnalysisService,
   getListResumeAnalysisService,
   getResumeAnalysisByIdService,
   getLatestResumeAnalysisService,

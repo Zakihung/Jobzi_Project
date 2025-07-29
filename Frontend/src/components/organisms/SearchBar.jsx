@@ -18,6 +18,23 @@ const SearchContainer = styled.div`
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  @media (min-width: 576px) and (max-width: 768px) {
+    max-width: 100%;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  @media (min-width: 768px) {
+    max-width: 100%;
+  }
 `;
 
 const LocationInputGroup = styled.div`
@@ -25,10 +42,22 @@ const LocationInputGroup = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  width: 200px;
+
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+  @media (min-width: 576px) and (max-width: 768px) {
+    width: 150px;
+  }
 `;
 
 const SearchInputGroup = styled.div`
   flex: 5;
+
+  @media (max-width: 576px) {
+    width: 100%;
+  }
 `;
 
 const SearchInput = styled(Input)`
@@ -42,6 +71,17 @@ const SearchInput = styled(Input)`
     box-shadow: none !important;
     outline: none !important;
   }
+
+  @media (max-width: 576px) {
+    height: 36px;
+    font-size: 14px;
+  }
+
+  @media (min-width: 576px) and (max-width: 768px) {
+    width: 100%;
+    height: 38px;
+    font-size: 15px;
+  }
 `;
 
 const DividerVer = styled(Divider)`
@@ -49,6 +89,14 @@ const DividerVer = styled(Divider)`
     margin: 0 2px;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     height: 40px;
+  }
+
+  @media (max-width: 576px) {
+    display: none;
+  }
+
+  @media (min-width: 576px) and (max-width: 768px) {
+    height: 38px;
   }
 `;
 
@@ -64,9 +112,11 @@ const LocationTrigger = styled.div`
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   transition: all 0.3s ease;
+
   .location-prefix {
     transition: transform 0.3s ease;
   }
+
   &:hover {
     color: #577cf6;
     .location-prefix {
@@ -100,19 +150,29 @@ const LocationTrigger = styled.div`
   &.open .arrow-icon {
     transform: rotate(180deg);
   }
-`;
 
-const LocationList = styled(List)`
-  && {
-    .ant-list-item {
-      padding: 8px 16px;
-      cursor: pointer;
-      border-bottom: none;
-      transition: background-color 0.2s ease;
+  @media (max-width: 576px) {
+    height: 36px;
+    font-size: 12px;
+    .location-text {
+      font-size: 14px;
+    }
+    .location-prefix {
+      font-size: 16px;
+    }
+    .arrow-icon {
+      display: none;
+    }
+  }
 
-      &:hover {
-        color: #577cf6;
-      }
+  @media (min-width: 576px) and (max-width: 768px) {
+    height: 38px;
+    font-size: 13px;
+    .location-text {
+      font-size: 15px;
+    }
+    .location-prefix {
+      font-size: 17px;
     }
   }
 `;
@@ -139,6 +199,20 @@ const SearchButton = styled(Button)`
     .anticon {
       transform: scale(1.4);
     }
+  }
+
+  @media (max-width: 576px) {
+    height: 36px;
+    font-size: 14px;
+    padding: 0 10px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (min-width: 576px) and (max-width: 768px) {
+    height: 38px;
+    font-size: 15px;
+    padding: 0 12px;
   }
 `;
 
@@ -290,6 +364,7 @@ const SearchBar = ({
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
           onPressEnter={handleSearch}
+          allowClear
         />
       </SearchInputGroup>
       <DividerVer type="vertical" />

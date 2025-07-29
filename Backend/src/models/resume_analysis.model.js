@@ -1,8 +1,13 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 
-const resume_analysisSchema = new mongoose.Schema(
+const resumeAnalysisSchema = new mongoose.Schema(
   {
+    resume_file_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ResumeFile",
+      required: true,
+    },
     job_post_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "JobPost",
@@ -11,25 +16,13 @@ const resume_analysisSchema = new mongoose.Schema(
     online_resume_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "OnlineResume",
-      default: null,
+      required: false,
     },
-    resume_file_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ResumeFile",
-      default: null,
+    extracted_text: {
+      type: String,
+      default: "",
     },
-    extraction: {
-      raw_text: {
-        type: String,
-        default: "",
-      },
-      extracted_at: {
-        type: Date,
-        default: null,
-      },
-      extraction_error: { type: String, default: null },
-    },
-    classification: {
+    extracted_fields: {
       education: [
         {
           institution: String,
@@ -65,39 +58,24 @@ const resume_analysisSchema = new mongoose.Schema(
           responsibilities: String,
         },
       ],
-      hobbies: [
-        {
-          type: String, // Sửa từ {name: String, description: String} thành mảng chuỗi
-        },
-      ],
+      hobbies: [String],
       personal_info: {
         name: String,
         email: String,
         phone: String,
         address: String,
-        dob: String, // Thêm trường dob để khớp với classification_service.py
-        gender: String, // Thêm trường gender
+        dob: String,
+        gender: String,
         other: String,
       },
       total_experience: {
         type: Number,
-        default: 0.0, // Thêm trường total_experience
+        default: 0.0,
       },
-      classification_error: { type: String, default: null },
     },
-    analysis: {
-      strengths: [
-        {
-          description: String,
-          related_to: String,
-        },
-      ],
-      weaknesses: [
-        {
-          description: String,
-          related_to: String,
-        },
-      ],
+    jd_matching: {
+      matched_keywords: [String],
+      missing_keywords: [String],
       job_match: [
         {
           criteria: String,
@@ -110,30 +88,37 @@ const resume_analysisSchema = new mongoose.Schema(
           description: String,
         },
       ],
-      match_score: {
-        type: Number,
-        min: 0,
-        max: 100,
-        default: 0,
-      },
-      suggestions: [
-        {
-          section: String,
-          suggestion: String,
-        },
-      ],
-      analyzed_at: {
-        type: Date,
-        default: null,
-      },
-      analysis_error: { type: String, default: null },
     },
+    strengths: [
+      {
+        description: String,
+        related_to: String,
+      },
+    ],
+    weaknesses: [
+      {
+        description: String,
+        related_to: String,
+      },
+    ],
+    match_score: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+    suggestions: [
+      {
+        section: String,
+        suggestion: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// Thêm plugin xóa mềm
-resume_analysisSchema.plugin(mongooseDelete, {
+// Plugin xóa mềm
+resumeAnalysisSchema.plugin(mongooseDelete, {
   deletedAt: true,
   overrideMethods: "all",
   deleted: true,
@@ -141,7 +126,7 @@ resume_analysisSchema.plugin(mongooseDelete, {
 
 const ResumeAnalysis = mongoose.model(
   "ResumeAnalysis",
-  resume_analysisSchema,
+  resumeAnalysisSchema,
   "ResumeAnalysis"
 );
 
