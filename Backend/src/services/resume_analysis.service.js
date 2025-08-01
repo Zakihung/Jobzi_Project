@@ -135,12 +135,14 @@ const processResumeAnalysisService = async (
     });
 
     // Step 2: Gửi sang Python để phân loại các phần thông tin
-    const classifyRes = await axios.post(
-      `${pythonApiUrl}/cv/classify/${resume_file_id}`,
-      { text: raw_text }
-    );
+    const classifyRes = await axios.post(`${pythonApiUrl}/cv/classify`, {
+      text: raw_text,
+    });
+    if (classifyRes.data.status !== "success" || !classifyRes.data.extracted) {
+      throw new Error("Phân loại CV thất bại hoặc không có dữ liệu trích xuất");
+    }
 
-    const extracted_fields = classifyRes.data;
+    const extracted_fields = classifyRes.data.extracted;
     await ResumeAnalysis.findByIdAndUpdate(analysis_id, {
       extracted_fields,
     });
@@ -151,9 +153,11 @@ const processResumeAnalysisService = async (
       { text: raw_text }
     );
 
+    if (analyzeRes.data.status !== "success" || !analyzeRes.data) {
+      throw new Error("Phân tích CV thất bại hoặc không có dữ liệu phân tích");
+    }
+
     const {
-      strengths = [],
-      weaknesses = [],
       jd_matching = {},
       match_score = 0,
       suggestions = [],
@@ -162,11 +166,16 @@ const processResumeAnalysisService = async (
     const finalResult = await ResumeAnalysis.findByIdAndUpdate(
       analysis_id,
       {
-        strengths,
-        weaknesses,
-        jd_matching,
         match_score,
         suggestions,
+        $set: {
+          strengths: jd_matching?.strengths || [],
+          weaknesses: jd_matching?.weaknesses || [],
+          "jd_matching.job_match": jd_matching?.job_match || [],
+          "jd_matching.job_mismatch": jd_matching?.job_mismatch || [],
+          "jd_matching.matched_skills": jd_matching?.matched_skills || [],
+          "jd_matching.missing_skills": jd_matching?.missing_skills || [],
+        },
       },
       { new: true }
     )

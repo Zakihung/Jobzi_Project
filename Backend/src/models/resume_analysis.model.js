@@ -23,59 +23,84 @@ const resumeAnalysisSchema = new mongoose.Schema(
       default: "",
     },
     extracted_fields: {
-      education: [
+      activities: [
         {
-          institution: String,
-          degree: String,
-          major: String,
-          duration: String,
-          description: String,
+          duration: { type: String, default: "" },
+          name: { type: String, default: "" },
+        },
+      ],
+      awards: [
+        {
+          name: { type: String, default: "" },
+          year: { type: String, default: "" },
         },
       ],
       career_objective: {
-        type: String,
-        default: "",
+        type: [String],
+        default: [],
       },
-      skills: [
+      certificates: [
         {
-          name: String,
-          proficiency: String,
+          name: { type: String, default: "" },
+          year: { type: String, default: "" },
         },
       ],
+      education: [
+        {
+          institution: { type: String, default: "" },
+          degree: { type: String, default: "" },
+          major: { type: String, default: "" },
+          duration: { type: String, default: "" },
+          description: { type: String, default: "" },
+          year: { type: String, default: "" },
+        },
+      ],
+      experience: [
+        {
+          company: { type: String, default: "" },
+          position: { type: String, default: "" },
+          duration: { type: String, default: "" },
+          responsibilities: { type: String, default: "" },
+          description: { type: String, default: "" },
+        },
+      ],
+      hobbies: {
+        type: [String],
+        default: [],
+      },
+      personal_info: {
+        name: { type: [String], default: [] },
+        email: { type: [String], default: [] },
+        phone: { type: [String], default: [] },
+        address: { type: [String], default: [] },
+        birth_date: { type: [String], default: [] },
+        gender: { type: [String], default: [] },
+        other: { type: [String], default: [] },
+      },
       projects: [
         {
-          name: String,
-          description: String,
-          role: String,
-          duration: String,
+          name: { type: String, default: "" },
+          description: { type: String, default: "" },
+          role: { type: String, default: "" },
+          duration: { type: String, default: "" },
         },
       ],
-      work_experience: [
+      references: [
         {
-          company: String,
-          position: String,
-          duration: String,
-          responsibilities: String,
+          name: { type: String, default: "" },
         },
       ],
-      hobbies: [String],
-      personal_info: {
-        name: String,
-        email: String,
-        phone: String,
-        address: String,
-        dob: String,
-        gender: String,
-        other: String,
-      },
-      total_experience: {
-        type: Number,
-        default: 0.0,
-      },
+      skills: [
+        {
+          name: { type: String, default: "" },
+          proficiency: { type: String, default: "" },
+          category: { type: String, default: "" },
+        },
+      ],
     },
     jd_matching: {
-      matched_keywords: [String],
-      missing_keywords: [String],
+      matched_skills: [String],
+      missing_skills: [String],
       job_match: [
         {
           criteria: String,

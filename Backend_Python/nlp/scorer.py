@@ -26,23 +26,16 @@ def compute_match_score(cv_skills, jd_skills):
         total_jd_skills = len(set(jd_skills_flat))
 
         if not matched or total_jd_skills == 0:
-            match_score = 0.0
+            match_score = 0
         else:
             # Tính điểm: 30 điểm khởi đầu + điểm phân bổ theo từng kỹ năng khớp
             base_score = 30
-            per_skill_score = 80 / total_jd_skills
+            per_skill_score = 70 / total_jd_skills
             match_score = base_score + per_skill_score * len(matched)
             match_score = min(match_score, 100)  # Giới hạn tối đa 100
+            match_score = int(round(match_score, 0))
 
-        return {
-            "match_score": round(match_score, 2),
-            "matched_skills": list(matched),
-            "missing_skills": list(set(jd_skills_flat) - set(cv_skills_flat))
-        }
+        return match_score
     except Exception as e:
         print(f"Lỗi khi tính điểm khớp: {e}")
-        return {
-            "match_score": 0.0,
-            "matched_skills": [],
-            "missing_skills": []
-        }
+        return 0

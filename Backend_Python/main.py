@@ -46,7 +46,7 @@ def classify_cv():
 
     try:
         extracted = extract_fields_from_text(data["text"])
-        return jsonify({"status": "success", "extracted": extracted})
+        return jsonify(extracted)
     except Exception as e:
         return jsonify({"status": "failed", "error_message": str(e)}), 500
 
@@ -146,7 +146,7 @@ def analyze(cv_id, job_id):
                 "job_mismatch": [],
                 "analyzed_at": None
             },
-            "match_score": {"match_score": 0.0, "matched_skills": [], "missing_skills": []},
+            "match_score": 0,
             "suggestions": [],
             "status": "failed",
             "error_message": f"Lỗi khi phân tích CV: {str(e)}"
