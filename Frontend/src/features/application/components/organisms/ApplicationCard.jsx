@@ -1,8 +1,19 @@
 import React, { useContext, useState } from "react";
 import { Card, Avatar, Typography, Button, Modal, Tag, Skeleton } from "antd";
-import { FileTextOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  ProfileOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import styled from "styled-components";
-import { formatTime } from "../../../../constants/formatTime";
 import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
 import useDeleteApplication from "../../../application/hooks/useDeleteApplication";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +28,6 @@ const ApplicationCardWrapper = styled(Card)`
   background: #ffffff;
   padding: 16px;
   height: 100%;
-  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   &:hover {
@@ -33,7 +43,7 @@ const ApplicationHeader = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   width: 100%;
 `;
 
@@ -78,34 +88,82 @@ const CompanyName = styled(Text)`
 
 const ApplicationDetails = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
 `;
 
-const DetailItem = styled.div`
+const InfoSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const SectionTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+`;
+
+const ContactInfo = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-left: 20px;
+`;
+
+const ContactItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
+  color: #666;
 `;
 
-const DetailIcon = styled.span`
-  color: #577cf6;
+const DateInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
+  color: #666;
 `;
 
-const DetailText = styled(Text)`
-  font-size: 14px;
+const StatusSection = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 `;
 
+const StatusRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const StatusDescription = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-left: 4px;
+`;
+
+// Styled component cho StatusTag với props động
 const StatusTag = styled(Tag)`
-  background: #f6f8ff;
-  color: #577cf6;
-  border: 1px solid #d6e4ff;
   border-radius: 16px;
   font-size: 12px;
   padding: 4px 12px;
   font-weight: 500;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: ${(props) => props.statusColor?.background || "#f6f8ff"};
+  color: ${(props) => props.statusColor?.color || "#577cf6"};
+  border: 1px solid ${(props) => props.statusColor?.border || "#d6e4ff"};
 `;
 
 const ActionBtn = styled(Button)`
@@ -136,11 +194,94 @@ const ActionBtn = styled(Button)`
   }
 `;
 
-const WarningText = styled(Text)`
-  color: #ff4d4f;
+const WarningText = styled.div`
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #d46b08;
   font-size: 12px;
   font-weight: 500;
+  margin-top: 4px;
 `;
+
+const Divider = styled.div`
+  height: 1px;
+  background: #f0f0f0;
+  margin: 0 -4px;
+`;
+
+const StatusText = styled(Text)`
+  color: #666;
+  font-weight: 500;
+`;
+
+const getStatusConfig = (status) => {
+  const configs = {
+    pending: {
+      color: "#d48806", // sẫm hơn #faad14
+      background: "#fff7e6", // đậm hơn #fffbe6
+      border: "#ffc069", // đậm hơn #ffe58f
+      icon: <ClockCircleOutlined />,
+      text: "Đang chờ duyệt",
+    },
+    reviewed: {
+      color: "#096dd9", // sẫm hơn #1890ff
+      background: "#e6f4ff", // dịu hơn #e6f7ff
+      border: "#69c0ff", // đậm hơn #91d5ff
+      icon: <EyeOutlined />,
+      text: "Đã xem",
+    },
+    accepted: {
+      color: "#389e0d", // sẫm hơn #52c41a
+      background: "#f0fff0", // dịu hơn #f6ffed
+      border: "#95de64", // đậm hơn #b7eb8f
+      icon: <CheckCircleOutlined />,
+      text: "Đã chấp nhận",
+    },
+    rejected: {
+      color: "#cf1322", // sẫm hơn #ff4d4f
+      background: "#fff2f0", // đậm hơn #fff1f0
+      border: "#ff7875", // đậm hơn #ffccc7
+      icon: <CloseCircleOutlined />,
+      text: "Bị từ chối",
+    },
+    withdrawn: {
+      color: "#595959", // sẫm hơn #8c8c8c
+      background: "#f0f0f0", // đậm hơn #f5f5f5
+      border: "#bfbfbf", // đậm hơn #d9d9d9
+      icon: <MinusCircleOutlined />,
+      text: "Đã rút đơn",
+    },
+  };
+
+  return (
+    configs[status] || {
+      color: "#434343",
+      background: "#f0f5ff",
+      border: "#adc6ff",
+      icon: <InfoCircleOutlined />,
+      text: "Không xác định",
+    }
+  );
+};
+
+const getStatusDescription = (status) => {
+  switch (status) {
+    case "pending":
+      return "Đơn ứng tuyển của bạn đang chờ nhà tuyển dụng xem xét.";
+    case "reviewed":
+      return "Nhà tuyển dụng đã xem đơn ứng tuyển của bạn.";
+    case "accepted":
+      return "Bạn đã được chọn để tiếp tục vào vòng sau. Nhà tuyển dụng sẽ liên hệ với bạn sớm nhất có thể.";
+    case "rejected":
+      return "Rất tiếc! Đơn ứng tuyển của bạn chưa được chọn.";
+    case "withdrawn":
+      return "Bạn đã rút lại đơn ứng tuyển này.";
+    default:
+      return "Trạng thái không xác định.";
+  }
+};
 
 const ApplicationCard = ({ application }) => {
   const { auth } = useContext(AuthContext);
@@ -205,9 +346,16 @@ const ApplicationCard = ({ application }) => {
     );
   }
 
+  const hasRecipientInfo =
+    application.job_post_id?.recipient_name ||
+    application.job_post_id?.recipient_email ||
+    application.job_post_id?.recipient_phone_number;
+
+  const statusConfig = getStatusConfig(application.status);
+
   return (
     <ApplicationCardWrapper
-      onClick={() => navigate(`/jobpost/${application.job_post_id?._id}`)}
+    // onClick={() => navigate(`/jobpost/${application.job_post_id?._id}`)}
     >
       <ApplicationHeader>
         <CompanyLogo
@@ -231,26 +379,87 @@ const ApplicationCard = ({ application }) => {
           Hủy ứng tuyển
         </ActionBtn>
       </ApplicationHeader>
+
       <ApplicationDetails>
-        <DetailItem>
-          <DetailIcon as={FileTextOutlined} />
-          <DetailText>
-            Gửi CV:{" "}
+        {/* Thông tin người nhận CV */}
+        {hasRecipientInfo && (
+          <>
+            <InfoSection>
+              <SectionTitle>
+                <ProfileOutlined style={{ color: "#577cf6" }} />
+                Thông tin người nhận CV
+              </SectionTitle>
+              <ContactInfo>
+                {application.job_post_id?.recipient_name && (
+                  <ContactItem>
+                    <UserOutlined />
+                    {application.job_post_id.recipient_name}
+                  </ContactItem>
+                )}
+                {application.job_post_id?.recipient_email && (
+                  <ContactItem>
+                    <MailOutlined />
+                    {application.job_post_id.recipient_email}
+                  </ContactItem>
+                )}
+                {application.job_post_id?.recipient_phone_number && (
+                  <ContactItem>
+                    <PhoneOutlined />
+                    {application.job_post_id.recipient_phone_number}
+                  </ContactItem>
+                )}
+              </ContactInfo>
+            </InfoSection>
+            <Divider />
+          </>
+        )}
+
+        {/* Ngày gửi CV */}
+        <DateInfo>
+          <CalendarOutlined style={{ color: "#577cf6" }} />
+          <Text strong>Ngày gửi CV:</Text>
+          <Text>
             {new Date(application.createdAt).toLocaleDateString("vi-VN")}
-          </DetailText>
-        </DetailItem>
-        <DetailItem>
-          <StatusTag>{application.status || "Đang xử lý"}</StatusTag>
-        </DetailItem>
+          </Text>
+        </DateInfo>
+
+        <Divider />
+
+        {/* Trạng thái */}
+        <StatusSection>
+          <StatusRow>
+            <StatusTag statusColor={statusConfig}>
+              {statusConfig.icon}
+              {statusConfig.text}
+            </StatusTag>
+          </StatusRow>
+          <StatusDescription statusColor={statusConfig}>
+            <InfoCircleOutlined
+              style={{
+                color: statusConfig.color,
+                fontSize: "14px",
+                marginTop: "1px",
+                flexShrink: 0,
+              }}
+            />
+            <StatusText
+              statusColor={statusConfig}
+              style={{ fontSize: "13px", lineHeight: "1.4" }}
+            >
+              {getStatusDescription(application.status)}
+            </StatusText>
+          </StatusDescription>
+        </StatusSection>
+
+        {/* Cảnh báo 24h */}
         {isWithin24Hours() && (
-          <DetailItem>
-            <WarningText>
-              Bạn chỉ có thể hủy ứng tuyển trong vòng 24 giờ kể từ khi gửi CV.
-              Vui lòng liên hệ nhà tuyển dụng nếu cần hỗ trợ.
-            </WarningText>
-          </DetailItem>
+          <WarningText>
+            Bạn chỉ có thể hủy ứng tuyển trong vòng 24 giờ kể từ khi gửi CV. Vui
+            lòng liên hệ người nhận CV nếu cần hỗ trợ.
+          </WarningText>
         )}
       </ApplicationDetails>
+
       <Modal
         title="Xác nhận hủy ứng tuyển"
         open={confirmModalVisible}

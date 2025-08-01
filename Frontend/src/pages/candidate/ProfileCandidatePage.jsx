@@ -88,11 +88,6 @@ const ProfileCandidatePage = () => {
   const updateResumeFile = useUpdateResumeFile();
   const deleteResumeFile = useDeleteResumeFile();
 
-  // Sample data
-  const appliedJobs = [];
-  const interviews = [];
-  const followedJobs = [];
-
   // Handlers
   const handleMenuClick = (e) => {
     setSelectedMenu(e.key);
@@ -274,9 +269,6 @@ const ProfileCandidatePage = () => {
               <JobMenuCard
                 selectedMenu={selectedMenu}
                 onMenuClick={handleMenuClick}
-                appliedJobs={appliedJobs}
-                interviews={interviews}
-                followedJobs={followedJobs}
               />
             </Col>
             {/* Right Section: Profile & CV Management */}

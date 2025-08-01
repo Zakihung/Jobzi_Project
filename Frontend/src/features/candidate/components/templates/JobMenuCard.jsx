@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { Card, Menu, Typography, Space, Spin, Button } from "antd";
 import {
   FileTextOutlined,
-  CalendarOutlined,
   HeartOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
@@ -87,7 +87,7 @@ const ExploreButton = styled(Button)`
   }
 `;
 
-const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
+const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const candidateId = auth?.user?.candidate_id;
@@ -170,10 +170,12 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
         return (
           <ApplicationGrid applications={sortedApplications} fullWidth={true} />
         );
-      case "interviews":
+      case "resumeAnalysisHistory":
         return (
           <EmptyState>
-            <EmptyText>Chưa có lịch phỏng vấn!</EmptyText>
+            <EmptyText>
+              Chưa có lịch sử! Khám phá việc làm để phân tích CV
+            </EmptyText>
             <ExploreButton onClick={() => navigate("/jobs")}>
               Khám phá việc làm
             </ExploreButton>
@@ -207,13 +209,13 @@ const JobMenuCard = ({ selectedMenu, onMenuClick, interviews }) => {
         onClick={onMenuClick}
       >
         <Menu.Item key="applied" icon={<FileTextOutlined />}>
-          Đã gửi CV
-        </Menu.Item>
-        <Menu.Item key="interviews" icon={<CalendarOutlined />}>
-          Phỏng vấn
+          Theo dõi đơn ứng tuyển
         </Menu.Item>
         <Menu.Item key="saved" icon={<HeartOutlined />}>
-          Đã lưu
+          Việc làm đã lưu
+        </Menu.Item>
+        <Menu.Item key="resumeAnalysisHistory" icon={<HistoryOutlined />}>
+          Lịch sử phân tích CV
         </Menu.Item>
       </StyledMenu>
       <MenuContent>{renderContent()}</MenuContent>

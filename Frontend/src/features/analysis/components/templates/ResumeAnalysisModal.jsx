@@ -47,7 +47,7 @@ const ResumeAnalysisModal = ({
   resumeFiles,
   jobPostId,
   isSubmitting,
-  hasOnlineResume,
+  // hasOnlineResume,
   onSubmit,
 }) => {
   const { message } = App.useApp();
@@ -127,9 +127,9 @@ const ResumeAnalysisModal = ({
           onChange={(e) => setSelectedCV(e.target.value)}
           value={selectedCV}
         >
-          {hasOnlineResume && (
+          {/* {hasOnlineResume && (
             <Radio value="online">CV trực tuyến (do Jobzi cung cấp)</Radio>
-          )}
+          )} */}
           {resumeFiles?.map((file) => (
             <Radio key={file._id} value={file._id}>
               {file.name} (
