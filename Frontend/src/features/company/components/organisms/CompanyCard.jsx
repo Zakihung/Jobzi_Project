@@ -94,7 +94,7 @@ const JobSectionTitle = styled(Text)`
 
 const CompanyCard = ({ company }) => {
   const { data: employerData } = useGetEmployerByCompanyId(company._id);
-  const employerId = employerData?.data._id;
+  const employerId = employerData?.data?._id;
   const { data: jobpostData } = useGetJobPostsByEmployerId(employerId);
   const navigate = useNavigate();
 

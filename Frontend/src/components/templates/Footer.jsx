@@ -22,7 +22,6 @@ const Footer = () => {
     { label: "Trang chủ", path: "/" },
     { label: "Tìm kiếm việc làm", path: "/search" },
     { label: "Danh sách công ty", path: "/companies" },
-    { label: "Về chúng tôi", path: "/about" },
   ];
 
   const supportLinks = [

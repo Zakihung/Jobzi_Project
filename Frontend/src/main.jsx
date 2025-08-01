@@ -6,7 +6,7 @@ import { ConfigProvider, App as AntdApp } from "antd";
 import "./styles/global.css";
 import App from "./App.jsx";
 import EmployerApp from "./EmployerApp.jsx";
-import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
+// import RoutesDevTool from "./components/templates/RoutesDevTool.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 
 //Candidate
@@ -199,7 +199,6 @@ createRoot(document.getElementById("root")).render(
       }}
     >
       <AntdApp>
-        <RoutesDevTool />
         <AuthWrapper>
           <RouterProvider router={router} />
         </AuthWrapper>

@@ -6,6 +6,8 @@ import CompanyBasicInfo from "../../features/company/components/templates/Compan
 import CompanyInfo from "../../features/company/components/templates/CompanyInfo";
 import CompanyJobPosition from "../../features/company/components/templates/CompanyJobPosition";
 import useGetCompanyById from "../../features/company/hooks/Company/useGetCompanyById";
+import useGetEmployerByCompanyId from "../../features/employer/hooks/useGetEmployerByCompanyId";
+import useGetJobPostsByEmployerId from "../../features/postjob/hooks/Job_Post/useGetJobPostsByEmployerId";
 
 const { TabPane } = Tabs;
 const { Text } = Typography;
@@ -40,60 +42,43 @@ const SkeletonContainer = styled.div`
 const CompanyDetailPage = () => {
   const { companyId } = useParams();
   const navigate = useNavigate();
-  const { data: companyData, isLoading, error } = useGetCompanyById(companyId);
-
-  // Sample job data
-  const jobs = [
-    {
-      id: 1,
-      title: "Senior React Developer",
-      location: "Hồ Chí Minh",
-      salary: "20-30 triệu VNĐ",
-      type: "Full-time",
-      posted: "2 ngày trước",
-    },
-    {
-      id: 2,
-      title: "Backend Developer (Node.js)",
-      location: "Hồ Chí Minh",
-      salary: "18-25 triệu VNĐ",
-      type: "Full-time",
-      posted: "3 ngày trước",
-    },
-    {
-      id: 3,
-      title: "UI/UX Designer",
-      location: "Remote",
-      salary: "15-20 triệu VNĐ",
-      type: "Part-time",
-      posted: "5 ngày trước",
-    },
-  ];
+  const {
+    data: companyData,
+    isLoading: isLoadingCData,
+    error,
+  } = useGetCompanyById(companyId);
+  const { data: employerData, isLoading: isLoadingEData } =
+    useGetEmployerByCompanyId(companyId);
+  const employerId = employerData?.data?._id;
+  const { data: jobpostData, isLoading: isLoadingJData } =
+    useGetJobPostsByEmployerId(employerId);
 
   const handleViewJob = (jobId) => {
-    navigate(`/jobs/${jobId}`);
+    navigate(`/jobpost/${jobId}`);
   };
 
   // Xử lý dữ liệu công ty từ API
   const company = companyData
     ? {
-        id: companyData._id,
-        name: companyData.name,
+        id: companyData?._id,
+        name: companyData?.name,
         logo:
-          companyData.logo ||
+          companyData?.logo ||
           "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
-        company_industry: companyData.company_industry_id?.name || "",
-        website_url: companyData.website_url || "",
-        min_size: companyData.min_size || 0,
-        max_size: companyData.max_size || 0,
-        address: companyData.address || "",
-        province: companyData.province_id?.name || "",
-        introduction: companyData.introduction || "",
-        businessOperations: companyData.businessOperations || [],
-        regulations: companyData.regulations || [],
-        benefits: companyData.benefits || [],
+        company_industry: companyData?.company_industry_id?.name || "",
+        website_url: companyData?.website_url || "",
+        min_size: companyData?.min_size || 0,
+        max_size: companyData?.max_size || 0,
+        address: companyData?.address || "",
+        province: companyData?.province_id?.name || "",
+        introduction: companyData?.introduction || "",
+        businessOperations: companyData?.businessOperations || [],
+        regulations: companyData?.regulations || [],
+        benefits: companyData?.benefits || [],
       }
     : null;
+
+  const isLoading = isLoadingCData || isLoadingEData || isLoadingJData;
 
   return (
     <StyledLayout>
@@ -131,7 +116,7 @@ const CompanyDetailPage = () => {
                   </TabPane>
                   <TabPane tab="Vị trí tuyển dụng" key="jobs">
                     <CompanyJobPosition
-                      jobs={jobs}
+                      jobs={jobpostData}
                       loading={false}
                       onViewJob={handleViewJob}
                     />

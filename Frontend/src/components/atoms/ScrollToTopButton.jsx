@@ -35,7 +35,7 @@ const ScrollToTopButton = () => {
       <style jsx>{`
         .scroll-to-top-button {
           position: fixed;
-          bottom: 130px;
+          bottom: 70px;
           right: 15px;
           z-index: 1006;
         }

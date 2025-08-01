@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -78,6 +79,57 @@ const LoadingContainer = styled.div`
   min-height: 200px;
 `;
 
+const formatSalary = (min, max, type) => {
+  if (type === "Thỏa thuận") return "Thỏa thuận";
+  return `${min?.toLocaleString()} - ${max?.toLocaleString()} triệu VND`;
+};
+
+// Hàm chuyển đổi date string sang dayjs object
+const parseDateToDayjs = (dateValue) => {
+  if (!dateValue) return null;
+
+  // Nếu đã là dayjs object
+  if (dayjs.isDayjs(dateValue)) {
+    return dateValue;
+  }
+
+  // Nếu là moment object (để tương thích ngược)
+  if (
+    dateValue &&
+    typeof dateValue === "object" &&
+    dateValue._isAMomentObject
+  ) {
+    return dayjs(dateValue.toISOString());
+  }
+
+  // Nếu là string, thử parse với nhiều format
+  if (typeof dateValue === "string") {
+    // Thử parse ISO format trước
+    let parsed = dayjs(dateValue);
+    if (parsed.isValid()) {
+      return parsed;
+    }
+
+    // Thử các format khác
+    const formats = ["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY"];
+    for (const format of formats) {
+      parsed = dayjs(dateValue, format);
+      if (parsed.isValid()) {
+        return parsed;
+      }
+    }
+  }
+
+  return null;
+};
+
+const formatDateForDisplay = (dateValue) => {
+  if (!dateValue) return "---";
+
+  const parsed = parseDateToDayjs(dateValue);
+  return parsed ? parsed.format("DD/MM/YYYY") : "---";
+};
+
 const CompanyJobPosition = ({ jobs, loading, onViewJob }) => {
   return (
     <Row gutter={[24, 24]}>
@@ -95,7 +147,7 @@ const CompanyJobPosition = ({ jobs, loading, onViewJob }) => {
                   actions={[
                     <ViewJobButton
                       type="primary"
-                      onClick={() => onViewJob(job?.id)}
+                      onClick={() => onViewJob(job?._id)}
                     >
                       Xem chi tiết
                     </ViewJobButton>,
@@ -106,10 +158,20 @@ const CompanyJobPosition = ({ jobs, loading, onViewJob }) => {
                     title={<Text strong>{job?.title}</Text>}
                     description={
                       <Space direction="vertical" size={4}>
-                        <Text>{job?.location}</Text>
-                        <Text>{job?.salary}</Text>
-                        <Text>{job?.type}</Text>
-                        <Text type="secondary">Đăng {job?.posted}</Text>
+                        <Text>
+                          {job?.locations[0].address},{" "}
+                          {job?.locations[0].province}
+                        </Text>
+                        <Text>
+                          {formatSalary(
+                            job?.min_salary_range,
+                            job?.max_salary_range,
+                            job?.salary_type
+                          )}
+                        </Text>
+                        <Text type="secondary">
+                          Đăng vào {formatDateForDisplay(job?.createdAt)}
+                        </Text>
                       </Space>
                     }
                   />

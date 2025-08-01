@@ -85,6 +85,26 @@ const NotificationButton = styled(Button)`
   }
 `;
 
+const GreetingText = styled.div`
+  color: #333333;
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 6px 10px;
+    margin-right: 12px;
+  }
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
 const MenuItemLabel = styled.div`
   display: flex;
   align-items: center;
@@ -130,6 +150,7 @@ const SkeletonContainer = styled.div`
 const UserMenu = ({ onSignin, onSignup }) => {
   const { auth, logout, loading } = useContext(AuthContext);
   const role = auth?.user?.role;
+  const name = auth?.user?.full_name;
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -234,7 +255,7 @@ const UserMenu = ({ onSignin, onSignup }) => {
           Đăng tuyển dụng
         </PostJobButton>
       )}
-      <NotificationButton
+      {/* <NotificationButton
         icon={
           <Badge
             count={5}
@@ -248,7 +269,9 @@ const UserMenu = ({ onSignin, onSignup }) => {
           </Badge>
         }
         onClick={() => handleMenuClick("notifications")}
-      />
+      /> */}
+      {role === "candidate" && <GreetingText>Chào, {name}</GreetingText>}
+
       <Dropdown
         menu={{ items: menuItems }}
         placement="bottomRight"
