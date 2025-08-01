@@ -92,6 +92,7 @@ const ResumeAnalysisModal = ({
       title="Chọn CV để phân tích"
       open={visible}
       onCancel={handleCancel}
+      maskClosable={false}
       footer={
         isSubmitting || isRedirecting
           ? null
@@ -121,6 +122,10 @@ const ResumeAnalysisModal = ({
         <LoadingContainer>
           <Spin size="large" />
           <LoadingText>Đang trích xuất thông tin và phân tích</LoadingText>
+          <LoadingText>
+            Việc phân tích có thể mất chút thời gian. Vui lòng chờ trong ít
+            phút.
+          </LoadingText>
         </LoadingContainer>
       ) : (
         <RadioGroup

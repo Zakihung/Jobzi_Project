@@ -194,6 +194,17 @@ const ActionBtn = styled(Button)`
   }
 `;
 
+const ViewDetailBtn = styled(ActionBtn)`
+  border-color: #1677ff !important;
+  color: #1677ff !important;
+
+  &:hover {
+    background: #e6f4ff !important;
+    color: #0958d9 !important;
+    border-color: #0958d9 !important;
+  }
+`;
+
 const WarningText = styled.div`
   background: #fff7e6;
   border: 1px solid #ffd591;
@@ -354,9 +365,7 @@ const ApplicationCard = ({ application }) => {
   const statusConfig = getStatusConfig(application.status);
 
   return (
-    <ApplicationCardWrapper
-    // onClick={() => navigate(`/jobpost/${application.job_post_id?._id}`)}
-    >
+    <ApplicationCardWrapper>
       <ApplicationHeader>
         <CompanyLogo
           src={
@@ -375,9 +384,25 @@ const ApplicationCard = ({ application }) => {
               "Không xác định"}
           </CompanyName>
         </ApplicationContent>
-        <ActionBtn onClick={handleCancelApplication} loading={isDeleting}>
-          Hủy ứng tuyển
-        </ActionBtn>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            alignItems: "flex-end",
+          }}
+        >
+          <ViewDetailBtn
+            onClick={() => navigate(`/jobpost/${application.job_post_id?._id}`)}
+          >
+            Xem chi tiết tin
+          </ViewDetailBtn>
+          {isWithin24Hours() && (
+            <ActionBtn onClick={handleCancelApplication} loading={isDeleting}>
+              Hủy ứng tuyển
+            </ActionBtn>
+          )}
+        </div>
       </ApplicationHeader>
 
       <ApplicationDetails>

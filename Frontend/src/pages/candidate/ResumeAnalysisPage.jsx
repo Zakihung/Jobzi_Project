@@ -40,7 +40,7 @@ const { Title, Text, Paragraph } = Typography;
 
 const ResumeAnalysisPage = () => {
   const navigate = useNavigate();
-  const { job_post_id, resume_file_id, online_resume_id } = useParams(); // Lấy tham số từ URL (nếu có)
+  const { job_post_id, resume_file_id, online_resume_id } = useParams();
   const [selectedMenu, setSelectedMenu] = useState("overview");
 
   const {
@@ -129,7 +129,7 @@ const ResumeAnalysisPage = () => {
               Điểm mạnh
             </Title>
             <List
-              dataSource={analysisData.analysis.strengths}
+              dataSource={analysisData.strengths}
               renderItem={(item) => (
                 <List.Item className={styles.listItem}>
                   <div>
@@ -152,7 +152,7 @@ const ResumeAnalysisPage = () => {
               Điểm yếu
             </Title>
             <List
-              dataSource={analysisData.analysis.weaknesses}
+              dataSource={analysisData.weaknesses}
               renderItem={(item) => (
                 <List.Item className={styles.listItem}>
                   <div>
@@ -184,19 +184,24 @@ const ResumeAnalysisPage = () => {
       <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Họ và tên">
-            {analysisData.classification.personal_info.name}
+            {analysisData.extracted_fields.personal_info.name.join(", ")}
           </Descriptions.Item>
           <Descriptions.Item label="Số điện thoại">
-            {analysisData.classification.personal_info.phone}
+            {analysisData.extracted_fields.personal_info.phone.join(", ")}
           </Descriptions.Item>
           <Descriptions.Item label="Ngày sinh">
-            {analysisData.classification.personal_info.dob}
+            {analysisData.extracted_fields.personal_info.birth_date.join(", ")}
           </Descriptions.Item>
           <Descriptions.Item label="Giới tính">
-            {analysisData.classification.personal_info.gender}
+            {analysisData.extracted_fields.personal_info.gender.length > 0
+              ? analysisData.extracted_fields.personal_info.gender.join(", ")
+              : "Không xác định"}
           </Descriptions.Item>
-          <Descriptions.Item label="Địa chỉ" span={2}>
-            {analysisData.classification.personal_info.address}
+          <Descriptions.Item label="Email">
+            {analysisData.extracted_fields.personal_info.email.join(", ")}
+          </Descriptions.Item>
+          <Descriptions.Item label="Địa chỉ">
+            {analysisData.extracted_fields.personal_info.address.join(", ")}
           </Descriptions.Item>
         </Descriptions>
       </Card>
@@ -207,7 +212,9 @@ const ResumeAnalysisPage = () => {
           <CompassOutlined />
           Mục tiêu nghề nghiệp
         </Title>
-        <Paragraph>{analysisData.classification.career_objective}</Paragraph>
+        <Paragraph>
+          {analysisData.extracted_fields.career_objective.join(" ")}
+        </Paragraph>
       </Card>
 
       {/* Học vấn */}
@@ -216,7 +223,7 @@ const ResumeAnalysisPage = () => {
       </Title>
       <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
         <List
-          dataSource={analysisData.classification.education}
+          dataSource={analysisData.extracted_fields.education}
           renderItem={(item) => (
             <Card className={styles.educationCard}>
               <List.Item>
@@ -230,9 +237,12 @@ const ResumeAnalysisPage = () => {
                   title={<Text strong>{item.institution}</Text>}
                   description={
                     <Space direction="vertical" size={4}>
-                      <Text>Bằng cấp: {item.degree}</Text>
-                      <Text>Chuyên ngành: {item.major}</Text>
-                      <Text>Thời gian: {item.duration}</Text>
+                      {item.degree && <Text>Bằng cấp: {item.degree}</Text>}
+                      {item.major && <Text>Chuyên ngành: {item.major}</Text>}
+                      {item.duration && <Text>Thời gian: {item.duration}</Text>}
+                      {item.description && (
+                        <Text>Mô tả: {item.description}</Text>
+                      )}
                     </Space>
                   }
                 />
@@ -246,20 +256,9 @@ const ResumeAnalysisPage = () => {
       <Title level={5} className={styles.cardTitle}>
         <SolutionOutlined /> Kinh nghiệm làm việc
       </Title>
-      <div style={{ marginBottom: 24 }}>
-        <Text strong>Tổng kinh nghiệm: </Text>
-        <Badge
-          count={`${analysisData.classification.total_experience} năm`}
-          style={{
-            backgroundColor: "#577cf6",
-            fontSize: 13,
-            alignItems: "center",
-          }}
-        />
-      </div>
       <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
         <List
-          dataSource={analysisData.classification.work_experience}
+          dataSource={analysisData.extracted_fields.experience}
           renderItem={(item) => (
             <Card className={styles.workCard}>
               <List.Item>
@@ -270,12 +269,19 @@ const ResumeAnalysisPage = () => {
                       className={styles.workAvatar}
                     />
                   }
-                  title={<Text strong>{item.position}</Text>}
+                  title={<Text strong>{item.position || item.company}</Text>}
                   description={
                     <Space direction="vertical" size={4}>
-                      <Text>Công ty: {item.company}</Text>
-                      <Text>Thời gian: {item.duration}</Text>
-                      <Text>Mô tả: {item.responsibilities}</Text>
+                      {item.company && !item.position && (
+                        <Text>Công ty: {item.company}</Text>
+                      )}
+                      {item.duration && <Text>Thời gian: {item.duration}</Text>}
+                      {item.responsibilities && (
+                        <Text>Mô tả: {item.responsibilities}</Text>
+                      )}
+                      {item.description && (
+                        <Text>Mô tả: {item.description}</Text>
+                      )}
                     </Space>
                   }
                 />
@@ -294,9 +300,10 @@ const ResumeAnalysisPage = () => {
           <Col span={24}>
             <Card className={styles.skillsCard}>
               <Space wrap>
-                {analysisData.classification.skills.map((skill) => (
+                {analysisData.extracted_fields.skills.map((skill) => (
                   <Tag key={skill._id} color="blue" className={styles.skillTag}>
-                    {skill.name} - {skill.proficiency}
+                    {skill.name}
+                    {skill.proficiency && ` - ${skill.proficiency}`}
                   </Tag>
                 ))}
               </Space>
@@ -314,7 +321,7 @@ const ResumeAnalysisPage = () => {
           <Col span={24}>
             <Card className={styles.hobbiesCard}>
               <List
-                dataSource={analysisData.classification.hobbies}
+                dataSource={analysisData.extracted_fields.hobbies}
                 renderItem={(hobby) => (
                   <List.Item>
                     <Text>{hobby}</Text>
@@ -324,6 +331,99 @@ const ResumeAnalysisPage = () => {
             </Card>
           </Col>
         </Row>
+      </Card>
+
+      {/* Dự án */}
+      <Title level={5} className={styles.cardTitle}>
+        <StarOutlined /> Dự án
+      </Title>
+      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
+        <List
+          dataSource={analysisData.extracted_fields.projects}
+          renderItem={(item) => (
+            <List.Item>
+              <List.Item.Meta
+                title={<Text strong>{item.name}</Text>}
+                description={
+                  <Space direction="vertical" size={4}>
+                    {item.description && <Text>Mô tả: {item.description}</Text>}
+                    {item.role && <Text>Vai trò: {item.role}</Text>}
+                    {item.duration && <Text>Thời gian: {item.duration}</Text>}
+                  </Space>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      </Card>
+
+      {/* Chứng chỉ */}
+      <Title level={5} className={styles.cardTitle}>
+        <TrophyOutlined /> Chứng chỉ
+      </Title>
+      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
+        <List
+          dataSource={analysisData.extracted_fields.certificates}
+          renderItem={(item) => (
+            <List.Item>
+              <Text>
+                {item.name}
+                {item.year && ` (${item.year})`}
+              </Text>
+            </List.Item>
+          )}
+        />
+      </Card>
+
+      {/* Hoạt động */}
+      <Title level={5} className={styles.cardTitle}>
+        <SolutionOutlined /> Hoạt động
+      </Title>
+      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
+        <List
+          dataSource={analysisData.extracted_fields.activities}
+          renderItem={(item) => (
+            <List.Item>
+              <Text>
+                {item.name}
+                {item.duration && ` (${item.duration})`}
+              </Text>
+            </List.Item>
+          )}
+        />
+      </Card>
+
+      {/* Giải thưởng */}
+      <Title level={5} className={styles.cardTitle}>
+        <TrophyOutlined /> Giải thưởng
+      </Title>
+      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
+        <List
+          dataSource={analysisData.extracted_fields.awards}
+          renderItem={(item) => (
+            <List.Item>
+              <Text>
+                {item.name}
+                {item.year && ` (${item.year})`}
+              </Text>
+            </List.Item>
+          )}
+        />
+      </Card>
+
+      {/* Người giới thiệu */}
+      <Title level={5} className={styles.cardTitle}>
+        <UserOutlined /> Người giới thiệu
+      </Title>
+      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
+        <List
+          dataSource={analysisData.extracted_fields.references}
+          renderItem={(item) => (
+            <List.Item>
+              <Text>{item.name}</Text>
+            </List.Item>
+          )}
+        />
       </Card>
     </div>
   );
@@ -344,13 +444,13 @@ const ResumeAnalysisPage = () => {
                   Mức độ phù hợp
                 </Title>
                 <Text className={styles.scoreStatus}>
-                  {getScoreStatus(analysisData.analysis.match_score)}
+                  {getScoreStatus(analysisData.match_score)}
                 </Text>
               </div>
             </div>
             <Progress
-              percent={analysisData.analysis.match_score}
-              strokeColor={getScoreColor(analysisData.analysis.match_score)}
+              percent={analysisData.match_score}
+              strokeColor={getScoreColor(analysisData.match_score)}
               strokeWidth={12}
               format={(percent) => (
                 <span className={styles.scoreText}>{percent}%</span>
@@ -368,7 +468,7 @@ const ResumeAnalysisPage = () => {
               Phù hợp
             </Title>
             <List
-              dataSource={analysisData.analysis.job_match}
+              dataSource={analysisData.jd_matching.job_match}
               renderItem={(item) => (
                 <List.Item className={styles.matchItem}>
                   <Space direction="vertical" size={4}>
@@ -388,7 +488,7 @@ const ResumeAnalysisPage = () => {
               Không phù hợp
             </Title>
             <List
-              dataSource={analysisData.analysis.job_mismatch.slice(0, 5)}
+              dataSource={analysisData.jd_matching.job_mismatch.slice(0, 5)}
               renderItem={(item) => (
                 <List.Item className={styles.mismatchItem}>
                   <Space direction="vertical" size={4}>
@@ -398,11 +498,45 @@ const ResumeAnalysisPage = () => {
                 </List.Item>
               )}
             />
-            {analysisData.analysis.job_mismatch.length > 5 && (
+            {analysisData.jd_matching.job_mismatch.length > 5 && (
               <Text type="secondary" className={styles.moreText}>
-                Và {analysisData.analysis.job_mismatch.length - 5} mục khác...
+                Và {analysisData.jd_matching.job_mismatch.length - 5} mục
+                khác...
               </Text>
             )}
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+        <Col xs={24} md={12}>
+          <Card className={styles.matchCard}>
+            <Title level={5} className={styles.cardTitle}>
+              <CheckCircleOutlined className={styles.successIcon} />
+              Kỹ năng phù hợp
+            </Title>
+            <Space wrap>
+              {analysisData.jd_matching.matched_skills.map((skill) => (
+                <Tag key={skill} color="green">
+                  {skill}
+                </Tag>
+              ))}
+            </Space>
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card className={styles.mismatchCard}>
+            <Title level={5} className={styles.cardTitle}>
+              <CloseCircleOutlined className={styles.errorIcon} />
+              Kỹ năng còn thiếu
+            </Title>
+            <Space wrap>
+              {analysisData.jd_matching.missing_skills.map((skill) => (
+                <Tag key={skill} color="red">
+                  {skill}
+                </Tag>
+              ))}
+            </Space>
           </Card>
         </Col>
       </Row>
@@ -417,7 +551,7 @@ const ResumeAnalysisPage = () => {
 
       <Card className={styles.suggestionsCard}>
         <List
-          dataSource={analysisData.analysis.suggestions}
+          dataSource={analysisData.suggestions}
           renderItem={(item) => (
             <List.Item className={styles.suggestionItem}>
               <List.Item.Meta
