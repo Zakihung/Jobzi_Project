@@ -4,3 +4,11 @@ __pycache__/
 .idea/
 dataset/
 .env
+classifier_model.pkl
+extractor.log
+vectorizer.pkl
+nlp/skills_list.py
+results
+nlp/phobert_cv_classifier
+models/keywords.py
+models/training_data.csv

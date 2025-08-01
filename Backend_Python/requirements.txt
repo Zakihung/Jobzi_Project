@@ -1,5 +1,16 @@
+accelerate
 flask
+joblib
+nltk
+numpy
+pandas
 pdfplumber
-requests
 pymongo
 python-dotenv
+requests
+scikit-learn
+sentence-transformers
+torch
+transformers
+underthesea
+sentencepiece
