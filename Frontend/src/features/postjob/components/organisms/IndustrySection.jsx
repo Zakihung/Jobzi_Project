@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Typography, Select, Row, Col } from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
-import { useEffect } from "react";
 import useGetIndustryGroups from "../../hooks/Industry_Group/useGetIndustryGroups";
 import useGetIndustries from "../../hooks/Industry/useGetIndustries";
 import useGetJobPositions from "../../hooks/Job_Position/useGetJobPositions";
+import useGetJobPositionById from "../../hooks/Job_Position/useGetJobPositionById";
+import useGetIndustryById from "../../hooks/Industry/useGetIndustryById";
+import useGetIndustryGroupById from "../../hooks/Industry_Group/useGetIndustryGroupById";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -55,37 +57,84 @@ const IndustrySection = ({
   completedSections,
   setValue,
   setCompletedSections,
+  disabled,
+  jobData,
 }) => {
   const [selectedIndustryGroup, setSelectedIndustryGroup] = useState(null);
   const [selectedIndustry, setSelectedIndustry] = useState(null);
 
-  // Lấy danh sách nhóm ngành
   const { data: industryGroups, isLoading: isLoadingIndustryGroups } =
     useGetIndustryGroups();
 
-  // Lấy danh sách ngành dựa trên industry_group_id
   const { data: industries, isLoading: isLoadingIndustries } = useGetIndustries(
     {
       enabled: !!selectedIndustryGroup,
     }
   );
 
-  // Lấy danh sách vị trí công việc dựa trên industry_id
   const { data: jobPositions, isLoading: isLoadingJobPositions } =
     useGetJobPositions({
       enabled: !!selectedIndustry,
     });
 
+  const { data: jobPositionData, isLoading: isLoadingJobPosition } =
+    useGetJobPositionById(jobData?.job_position_id?._id, {
+      enabled: !!jobData?.job_position_id,
+    });
+
+  const { data: industryData, isLoading: isLoadingIndustry } =
+    useGetIndustryById(jobPositionData?.industry_id?._id, {
+      enabled: !!jobPositionData?.industry_id?._id,
+    });
+
+  const { data: industryGroupData, isLoading: isLoadingIndustryGroup } =
+    useGetIndustryGroupById(industryData?.industry_group_id?._id, {
+      enabled: !!industryData?.industry_group_id?._id,
+    });
+
   useEffect(() => {
-    // Reset ngành và vị trí khi nhóm ngành thay đổi
-    setValue("industry", null);
-    setValue("position", null);
-    setSelectedIndustry(null);
+    if (
+      jobData?.job_position_id?._id &&
+      jobPositionData &&
+      industryData &&
+      industryGroupData
+    ) {
+      const industryGroupId = industryData?.industry_group_id?._id;
+      const industryId = jobPositionData?.industry_id?._id;
+      const positionId = jobData?.job_position_id?._id;
+
+      if (industryGroupId && industryId && positionId) {
+        setSelectedIndustryGroup(industryGroupId);
+        setSelectedIndustry(industryId);
+        setValue("industry", industryId);
+        setValue("position", positionId);
+        if (!completedSections.includes("Ngành nghề và vị trí")) {
+          setCompletedSections([...completedSections, "Ngành nghề và vị trí"]);
+        }
+      }
+    }
+  }, [
+    jobData,
+    jobPositionData,
+    industryData,
+    industryGroupData,
+    setValue,
+    setCompletedSections,
+    completedSections,
+  ]);
+
+  useEffect(() => {
+    if (!selectedIndustryGroup) {
+      setValue("industry", null);
+      setValue("position", null);
+      setSelectedIndustry(null);
+    }
   }, [selectedIndustryGroup, setValue]);
 
   useEffect(() => {
-    // Reset vị trí khi ngành thay đổi
-    setValue("position", null);
+    if (!selectedIndustry) {
+      setValue("position", null);
+    }
   }, [selectedIndustry, setValue]);
 
   return (
@@ -113,7 +162,8 @@ const IndustrySection = ({
                 );
               }
             }}
-            loading={isLoadingIndustryGroups}
+            loading={isLoadingIndustryGroups || isLoadingIndustryGroup}
+            disabled={disabled || isLoadingIndustryGroup}
           >
             {industryGroups?.map((group) => (
               <Option key={group._id} value={group._id}>
@@ -145,8 +195,13 @@ const IndustrySection = ({
                 );
               }
             }}
-            disabled={!selectedIndustryGroup || isLoadingIndustries}
-            loading={isLoadingIndustries}
+            disabled={
+              disabled ||
+              !selectedIndustryGroup ||
+              isLoadingIndustries ||
+              isLoadingIndustry
+            }
+            loading={isLoadingIndustries || isLoadingIndustry}
           >
             {industries
               ?.filter(
@@ -175,8 +230,13 @@ const IndustrySection = ({
                 placeholder="Chọn vị trí cần tuyển"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
-                disabled={!selectedIndustry || isLoadingJobPositions}
-                loading={isLoadingJobPositions}
+                disabled={
+                  disabled ||
+                  !selectedIndustry ||
+                  isLoadingJobPositions ||
+                  isLoadingJobPosition
+                }
+                loading={isLoadingJobPositions || isLoadingJobPosition}
                 onChange={(value) => {
                   field.onChange(value);
                   if (

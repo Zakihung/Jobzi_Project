@@ -50,7 +50,7 @@ const DashboardEmployerPage = () => {
               job?.status === "active"
                 ? "Đang tuyển"
                 : job?.status === "inactive"
-                ? "Tạm dừng"
+                ? "Đang ẩn"
                 : "Đã đóng",
             applications: job?.applications?.length || 0, // Số lượng ứng tuyển
             postedDate: createdAt.toLocaleDateString("vi-VN"), // Định dạng ngày
@@ -95,7 +95,7 @@ const DashboardEmployerPage = () => {
     switch (status) {
       case "Đang tuyển":
         return `${styles.jobStatus} ${styles.active}`;
-      case "Tạm dừng":
+      case "Đang ẩn":
         return `${styles.jobStatus} ${styles.paused}`;
       case "Đã đóng":
         return `${styles.jobStatus} ${styles.closed}`;

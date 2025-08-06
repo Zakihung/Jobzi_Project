@@ -10,29 +10,42 @@ import {
   Tag,
   Space,
   Popconfirm,
-  message,
+  App,
+  Modal,
 } from "antd";
 import {
-  EditOutlined,
+  EyeOutlined,
   DeleteOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
 import styles from "../../styles/JobEmployerPage.module.css";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/auth.context";
 import useGetEmployerByUserId from "../../features/employer/hooks/useGetEmployerByUserId";
 import useGetJobPostsByEmployerId from "../../features/postjob/hooks/Job_Post/useGetJobPostsByEmployerId";
+import useUpdateStatusJobPost from "../../features/postjob/hooks/Job_Post/useUpdateStatusJobPost";
+import useDeleteJobPost from "../../features/postjob/hooks/Job_Post/useDeleteJobPost";
+import { useNavigate } from "react-router-dom";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const JobEmployerPage = () => {
+  const { message } = App.useApp();
   const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
   const { data: employer } = useGetEmployerByUserId(auth?.user?.id);
   const employerId = employer?.data?._id;
 
   const { data: jobsData, isLoading } = useGetJobPostsByEmployerId(employerId);
+  const { mutate: updateStatusJobPost, isLoading: isUpdating } =
+    useUpdateStatusJobPost();
+  const { mutate: deleteJobPost, isLoading: isDeleting } = useDeleteJobPost();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   if (isLoading) return;
 
@@ -56,110 +69,82 @@ const JobEmployerPage = () => {
           status: job?.status,
           daysLeft,
           createdAt: postDate,
+          description: job?.description,
+          salary_type: job?.salary_type,
+          min_salary_range: job?.min_salary_range,
+          max_salary_range: job?.max_salary_range,
         };
       })
       .sort((a, b) => b.createdAt - a.createdAt) || [];
 
-  //   const [jobs, setJobs] = useState([
-  //     {
-  //       id: 1,
-  //       title: "Frontend Developer - React.js",
-  //       location: "Quận 1, TP. Hồ Chí Minh",
-  //       postDate: "15/06/2025",
-  //       expiryDate: "28/06/2025",
-  //       status: "active",
-  //       daysLeft: 2,
-  //     },
-  //     {
-  //       id: 2,
-  //       title: "Backend Developer - Node.js",
-  //       location: "Quận 3, TP. Hồ Chí Minh",
-  //       postDate: "10/06/2025",
-  //       expiryDate: "25/06/2025",
-  //       status: "active",
-  //       daysLeft: -1,
-  //     },
-  //     {
-  //       id: 3,
-  //       title: "Product Manager",
-  //       location: "Cầu Giấy, Hà Nội",
-  //       postDate: "20/06/2025",
-  //       expiryDate: "08/07/2025",
-  //       status: "inactive",
-  //       daysLeft: 12,
-  //     },
-  //     {
-  //       id: 4,
-  //       title: "UI/UX Designer",
-  //       location: "Hai Châu, Đà Nẵng",
-  //       postDate: "12/06/2025",
-  //       expiryDate: "30/06/2025",
-  //       status: "active",
-  //       daysLeft: 4,
-  //     },
-  //   ]);
-
-  const handleStatusChange = (jobId, checked) => {
-    // Cập nhật trạng thái job (cần thêm API để cập nhật trạng thái)
-    message.success(checked ? "Đã hiển thị việc làm" : "Đã ẩn việc làm");
+  const showConfirmModal = (jobId, checked) => {
+    setSelectedJobId(jobId);
+    setSelectedStatus(checked ? "active" : "inactive");
+    setIsModalVisible(true);
   };
 
-  const handleEdit = (jobId) => {
-    message.info(`Chỉnh sửa công việc #${jobId}`);
-    // Implement edit logic here (cần thêm API để chỉnh sửa)
+  const handleStatusChange = () => {
+    updateStatusJobPost(
+      { id: selectedJobId, status: selectedStatus },
+      {
+        onSuccess: () => {
+          message.success(
+            selectedStatus === "active"
+              ? "Đã hiển thị việc làm"
+              : "Đã ẩn việc làm"
+          );
+          setIsModalVisible(false);
+        },
+        onError: () => {
+          message.error("Cập nhật trạng thái thất bại");
+          setIsModalVisible(false);
+        },
+      }
+    );
   };
 
-  const handleDelete = () => {
-    // Xóa job (cần thêm API để xóa)
-    message.success("Đã xóa công việc thành công");
+  const handleView = (job) => {
+    navigate(`/employer/jobpost/${job.id}`);
+  };
+
+  const handleDelete = (jobId) => {
+    deleteJobPost(jobId, {
+      onSuccess: () => {
+        message.success("Đã xóa công việc thành công");
+      },
+      onError: () => {
+        message.error("Xóa công việc thất bại");
+      },
+    });
   };
 
   const getExpiryStatus = (daysLeft) => {
-    if (daysLeft < 0) {
-      return {
-        text: "Đã hết hạn",
-        color: "red",
-      };
-    } else if (daysLeft <= 5) {
-      return {
-        text: `Hết hạn trong ${daysLeft} ngày`,
-        color: "orange",
-      };
-    } else {
-      return {
-        text: `Hết hạn trong ${daysLeft} ngày`,
-        color: "green",
-      };
+    if (daysLeft <= 0) {
+      return { color: "red", text: "Hết hạn" };
     }
+    if (daysLeft <= 7) {
+      return { color: "orange", text: `${daysLeft} ngày còn lại` };
+    }
+    return { color: "green", text: `${daysLeft} ngày còn lại` };
   };
 
   const columns = [
     {
-      title: "Thông tin",
-      dataIndex: "info",
-      key: "info",
-      width: "40%",
-      render: (_, record) => (
-        <div className={styles.jobInfo}>
-          <Title level={5} className={styles.jobTitle}>
-            {record.title}
-          </Title>
-          <div className={styles.jobLocation}>
-            <EnvironmentOutlined className={styles.locationIcon} />
-            <Text type="secondary">{record.location}</Text>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Ngày hết hạn",
-      dataIndex: "expiry",
-      key: "expiry",
-      width: "25%",
-      render: (_, record) => {
+      title: "Vị trí tuyển dụng",
+      dataIndex: "title",
+      key: "title",
+      width: "35%",
+      render: (text, record) => {
         const expiryStatus = getExpiryStatus(record.daysLeft);
         return (
-          <div className={styles.expiryInfo}>
+          <div className={styles.jobInfo}>
+            <Text strong className={styles.jobTitle}>
+              {text}
+            </Text>
+            <div className={styles.locationInfo}>
+              <EnvironmentOutlined className={styles.locationIcon} />
+              <Text type="secondary">{record.location}</Text>
+            </div>
             <Tag color={expiryStatus.color} className={styles.expiryTag}>
               {expiryStatus.text}
             </Tag>
@@ -186,10 +171,11 @@ const JobEmployerPage = () => {
         <div className={styles.statusControl}>
           <Switch
             checked={record.status === "active"}
-            onChange={(checked) => handleStatusChange(record.id, checked)}
+            onChange={(checked) => showConfirmModal(record.id, checked)}
             checkedChildren="Hiển thị"
             unCheckedChildren="Ẩn"
             className={styles.statusSwitch}
+            disabled={isUpdating}
           />
           <div className={styles.statusText}>
             <Text type={record.status === "active" ? "success" : "secondary"}>
@@ -208,12 +194,12 @@ const JobEmployerPage = () => {
         <Space size="small" className={styles.actionButtons}>
           <Button
             type="primary"
-            icon={<EditOutlined />}
+            icon={<EyeOutlined />}
             size="small"
-            onClick={() => handleEdit(record.id)}
+            onClick={() => handleView(record)}
             className={styles.editButton}
           >
-            Sửa
+            Xem
           </Button>
           <Popconfirm
             title="Xóa công việc"
@@ -228,6 +214,7 @@ const JobEmployerPage = () => {
               icon={<DeleteOutlined />}
               size="small"
               className={styles.deleteButton}
+              loading={isDeleting}
             >
               Xóa
             </Button>
@@ -238,42 +225,52 @@ const JobEmployerPage = () => {
   ];
 
   return (
-    <Row
-      gutter={[24, 24]}
-      style={{
-        background: "#fff",
-        borderRadius: "24px",
-      }}
-      justify={"center"}
-    >
-      <Col span={21}>
-        <Card className={styles.jobCard}>
-          <div className={styles.cardHeader}>
-            <Title level={2} className={styles.pageTitle}>
-              Danh sách việc làm
-            </Title>
-            <Text type="secondary" className={styles.jobCount}>
-              Tổng cộng: {jobs.length} việc làm
-            </Text>
-          </div>
+    <>
+      <Row
+        gutter={[24, 24]}
+        style={{
+          background: "#fff",
+          borderRadius: "24px",
+        }}
+        justify={"center"}
+      >
+        <Col span={21}>
+          <Card className={styles.jobCard}>
+            <div className={styles.cardHeader}>
+              <Title level={2} className={styles.pageTitle}>
+                Danh sách việc làm
+              </Title>
+              <Text type="secondary" className={styles.jobCount}>
+                Tổng cộng: {jobs.length} việc làm
+              </Text>
+            </div>
 
-          <Table
-            columns={columns}
-            dataSource={jobs}
-            rowKey="id"
-            //   pagination={{
-            //     pageSize: 10,
-            //     showSizeChanger: true,
-            //     showQuickJumper: true,
-            //     showTotal: (total, range) =>
-            //       `${range[0]}-${range[1]} của ${total} việc làm`,
-            //   }}
-            className={styles.jobTable}
-            scroll={{ x: 800 }}
-          />
-        </Card>
-      </Col>
-    </Row>
+            <Table
+              columns={columns}
+              dataSource={jobs}
+              rowKey="id"
+              className={styles.jobTable}
+              scroll={{ x: 800 }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Modal
+        title="Xác nhận thay đổi trạng thái"
+        open={isModalVisible}
+        onOk={handleStatusChange}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        confirmLoading={isUpdating}
+      >
+        <p>
+          Bạn có chắc chắn muốn{" "}
+          {selectedStatus === "active" ? "hiển thị" : "ẩn"} tin này?
+        </p>
+      </Modal>
+    </>
   );
 };
 

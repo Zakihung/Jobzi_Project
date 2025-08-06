@@ -116,10 +116,6 @@ const ProfileCandidatePage = () => {
 
   // Upload Modal Handlers
   const showUploadModal = () => {
-    if (resumeFiles?.length >= 3) {
-      message.warning("Bạn chỉ có thể đăng tải tối đa 3 tệp CV!");
-      return;
-    }
     setIsUploadModalVisible(true);
     setSelectedFile(null);
     setFileName("");

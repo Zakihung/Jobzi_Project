@@ -1,9 +1,12 @@
-import React, { useState, useRef } from "react";
-import { Layout, Row, Col } from "antd";
+import React, { useState, useRef, useEffect } from "react";
+import { Layout, Row, Col, App } from "antd";
 import styled from "styled-components";
 import NavPostJobMenu from "../../features/postjob/components/templates/NavPostJobMenu";
 import PostJobForm from "../../features/postjob/components/templates/PostJobForm";
 import SidebarProgress from "../../features/postjob/components/templates/SidebarProgress";
+import useGetJobPostById from "../../features/postjob/hooks/Job_Post/useGetJobPostById";
+import useUpdateJobPost from "../../features/postjob/hooks/Job_Post/useUpdateJobPost";
+import { useParams } from "react-router-dom";
 
 const PostJobContainer = styled(Layout)`
   min-height: 100vh;
@@ -15,7 +18,11 @@ const ContentContainer = styled(Layout.Content)`
   background: #f8f9fa;
 `;
 
-const PostJobPage = () => {
+const JobPostDetailEmployerPage = () => {
+  const { id } = useParams();
+  const { data: jobData, isLoading } = useGetJobPostById(id);
+  const { mutate: updateJobPost } = useUpdateJobPost();
+  const [isEditing, setIsEditing] = useState(false);
   const [locations, setLocations] = useState([{ province: "", address: "" }]);
   const [completedSections, setCompletedSections] = useState([]);
   const sectionRefs = {
@@ -27,7 +34,7 @@ const PostJobPage = () => {
     benefits: useRef(null),
     cvInfo: useRef(null),
   };
-  const formRef = useRef(null); // Thêm ref cho form
+  const formRef = useRef(null);
 
   const allSections = [
     "Tiêu đề tin tuyển dụng",
@@ -39,17 +46,22 @@ const PostJobPage = () => {
     "Thông tin nhận CV",
   ];
 
+  useEffect(() => {
+    if (jobData) {
+      setLocations(
+        jobData.locations?.map((loc) => ({
+          province: loc.province || "",
+          address: loc.address || "",
+        })) || [{ province: "", address: "" }]
+      );
+      setCompletedSections(allSections); // Giả định tất cả section đã hoàn thành khi xem chi tiết
+    }
+  }, [jobData]);
+
   const handleLocationChange = (index, field, value) => {
     const newLocations = [...locations];
     newLocations[index] = { ...newLocations[index], [field]: value };
     setLocations(newLocations);
-    if (
-      newLocations[index].province &&
-      newLocations[index].address &&
-      !completedSections.includes("Thông tin chung")
-    ) {
-      setCompletedSections([...completedSections, "Thông tin chung"]);
-    }
   };
 
   const addLocation = () => {
@@ -61,15 +73,11 @@ const PostJobPage = () => {
     setLocations(newLocations);
   };
 
-  const handleSubmit = () => {
-    if (formRef.current) {
-      formRef.current.dispatchEvent(
-        new Event("submit", { cancelable: true, bubbles: true })
-      );
-    } else {
-      console.error("formRef không được khai báo");
-    }
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
   };
+
+  if (isLoading) return <div>Đang tải...</div>;
 
   return (
     <PostJobContainer>
@@ -103,20 +111,26 @@ const PostJobPage = () => {
                   completedSections={completedSections}
                   setCompletedSections={setCompletedSections}
                   allSections={allSections}
-                  formRef={formRef} // Truyền ref vào PostJobForm
-                  isEditing={true}
-                  disabled={false}
+                  formRef={formRef}
+                  jobData={jobData}
+                  isEditing={isEditing}
+                  disabled={!isEditing}
+                  updateJobPost={updateJobPost}
                 />
               </Col>
               <Col xs={24} md={6} lg={5}>
                 <SidebarProgress
                   completedSections={completedSections}
                   allSections={allSections}
-                  onSubmit={handleSubmit} // Gọi handleSubmit
-                  onEdit={() =>
-                    console.log("onEdit không dùng trong PostJobPage")
-                  }
-                  isEditing={true}
+                  onSubmit={() => {
+                    if (formRef.current) {
+                      formRef.current.dispatchEvent(
+                        new Event("submit", { cancelable: true, bubbles: true })
+                      );
+                    }
+                  }}
+                  onEdit={handleEditToggle}
+                  isEditing={isEditing}
                 />
               </Col>
             </Row>
@@ -127,4 +141,4 @@ const PostJobPage = () => {
   );
 };
 
-export default PostJobPage;
+export default JobPostDetailEmployerPage;

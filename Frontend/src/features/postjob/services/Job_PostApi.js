@@ -36,6 +36,12 @@ const updateJobPostApi = (id, data) => {
   return axios.put(URL_API, data);
 };
 
+// API để cập nhật trạng thái job post
+const updateStatusJobPostApi = (id, status) => {
+  const URL_API = `/api/job-post/status/${id}`;
+  return axios.put(URL_API, { status });
+};
+
 // API để xóa job post
 const deleteJobPostApi = (id) => {
   const URL_API = `/api/job-post/${id}`;
@@ -55,6 +61,7 @@ export {
   getJobPostsByEmployerIdApi,
   getJobPostsByJobPositionIdApi,
   updateJobPostApi,
+  updateStatusJobPostApi,
   deleteJobPostApi,
   deleteAllJobPostsApi,
 };

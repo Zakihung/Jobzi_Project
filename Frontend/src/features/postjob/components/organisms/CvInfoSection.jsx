@@ -50,6 +50,7 @@ const CvInfoSection = ({
   sectionRefs,
   completedSections,
   setCompletedSections,
+  disabled,
 }) => {
   const checkCompletion = (values) => {
     const requiredFields = [
@@ -163,6 +164,7 @@ const CvInfoSection = ({
                 size="large"
                 status={errors.expiredAt ? "error" : ""}
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               />
             )}
           />
@@ -192,6 +194,7 @@ const CvInfoSection = ({
                 size="large"
                 status={errors.recipient_name ? "error" : ""}
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               />
             )}
           />
@@ -220,6 +223,7 @@ const CvInfoSection = ({
                 size="large"
                 status={errors.recipient_phone_number ? "error" : ""}
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               />
             )}
           />
@@ -246,6 +250,7 @@ const CvInfoSection = ({
                 size="large"
                 status={errors.recipient_email ? "error" : ""}
                 style={{ width: "100%", marginBottom: 8 }}
+                disabled={disabled}
               />
             )}
           />

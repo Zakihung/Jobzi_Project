@@ -68,6 +68,7 @@ const RequirementsSection = ({
   completedSections,
   setCompletedSections,
   watch,
+  disabled,
 }) => {
   const requirements = watch("requirements") || "";
   const skills = watch("skills") || [];
@@ -95,7 +96,7 @@ const RequirementsSection = ({
     <StyledCard ref={sectionRefs.requirements}>
       <StyledTitle level={3}>Yêu cầu ứng viên</StyledTitle>
       <StyledSubTitle>Mô tả yêu cầu ứng viên</StyledSubTitle>
-      <TextEditor editor={editor} />
+      <TextEditor editor={editor} disabled={disabled} />
       {errors.requirements && (
         <Text type="danger">{errors.requirements.message}</Text>
       )}
@@ -116,6 +117,7 @@ const RequirementsSection = ({
                 field.onChange(value);
                 updateSectionStatus(skills);
               }}
+              disabled={disabled}
             >
               {Object.keys(educationLevelData).map((level) => (
                 <Select.Option key={level} value={level}>
@@ -146,6 +148,7 @@ const RequirementsSection = ({
                 field.onChange(value);
                 updateSectionStatus(value);
               }}
+              disabled={disabled}
             >
               {Object.keys(skillsData).map((type) => (
                 <Select.Option key={type} value={type}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Tooltip, Typography } from "antd";
+import { Button, Tooltip } from "antd";
 import { EditorContent } from "@tiptap/react";
 import {
   BoldOutlined,
@@ -147,7 +147,7 @@ const EditorWrapper = styled.div`
   position: relative;
 `;
 
-const TextEditor = ({ editor }) => {
+const TextEditor = ({ editor, disabled }) => {
   if (!editor) return null;
 
   // Hàm xử lý nội dung dán vào
@@ -173,13 +173,14 @@ const TextEditor = ({ editor }) => {
             (s) =>
               !s.includes("font-family") &&
               !s.includes("font-size") &&
-              !s.includes("color")
+              !s.includes("color") &&
+              !s.includes("background-color")
           )
           .join(";");
-        if (newStyle.trim() === "") {
-          element.removeAttribute("style");
-        } else {
+        if (newStyle) {
           element.setAttribute("style", newStyle);
+        } else {
+          element.removeAttribute("style");
         }
       }
     });
@@ -278,7 +279,7 @@ const TextEditor = ({ editor }) => {
                   onClick={button.action}
                   type={button.isActive() ? "primary" : "default"}
                   icon={button.icon}
-                  disabled={button.disabled ? button.disabled() : false}
+                  disabled={disabled || (button.disabled && button.disabled())}
                   size="small"
                 />
               </Tooltip>
@@ -296,7 +297,10 @@ const TextEditor = ({ editor }) => {
     <EditorWrapper>
       {renderToolbar()}
       <EditorContainer>
-        <EditorContent editor={editor} editorProps={{ handlePaste }} />
+        <EditorContent
+          editor={editor}
+          editorProps={{ handlePaste, editable: !disabled }}
+        />
       </EditorContainer>
     </EditorWrapper>
   );

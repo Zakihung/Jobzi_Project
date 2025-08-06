@@ -1,0 +1,253 @@
+/* CSS Variables */
+:root {
+  --primary: #577cf6;
+  --primary-dark: #4c6ef5;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --success: #52c41a;
+  --warning: #faad14;
+  --danger: #ff4d4f;
+  --border-radius: 12px;
+  --border-radius-lg: 16px;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Job Card */
+.jobCard {
+  border-radius: var(--border-radius-lg);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.jobTitle {
+  color: var(--text-primary) !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.candidateCount {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* Candidate Table */
+.candidateTable {
+  background: var(--white);
+}
+
+.candidateTable :global(.ant-table-thead > tr > th) {
+  background: var(--gray-100);
+  border-bottom: 2px solid var(--gray-200);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  padding: 16px 20px;
+}
+
+.candidateTable :global(.ant-table-tbody > tr > td) {
+  padding: 20px;
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top;
+}
+
+.candidateTable :global(.ant-table-tbody > tr:hover > td) {
+  background: #f0f7ff;
+}
+
+/* Candidate Info */
+.candidateInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.candidateName {
+  color: var(--text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.contactInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contactIcon {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+/* Application Info */
+.applicationInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.applicationItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateIcon {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Status Control */
+.statusControl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.statusSwitch {
+  background: var(--gray-200);
+}
+
+.statusSwitch:global(.ant-switch-checked) {
+  background: var(--success);
+}
+
+.statusTag {
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--border-radius);
+  padding: 4px 12px;
+  margin: 0;
+}
+
+/* View Profile Button */
+.viewProfileButton {
+  background: var(--primary);
+  border-color: var(--primary);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  width: 100%;
+}
+
+.viewProfileButton:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .candidateInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .viewProfileButton {
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .jobTitle {
+    font-size: 24px !important;
+  }
+
+  .candidateName {
+    font-size: 16px !important;
+  }
+
+  .candidateTable :global(.ant-table-thead > tr > th) {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .candidateTable :global(.ant-table-tbody > tr > td) {
+    padding: 16px;
+  }
+
+  .statusControl {
+    align-items: center;
+  }
+
+  .statusTag {
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .jobCard {
+    padding: 16px;
+    margin: 0 8px;
+  }
+
+  .jobTitle {
+    font-size: 20px !important;
+  }
+
+  .candidateName {
+    font-size: 14px !important;
+  }
+
+  .candidateTable :global(.ant-table-thead > tr > th) {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .candidateTable :global(.ant-table-tbody > tr > td) {
+    padding: 12px;
+  }
+
+  .viewProfileButton {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* Custom Scrollbar for Table */
+.candidateTable :global(.ant-table-body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-200) transparent;
+}
+
+.candidateTable :global(.ant-table-body::-webkit-scrollbar) {
+  height: 6px;
+}
+
+.candidateTable :global(.ant-table-body::-webkit-scrollbar-track) {
+  background: transparent;
+}
+
+.candidateTable :global(.ant-table-body::-webkit-scrollbar-thumb) {
+  background: var(--gray-200);
+  border-radius: 3px;
+}
+
+.candidateTable :global(.ant-table-body::-webkit-scrollbar-thumb:hover) {
+  background: var(--text-secondary);
+}

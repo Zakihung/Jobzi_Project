@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Layout, Row, Col, Typography, Space, Divider, Button } from "antd";
 import {
   MailOutlined,
@@ -10,26 +10,37 @@ import {
   XOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/auth.context";
 import styles from "../../styles/Footer.module.css";
 
 const { Footer: AntFooter } = Layout;
 const { Title, Text, Link } = Typography;
 
 const Footer = () => {
+  const { auth } = useContext(AuthContext);
+  const role = auth?.user?.role;
   const navigate = useNavigate();
 
-  const quickLinks = [
+  const quickLinksCandidate = [
     { label: "Trang chủ", path: "/" },
     { label: "Tìm kiếm việc làm", path: "/search" },
     { label: "Danh sách công ty", path: "/companies" },
   ];
 
-  const supportLinks = [
-    { label: "Trung tâm trợ giúp", path: "/help" },
-    { label: "Hướng dẫn sử dụng", path: "/guide" },
-    { label: "Chính sách bảo mật", path: "/privacy" },
-    { label: "Điều khoản dịch vụ", path: "/terms" },
+  const quickLinksEmployer = [
+    { label: "Tổng quan", path: "/employer" },
+    { label: "Việc làm", path: "/employer/jobs" },
+    { label: "Ứng viên", path: "/employer/candidates" },
+    { label: "Báo cáo", path: "/employer/reports" },
+    { label: "Công ty", path: "/employer/company" },
   ];
+
+  // const supportLinks = [
+  //   { label: "Trung tâm trợ giúp", path: "/help" },
+  //   { label: "Hướng dẫn sử dụng", path: "/guide" },
+  //   { label: "Chính sách bảo mật", path: "/privacy" },
+  //   { label: "Điều khoản dịch vụ", path: "/terms" },
+  // ];
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -40,7 +51,7 @@ const Footer = () => {
       <div className={styles.footerContainer}>
         <Row gutter={[32, 32]} justify={"center"}>
           {/* Column 1: Logo and Description */}
-          <Col xs={24} sm={12} lg={5}>
+          <Col xs={24} sm={24} lg={5}>
             <div className={styles.footerLogoSection}>
               <div className={styles.logoContainer}>
                 <img
@@ -59,47 +70,41 @@ const Footer = () => {
           </Col>
 
           {/* Column 2: Quick Links */}
-          <Col xs={24} sm={12} lg={3}>
-            <div className={styles.footerSection}>
-              <Title level={5} className={styles.footerTitle}>
-                Liên kết nhanh
-              </Title>
-              <Space direction="vertical" className={styles.footerLinks}>
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    className={styles.footerLink}
-                    onClick={() => handleNavigate(link.path)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </Space>
-            </div>
+          <Col xs={24} sm={12} lg={4}>
+            <Row justify="center">
+              <Col>
+                <div className={styles.footerSection}>
+                  <Title level={5} className={styles.footerTitle}>
+                    Liên kết nhanh
+                  </Title>
+                  <Space direction="vertical" className={styles.footerLinks}>
+                    {role === "candidate"
+                      ? quickLinksCandidate.map((link) => (
+                          <Link
+                            key={link.path}
+                            className={styles.footerLink}
+                            onClick={() => handleNavigate(link.path)}
+                          >
+                            {link.label}
+                          </Link>
+                        ))
+                      : quickLinksEmployer.map((link) => (
+                          <Link
+                            key={link.path}
+                            className={styles.footerLink}
+                            onClick={() => handleNavigate(link.path)}
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                  </Space>
+                </div>
+              </Col>
+            </Row>
           </Col>
 
-          {/* Column 3: Support Links */}
-          <Col xs={24} sm={12} lg={3}>
-            <div className={styles.footerSection}>
-              <Title level={5} className={styles.footerTitle}>
-                Hỗ trợ
-              </Title>
-              <Space direction="vertical" className={styles.footerLinks}>
-                {supportLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    className={styles.footerLink}
-                    onClick={() => handleNavigate(link.path)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </Space>
-            </div>
-          </Col>
-
-          {/* Column 4: Contact */}
-          <Col xs={24} sm={12} lg={7}>
+          {/* Column 3: Contact */}
+          <Col xs={24} sm={12} lg={8}>
             <div className={styles.footerSection}>
               <Title level={5} className={styles.footerTitle}>
                 Liên hệ
@@ -139,41 +144,45 @@ const Footer = () => {
               </Space>
             </div>
           </Col>
-          {/* Column 5: Social Media */}
-          <Col xs={24} sm={12} lg={4}>
-            <Title level={5} className={styles.socialTitle}>
-              Cộng đồng Jobzi
-            </Title>
-            <div className={styles.socialIcons}>
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<FacebookOutlined />}
-                className={styles.socialIcon}
-                style={{ backgroundColor: "#4267B2" }}
-              />
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<LinkedinOutlined />}
-                className={styles.socialIcon}
-                style={{ backgroundColor: "#0077B5" }}
-              />
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<XOutlined />}
-                className={styles.socialIcon}
-                style={{ backgroundColor: "#272c30" }}
-              />
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<InstagramOutlined />}
-                className={styles.socialIcon}
-                style={{ backgroundColor: "#E4405F" }}
-              />
-            </div>
+          {/* Column 4: Social Media */}
+          <Col xs={24} sm={24} lg={5}>
+            <Row justify="center">
+              <Col>
+                <Title level={5} className={styles.socialTitle}>
+                  Cộng đồng Jobzi
+                </Title>
+                <div className={styles.socialIcons}>
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon={<FacebookOutlined />}
+                    className={styles.socialIcon}
+                    style={{ backgroundColor: "#4267B2" }}
+                  />
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon={<LinkedinOutlined />}
+                    className={styles.socialIcon}
+                    style={{ backgroundColor: "#0077B5" }}
+                  />
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon={<XOutlined />}
+                    className={styles.socialIcon}
+                    style={{ backgroundColor: "#272c30" }}
+                  />
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon={<InstagramOutlined />}
+                    className={styles.socialIcon}
+                    style={{ backgroundColor: "#E4405F" }}
+                  />
+                </div>
+              </Col>
+            </Row>
           </Col>
         </Row>
         <Divider className={styles.footerDivider} />

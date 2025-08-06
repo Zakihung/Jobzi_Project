@@ -33,6 +33,7 @@ const JobTitleSection = ({
   sectionRefs,
   completedSections,
   setCompletedSections,
+  disabled,
 }) => {
   const maxLength = 100;
 
@@ -56,6 +57,7 @@ const JobTitleSection = ({
               placeholder="Nhập tiêu đề tin tuyển dụng"
               size="large"
               maxLength={maxLength}
+              disabled={disabled}
               onChange={(e) => {
                 field.onChange(e);
                 const value = e.target.value;

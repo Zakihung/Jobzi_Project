@@ -30,6 +30,8 @@ import { AuthWrapper } from "./contexts/auth.context.jsx";
 import JobEmployerPage from "./pages/employer/JobEmployerPage.jsx";
 import PostJobPage from "./pages/employer/PostJobPage.jsx";
 import CompanyDetailEmployerPage from "./pages/employer/CompanyDetailEmployerPage.jsx";
+import CandidateEmployerPage from "./pages/employer/CandidateEmployerPage.jsx";
+import JobPostDetailEmployerPage from "./pages/employer/JobPostDetailEmployerPage.jsx";
 
 // import EmployerJobPostListPage from "./pages/employer/EmployerJobPostListPage";
 // import EmployerJobPostDetailPage from "./pages/employer/EmployerJobPostDetailPage";
@@ -136,6 +138,14 @@ const router = createBrowserRouter([
       {
         path: "company",
         element: <CompanyDetailEmployerPage />,
+      },
+      {
+        path: "candidates",
+        element: <CandidateEmployerPage />,
+      },
+      {
+        path: "jobpost/:id",
+        element: <JobPostDetailEmployerPage />,
       },
     ],
   },

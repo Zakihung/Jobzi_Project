@@ -5,6 +5,7 @@ const {
   getJobPostsByEmployerIdService,
   getJobPostsByJobPositionIdService,
   updateJobPostService,
+  updateStatusJobPostService,
   deleteJobPostService,
   deleteAllJobPostsService,
 } = require("../services/job_post.service");
@@ -82,6 +83,17 @@ const updateJobPost = async (req, res, next) => {
   }
 };
 
+const updateStatusJobPost = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const data = await updateStatusJobPostService(id, status);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteJobPost = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -110,6 +122,7 @@ module.exports = {
   getJobPostsByEmployerId,
   getJobPostsByJobPositionId,
   updateJobPost,
+  updateStatusJobPost,
   deleteJobPost,
   deleteAllJobPosts,
 };

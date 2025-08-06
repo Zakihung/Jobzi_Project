@@ -1,8 +1,24 @@
-import React, { useEffect, useRef } from "react";
-import { Card, Typography, Select, Input, Button, Row, Col, Space } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Card,
+  Typography,
+  Select,
+  Input,
+  Button,
+  Row,
+  Col,
+  Space,
+  Popover,
+} from "antd";
 import { Controller } from "react-hook-form";
 import styled from "styled-components";
-import { MinusOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  MinusOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
+import useGetAllProvinceAlphabet from "../../../company/hooks/Province/useGetAllProvinceAlphabet";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -69,7 +85,41 @@ const NumberInputGroup = styled(Space.Compact)`
   }
 `;
 
-// Dữ liệu cho các Select
+const LocationTrigger = styled.div`
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  .location-text {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.88);
+  }
+
+  .arrow-icon {
+    margin-left: 8px;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  &.open .arrow-icon {
+    transform: rotate(180deg);
+  }
+`;
+
 const workTypeData = {
   full_time: "Toàn thời gian",
   part_time: "Bán thời gian",
@@ -108,13 +158,6 @@ const experienceLevelData = {
   expert: "Chuyên gia cao cấp (Principal / Expert)",
 };
 
-const provinceData = {
-  "Hồ Chí Minh": "Hồ Chí Minh",
-  "Hà Nội": "Hà Nội",
-  "Đà Nẵng": "Đà Nẵng",
-  "Cần Thơ": "Cần Thơ",
-};
-
 const salaryTypeData = {
   negotiable: "Thỏa thuận",
   range: "Khoảng lương",
@@ -133,8 +176,10 @@ const GeneralInfoSection = ({
   salary_type,
   watch,
   setValue,
+  disabled,
 }) => {
-  // Theo dõi tất cả các trường cần thiết
+  const { data: provincesData, isLoading: isProvinceLoading } =
+    useGetAllProvinceAlphabet();
   const watchedFields = watch([
     "number",
     "work_type",
@@ -147,8 +192,10 @@ const GeneralInfoSection = ({
     "max_salary_range",
   ]);
 
-  // Sử dụng ref để lưu trạng thái trước đó của isLocationValid
   const prevIsLocationValidRef = useRef(null);
+  const [popoverVisible, setPopoverVisible] = useState(
+    locations.map(() => false)
+  ); // State để quản lý Popover cho từng location
 
   useEffect(() => {
     if (salary_type === "negotiable") {
@@ -157,7 +204,6 @@ const GeneralInfoSection = ({
     }
   }, [salary_type, setValue]);
 
-  // Kiểm tra xem tất cả các trường đã được điền đầy đủ chưa
   useEffect(() => {
     const [
       number,
@@ -182,31 +228,29 @@ const GeneralInfoSection = ({
         max_salary_range !== "" &&
         max_salary_range > min_salary_range);
 
-    // Chỉ kiểm tra locations có dữ liệu hợp lệ, bỏ qua các location rỗng mới thêm
     const isLocationValid = locations.every(
-      (loc) =>
-        (!loc.province && !loc.address) ||
-        (loc.province && loc.address && loc.address.trim() !== "")
+      (loc) => loc.province && loc.address
     );
 
-    const isSectionComplete =
-      number &&
+    const isComplete =
+      number > 0 &&
       work_type &&
       gender &&
       experience_level &&
-      min_years_experience !== undefined &&
-      min_years_experience !== null &&
+      min_years_experience >= 0 &&
       role_organization &&
       salary_type &&
       isSalaryValid &&
-      isLocationValid &&
-      locations.some((loc) => loc.province && loc.address); // Đảm bảo ít nhất 1 location có dữ liệu
+      isLocationValid;
 
-    // Chỉ cập nhật completedSections nếu trạng thái hoàn thành thay đổi
-    if (isSectionComplete && !completedSections.includes("Thông tin chung")) {
+    if (
+      isComplete &&
+      !completedSections.includes("Thông tin chung") &&
+      isLocationValid
+    ) {
       setCompletedSections([...completedSections, "Thông tin chung"]);
     } else if (
-      !isSectionComplete &&
+      (!isComplete || !isLocationValid) &&
       completedSections.includes("Thông tin chung")
     ) {
       setCompletedSections(
@@ -214,9 +258,86 @@ const GeneralInfoSection = ({
       );
     }
 
-    // Cập nhật prevIsLocationValidRef
     prevIsLocationValidRef.current = isLocationValid;
   }, [watchedFields, locations, completedSections, setCompletedSections]);
+
+  const locationContent = (index) => (
+    <div
+      style={{
+        width: 520,
+        maxHeight: 300,
+        overflowY: "auto",
+        padding: "4px 12px",
+      }}
+    >
+      {provincesData?.map((group) => (
+        <div
+          key={group.letter}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px 12px",
+            paddingLeft: 12,
+            marginBottom: 12,
+          }}
+        >
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>{group.letter}</div>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px 12px",
+              paddingLeft: 12,
+            }}
+          >
+            {group.provinces.map((province) => (
+              <div
+                key={province.name}
+                style={{
+                  cursor: "pointer",
+                  color:
+                    locations[index].province === province.name
+                      ? "#577cf6"
+                      : "inherit",
+                  fontWeight:
+                    locations[index].province === province.name ? 600 : 400,
+                }}
+                onClick={() =>
+                  handleLocationChange(index, "province", province.name)
+                }
+                onMouseEnter={(e) => {
+                  if (locations[index].province !== province.name) {
+                    e.target.style.color = "#577cf6";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (locations[index].province !== province.name) {
+                    e.target.style.color = "inherit";
+                  }
+                }}
+              >
+                {province.name}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (isProvinceLoading) {
+    return (
+      <StyledCard ref={sectionRefs.generalInfo}>
+        <StyledTitle level={3}>Thông tin chung</StyledTitle>
+        <Input
+          size="large"
+          placeholder="Đang tải dữ liệu..."
+          disabled
+          style={{ width: "100%", marginBottom: 16 }}
+        />
+      </StyledCard>
+    );
+  }
 
   return (
     <StyledCard ref={sectionRefs.generalInfo}>
@@ -228,44 +349,31 @@ const GeneralInfoSection = ({
             name="number"
             control={control}
             rules={{
-              required: "Vui lòng nhập số lượng",
-              pattern: {
-                value: /^[1-9]\d*$/,
-                message: "Vui lòng nhập số nguyên dương",
-              },
+              required: "Vui lòng nhập số lượng tuyển",
+              min: { value: 1, message: "Số lượng phải lớn hơn 0" },
             }}
             render={({ field }) => (
               <NumberInputGroup>
                 <Button
                   icon={<MinusOutlined />}
-                  onClick={() => {
-                    const value = parseInt(field.value) || 1;
-                    if (value > 1) {
-                      field.onChange(value - 1);
-                    }
-                  }}
-                  size="large"
+                  onClick={() => field.onChange(Math.max(1, field.value - 1))}
+                  disabled={disabled || field.value <= 1}
                 />
                 <Input
                   {...field}
-                  value={field.value || ""}
-                  placeholder="Nhập số lượng"
-                  size="large"
-                  style={{ width: "100%" }}
+                  value={field.value}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
-                      field.onChange(value ? parseInt(value) : "");
+                      field.onChange(value ? parseInt(value) : 1);
                     }
                   }}
+                  disabled={disabled}
                 />
                 <Button
                   icon={<PlusOutlined />}
-                  onClick={() => {
-                    const value = parseInt(field.value) || 0;
-                    field.onChange(value + 1);
-                  }}
-                  size="large"
+                  onClick={() => field.onChange(field.value + 1)}
+                  disabled={disabled}
                 />
               </NumberInputGroup>
             )}
@@ -277,18 +385,19 @@ const GeneralInfoSection = ({
           <Controller
             name="work_type"
             control={control}
-            rules={{ required: "Vui lòng chọn hình thức" }}
+            rules={{ required: "Vui lòng chọn hình thức làm việc" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn hình thức"
+                placeholder="Chọn hình thức làm việc"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               >
-                {Object.entries(workTypeData).map(([value, label]) => (
-                  <Select.Option key={value} value={value}>
-                    {label}
-                  </Select.Option>
+                {Object.keys(workTypeData).map((type) => (
+                  <Option key={type} value={type}>
+                    {workTypeData[type]}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -302,17 +411,19 @@ const GeneralInfoSection = ({
           <Controller
             name="gender"
             control={control}
+            rules={{ required: "Vui lòng chọn giới tính" }}
             render={({ field }) => (
               <Select
                 {...field}
                 placeholder="Chọn giới tính"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               >
-                {Object.entries(genderData).map(([value, label]) => (
-                  <Select.Option key={value} value={value}>
-                    {label}
-                  </Select.Option>
+                {Object.keys(genderData).map((gender) => (
+                  <Option key={gender} value={gender}>
+                    {genderData[gender]}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -322,22 +433,23 @@ const GeneralInfoSection = ({
       </Row>
       <Row gutter={[12, 12]}>
         <Col span={8}>
-          <StyledSubTitle>Chức vụ tuyển</StyledSubTitle>
+          <StyledSubTitle>Cấp bậc</StyledSubTitle>
           <Controller
             name="role_organization"
             control={control}
-            rules={{ required: "Vui lòng chọn chức vụ" }}
+            rules={{ required: "Vui lòng chọn cấp bậc" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn chức vụ"
+                placeholder="Chọn cấp bậc"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               >
-                {Object.entries(roleOrganizationData).map(([value, label]) => (
-                  <Select.Option key={value} value={value}>
-                    {label}
-                  </Select.Option>
+                {Object.keys(roleOrganizationData).map((role) => (
+                  <Option key={role} value={role}>
+                    {roleOrganizationData[role]}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -347,22 +459,23 @@ const GeneralInfoSection = ({
           )}
         </Col>
         <Col span={8}>
-          <StyledSubTitle>Cấp độ chuyên môn</StyledSubTitle>
+          <StyledSubTitle>Kinh nghiệm</StyledSubTitle>
           <Controller
             name="experience_level"
             control={control}
-            rules={{ required: "Vui lòng chọn cấp độ" }}
+            rules={{ required: "Vui lòng chọn cấp độ kinh nghiệm" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn cấp độ"
+                placeholder="Chọn cấp độ kinh nghiệm"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               >
-                {Object.entries(experienceLevelData).map(([value, label]) => (
-                  <Select.Option key={value} value={value}>
-                    {label}
-                  </Select.Option>
+                {Object.keys(experienceLevelData).map((level) => (
+                  <Option key={level} value={level}>
+                    {experienceLevelData[level]}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -372,53 +485,36 @@ const GeneralInfoSection = ({
           )}
         </Col>
         <Col span={8}>
-          <StyledSubTitle>Số năm kinh nghiệm tối thiểu</StyledSubTitle>
+          <StyledSubTitle>Số năm kinh nghiệm</StyledSubTitle>
           <Controller
             name="min_years_experience"
             control={control}
             rules={{
-              required: "Vui lòng nhập số năm",
-              pattern: {
-                value: /^\d+$/,
-                message: "Vui lòng nhập số nguyên không âm",
-              },
+              required: "Vui lòng nhập số năm kinh nghiệm",
+              min: { value: 0, message: "Số năm kinh nghiệm không được âm" },
             }}
             render={({ field }) => (
               <NumberInputGroup>
                 <Button
                   icon={<MinusOutlined />}
-                  onClick={() => {
-                    const value = parseInt(field.value) || 0;
-                    if (value > 0) {
-                      field.onChange(value - 1);
-                    }
-                  }}
-                  size="large"
+                  onClick={() => field.onChange(Math.max(0, field.value - 1))}
+                  disabled={disabled || field.value <= 0}
                 />
                 <Input
                   {...field}
-                  value={
-                    field.value === undefined || field.value === null
-                      ? ""
-                      : field.value
-                  }
-                  placeholder="Nhập số năm tối thiểu"
-                  size="large"
-                  style={{ width: "100%" }}
+                  value={field.value}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
-                      field.onChange(value ? parseInt(value) : "");
+                      field.onChange(value ? parseInt(value) : 0);
                     }
                   }}
+                  disabled={disabled}
                 />
                 <Button
                   icon={<PlusOutlined />}
-                  onClick={() => {
-                    const value = parseInt(field.value) || 0;
-                    field.onChange(value + 1);
-                  }}
-                  size="large"
+                  onClick={() => field.onChange(field.value + 1)}
+                  disabled={disabled}
                 />
               </NumberInputGroup>
             )}
@@ -430,22 +526,23 @@ const GeneralInfoSection = ({
       </Row>
       <Row gutter={[12, 12]}>
         <Col span={8}>
-          <StyledSubTitle>Kiểu lương</StyledSubTitle>
+          <StyledSubTitle>Loại lương</StyledSubTitle>
           <Controller
             name="salary_type"
             control={control}
-            rules={{ required: "Vui lòng chọn kiểu lương" }}
+            rules={{ required: "Vui lòng chọn loại lương" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn kiểu lương"
+                placeholder="Chọn loại lương"
                 size="large"
                 style={{ width: "100%", marginBottom: 16 }}
+                disabled={disabled}
               >
-                {Object.entries(salaryTypeData).map(([value, label]) => (
-                  <Select.Option key={value} value={value}>
-                    {label}
-                  </Select.Option>
+                {Object.keys(salaryTypeData).map((type) => (
+                  <Option key={type} value={type}>
+                    {salaryTypeData[type]}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -455,22 +552,25 @@ const GeneralInfoSection = ({
           )}
         </Col>
         <Col span={8}>
-          <StyledSubTitle>&nbsp;</StyledSubTitle>
+          <StyledSubTitle>Lương tối thiểu</StyledSubTitle>
           <Controller
             name="min_salary_range"
             control={control}
             rules={{
-              validate: (value) =>
-                salary_type !== "range" || value
-                  ? true
-                  : "Vui lòng nhập lương tối thiểu",
+              validate: (value, formValues) => {
+                if (salary_type !== "range") return true;
+                if (value === undefined || value === null || value === "") {
+                  return "Vui lòng nhập lương tối thiểu";
+                }
+                return true;
+              },
             }}
             render={({ field }) => (
               <Input
                 {...field}
                 placeholder="Lương tối thiểu (triệu)"
                 size="large"
-                disabled={salary_type !== "range"}
+                disabled={disabled || salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -487,7 +587,7 @@ const GeneralInfoSection = ({
           )}
         </Col>
         <Col span={8}>
-          <StyledSubTitle>&nbsp;</StyledSubTitle>
+          <StyledSubTitle>Lương tối đa</StyledSubTitle>
           <Controller
             name="max_salary_range"
             control={control}
@@ -497,7 +597,6 @@ const GeneralInfoSection = ({
                 if (value === undefined || value === null || value === "") {
                   return "Vui lòng nhập lương tối đa";
                 }
-                // Sửa: Kiểm tra max_salary_range > min_salary_range
                 if (
                   formValues.min_salary_range !== undefined &&
                   formValues.min_salary_range !== null &&
@@ -513,7 +612,7 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Lương tối đa (triệu)"
                 size="large"
-                disabled={salary_type !== "range"}
+                disabled={disabled || salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -535,21 +634,33 @@ const GeneralInfoSection = ({
         <LocationItem key={index}>
           <Row gutter={[12, 12]} align="middle">
             <Col span={8}>
-              <Select
-                placeholder="Chọn tỉnh/thành phố"
-                value={location.province || null}
-                onChange={(value) =>
-                  handleLocationChange(index, "province", value)
-                }
-                size="large"
-                style={{ width: "100%" }}
+              <Popover
+                content={locationContent(index)}
+                trigger="click"
+                placement="bottomLeft"
+                arrow={false}
+                getPopupContainer={() => document.body}
+                open={popoverVisible[index]} // Sử dụng state để quản lý trạng thái mở
+                onOpenChange={(visible) => {
+                  setPopoverVisible((prev) => {
+                    const newVisible = [...prev];
+                    newVisible[index] = visible; // Cập nhật trạng thái Popover
+                    return newVisible;
+                  });
+                }}
+                disabled={disabled} // Thêm disabled cho Popover
               >
-                {Object.keys(provinceData).map((province) => (
-                  <Option key={province} value={province}>
-                    {provinceData[province]}
-                  </Option>
-                ))}
-              </Select>
+                <LocationTrigger
+                  style={
+                    disabled ? { pointerEvents: "none", opacity: 0.6 } : {}
+                  }
+                >
+                  <span className="location-text">
+                    {location.province || "Chọn tỉnh/thành phố"}
+                  </span>
+                  <DownOutlined className="arrow-icon" />
+                </LocationTrigger>
+              </Popover>
             </Col>
             <Col span={index === 0 ? 16 : 14}>
               <Input
@@ -561,6 +672,7 @@ const GeneralInfoSection = ({
                 }
                 size="large"
                 style={{ width: "100%" }}
+                disabled={disabled}
               />
             </Col>
             {index > 0 && (
@@ -570,6 +682,7 @@ const GeneralInfoSection = ({
                   onClick={() => removeLocation(index)}
                   size="large"
                   danger
+                  disabled={disabled}
                 />
               </Col>
             )}
@@ -580,7 +693,7 @@ const GeneralInfoSection = ({
         type="primary"
         icon={<PlusOutlined />}
         onClick={addLocation}
-        disabled={locations.length >= 3}
+        disabled={disabled || locations.length >= 3}
       >
         Thêm khu vực làm việc
       </Button>

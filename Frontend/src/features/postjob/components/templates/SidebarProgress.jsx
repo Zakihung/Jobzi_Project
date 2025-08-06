@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, List, Typography, Button, Divider } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const { Text } = Typography;
@@ -37,7 +38,29 @@ const IncompleteIcon = styled(CloseCircleOutlined)`
   margin-right: 8px;
 `;
 
-const SidebarProgress = ({ completedSections, allSections, onSubmit }) => {
+const SaveButton = styled(Button)`
+  background-color: #10b981;
+  border-color: #10b981;
+  color: white;
+
+  &:hover {
+    background-color: #34d399 !important;
+    border-color: #34d399 !important;
+    color: white;
+  }
+`;
+
+const SidebarProgress = ({
+  completedSections,
+  allSections,
+  onSubmit,
+  onEdit,
+  isEditing,
+}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isPostJobPage = location.pathname === "/employer/postjob";
+
   return (
     <StickyMenu>
       <StyledCard>
@@ -65,9 +88,39 @@ const SidebarProgress = ({ completedSections, allSections, onSubmit }) => {
           )}
         />
         <Divider style={{ margin: "0 0 10px" }} />
-        <Button type="primary" block onClick={onSubmit}>
-          Đăng tuyển dụng
-        </Button>
+        {isPostJobPage ? (
+          <Button type="primary" block onClick={onSubmit}>
+            Đăng tuyển dụng
+          </Button>
+        ) : (
+          <Button type="primary" block onClick={onEdit}>
+            {isEditing ? "Hủy chỉnh sửa" : "Chỉnh sửa"}
+          </Button>
+        )}
+        {isEditing && !isPostJobPage && (
+          <>
+            <Divider style={{ margin: "10px 0" }} />
+            <SaveButton type="primary" block onClick={onSubmit}>
+              Lưu
+            </SaveButton>
+          </>
+        )}
+        {!isPostJobPage && (
+          <>
+            <Divider style={{ margin: "10px 0" }} />
+            <Button block onClick={() => navigate("/employer/jobs")}>
+              Về trang Danh sách việc làm
+            </Button>
+          </>
+        )}
+        {isPostJobPage && (
+          <>
+            <Divider style={{ margin: "10px 0" }} />
+            <Button block onClick={() => navigate("/employer")}>
+              Trở về trang chủ
+            </Button>
+          </>
+        )}
       </StyledCard>
     </StickyMenu>
   );

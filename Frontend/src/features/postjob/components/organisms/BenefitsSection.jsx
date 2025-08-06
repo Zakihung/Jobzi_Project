@@ -43,12 +43,12 @@ const StyledSubTitle = styled(Title)`
   }
 `;
 
-const BenefitsSection = ({ editor, errors, sectionRefs }) => {
+const BenefitsSection = ({ editor, errors, sectionRefs, disabled }) => {
   return (
     <StyledCard ref={sectionRefs.benefits}>
       <StyledTitle level={3}>Quyền lợi ứng viên</StyledTitle>
       <StyledSubTitle>Mô tả quyền lợi ứng viên</StyledSubTitle>
-      <TextEditor editor={editor} />
+      <TextEditor editor={editor} disabled={disabled} />
       {errors.benefits && <Text type="danger">{errors.benefits.message}</Text>}
     </StyledCard>
   );
