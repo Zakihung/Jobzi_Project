@@ -261,6 +261,7 @@ const JobPostDetailPage = () => {
               onSubmit={handleSubmitApplication}
               isSubmitting={isSubmitting}
               hasOnlineResume={!!onlineResume}
+              onlineResume={onlineResume}
             />
             <ResumeAnalysisModal
               visible={analysisModalVisible}

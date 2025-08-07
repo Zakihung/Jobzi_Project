@@ -71,7 +71,7 @@ const PreviewCVModal = ({ visible, onCancel, previewUrl }) => {
 
   return (
     <StyledModal
-      title="Xem trước CV"
+      title="Xem tệp CV"
       open={visible}
       onCancel={onCancel}
       footer={null}

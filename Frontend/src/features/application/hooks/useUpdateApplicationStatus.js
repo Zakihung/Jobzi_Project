@@ -9,7 +9,6 @@ const useUpdateApplicationStatus = () => {
   return useMutation({
     mutationFn: ({ id, status }) => updateApplicationStatusApi({ id, status }),
     onSuccess: () => {
-      message.success("Cập nhật trạng thái ứng tuyển thành công!");
       queryClient.invalidateQueries(["applications"]);
       queryClient.invalidateQueries(["applicationsByCandidate"]);
     },

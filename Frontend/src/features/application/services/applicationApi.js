@@ -42,10 +42,24 @@ const getApplicationsByCandidateIdApi = (candidate_id) => {
   return axios.get(URL_API);
 };
 
+// Lấy danh sách ứng tuyển theo job_post_id
+const getApplicationsByJobPostIdApi = (job_post_id) => {
+  const URL_API = `/api/application/job-post/${job_post_id}`;
+  return axios.get(URL_API);
+};
+
+// Lấy số lượng ứng tuyển theo job_post_id
+const getNumberOfApplicationByJobPostIdApi = (job_post_id) => {
+  const URL_API = `/api/application/job-post/${job_post_id}/count`;
+  return axios.get(URL_API);
+};
+
 export {
   createApplicationApi,
   getListApplicationApi,
   getApplicationByIdApi,
+  getApplicationsByJobPostIdApi,
+  getNumberOfApplicationByJobPostIdApi,
   updateApplicationStatusApi,
   deleteApplicationApi,
   deleteAllApplicationsApi,

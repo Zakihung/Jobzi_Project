@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Card, Avatar, Typography, Button, Modal, Tag, Skeleton } from "antd";
+import {
+  Card,
+  Avatar,
+  Typography,
+  Button,
+  Modal,
+  Tag,
+  Skeleton,
+  App,
+} from "antd";
 import {
   InfoCircleOutlined,
   MailOutlined,
@@ -16,9 +25,8 @@ import {
 import styled from "styled-components";
 import useGetCompanyById from "../../../company/hooks/Company/useGetCompanyById";
 import useDeleteApplication from "../../../application/hooks/useDeleteApplication";
+import useUpdateApplicationStatus from "../../../application/hooks/useUpdateApplicationStatus";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../../contexts/auth.context";
-import { App } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -205,6 +213,17 @@ const ViewDetailBtn = styled(ActionBtn)`
   }
 `;
 
+const WithdrawBtn = styled(ActionBtn)`
+  border-color: #8c8c8c !important;
+  color: #8c8c8c !important;
+
+  &:hover {
+    border-color: #595959 !important;
+    color: #595959 !important;
+    background: #f5f5f5 !important;
+  }
+`;
+
 const WarningText = styled.div`
   background: #fff7e6;
   border: 1px solid #ffd591;
@@ -262,7 +281,7 @@ const getStatusConfig = (status) => {
       background: "#f0f0f0", // đậm hơn #f5f5f5
       border: "#bfbfbf", // đậm hơn #d9d9d9
       icon: <MinusCircleOutlined />,
-      text: "Đã rút đơn",
+      text: "Đã rút hồ sơ",
     },
   };
 
@@ -288,21 +307,26 @@ const getStatusDescription = (status) => {
     case "rejected":
       return "Rất tiếc! Đơn ứng tuyển của bạn chưa được chọn.";
     case "withdrawn":
-      return "Bạn đã rút lại đơn ứng tuyển này.";
+      return "Bạn đã rút đơn ứng tuyển cho công việc này.";
     default:
       return "Trạng thái không xác định.";
   }
 };
 
 const ApplicationCard = ({ application }) => {
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const { data: companyData, isLoading } = useGetCompanyById(
     application.job_post_id?.employer_id?.company_id
   );
   const { mutate: deleteApplication, isLoading: isDeleting } =
     useDeleteApplication();
+  const { mutate: updateApplicationStatus, isLoading: isUpdatingStatus } =
+    useUpdateApplicationStatus();
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [cannotCancelModalVisible, setCannotCancelModalVisible] =
+    useState(false);
+  const [confirmWithdrawModalVisible, setConfirmWithdrawModalVisible] =
     useState(false);
 
   // Kiểm tra xem đơn ứng tuyển có trong 24 giờ hay không
@@ -347,10 +371,32 @@ const ApplicationCard = ({ application }) => {
     });
   };
 
+  const handleWithdrawApplication = (e) => {
+    e.stopPropagation();
+    setConfirmWithdrawModalVisible(true);
+  };
+
+  const handleConfirmWithdraw = (e) => {
+    e.stopPropagation();
+    updateApplicationStatus(
+      { id: application._id, status: "withdrawn" },
+      {
+        onSuccess: () => {
+          message.success("Rút hồ sơ thành công");
+          setConfirmWithdrawModalVisible(false);
+        },
+        onError: () => {
+          setConfirmWithdrawModalVisible(false);
+        },
+      }
+    );
+  };
+
   const handleModalCancel = (e) => {
     e.stopPropagation();
     setConfirmModalVisible(false);
     setCannotCancelModalVisible(false);
+    setConfirmWithdrawModalVisible(false);
   };
 
   const handleNavigate = () => {
@@ -413,10 +459,19 @@ const ApplicationCard = ({ application }) => {
           <ViewDetailBtn onClick={handleNavigate}>
             Xem chi tiết tin
           </ViewDetailBtn>
-          {isWithin24Hours() && (
+          {isWithin24Hours() ? (
             <ActionBtn onClick={handleCancelApplication} loading={isDeleting}>
               Hủy ứng tuyển
             </ActionBtn>
+          ) : (
+            application.status !== "withdrawn" && (
+              <WithdrawBtn
+                onClick={handleWithdrawApplication}
+                loading={isUpdatingStatus}
+              >
+                Rút hồ sơ
+              </WithdrawBtn>
+            )
           )}
         </div>
       </ApplicationHeader>
@@ -495,8 +550,8 @@ const ApplicationCard = ({ application }) => {
         {/* Cảnh báo 24h */}
         {isWithin24Hours() && (
           <WarningText>
-            Bạn chỉ có thể hủy ứng tuyển trong vòng 24 giờ kể từ khi gửi CV. Vui
-            lòng liên hệ người nhận CV nếu cần hỗ trợ.
+            Bạn chỉ có thể hủy ứng tuyển trong vòng 24 giờ kể từ khi gửi CV. Sau
+            thời gian trên bạn có thể rút hồ sơ nếu muốn.
           </WarningText>
         )}
       </ApplicationDetails>
@@ -526,6 +581,18 @@ const ApplicationCard = ({ application }) => {
           Bạn chỉ có thể hủy ứng tuyển trong vòng 24 giờ kể từ khi gửi CV. Vui
           lòng liên hệ nhà tuyển dụng nếu cần hỗ trợ.
         </p>
+      </Modal>
+      <Modal
+        title="Xác nhận rút hồ sơ"
+        open={confirmWithdrawModalVisible}
+        onOk={handleConfirmWithdraw}
+        onCancel={handleModalCancel}
+        okText="Rút hồ sơ"
+        cancelText="Hủy"
+        okButtonProps={{ danger: true }}
+        wrapProps={{ onClick: (e) => e.stopPropagation() }}
+      >
+        <p>Bạn có chắc chắn muốn rút hồ sơ ứng tuyển công việc này?</p>
       </Modal>
     </ApplicationCardWrapper>
   );

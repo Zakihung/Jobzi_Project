@@ -152,7 +152,7 @@ const JobEmployerPage = () => {
               <div className={styles.expiredNote}>
                 <Text type="danger">
                   Tin này đã hết hạn, để gia hạn hiển thị tin vui lòng nhấn{" "}
-                  <strong>"Xem và chỉnh sửa"</strong> và thay đổi thời gian nhận
+                  <strong>"Xem/Chỉnh sửa"</strong> và thay đổi thời gian nhận
                   CV.
                 </Text>
               </div>
@@ -184,7 +184,7 @@ const JobEmployerPage = () => {
             checkedChildren="Hiển thị"
             unCheckedChildren="Ẩn"
             className={styles.statusSwitch}
-            disabled={isUpdating}
+            disabled={isUpdating || record.daysLeft <= 0}
           />
           <div className={styles.statusText}>
             <Text type={record.status === "active" ? "success" : "secondary"}>

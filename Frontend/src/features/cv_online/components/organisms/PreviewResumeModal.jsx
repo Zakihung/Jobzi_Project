@@ -306,9 +306,7 @@ const PreviewResumeModal = ({
 
   return (
     <StyledModal
-      title={
-        <div style={{ textAlign: "center" }}>Xem trước hồ sơ trực tuyến</div>
-      }
+      title={<div style={{ textAlign: "center" }}>Xem hồ sơ trực tuyến</div>}
       open={isModalVisible}
       onCancel={handleCancel}
       footer={null}

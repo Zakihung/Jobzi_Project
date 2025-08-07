@@ -2,6 +2,8 @@ const {
   createApplicationService,
   getListApplicationService,
   getApplicationByIdService,
+  getApplicationsByJobPostIdService,
+  getNumberOfApplicationByJobPostIdService,
   updateApplicationStatusService,
   deleteApplicationService,
   deleteAllApplicationsService,
@@ -37,6 +39,26 @@ const getApplicationById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const data = await getApplicationByIdService(id);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getNumberOfApplicationByJobPostId = async (req, res, next) => {
+  try {
+    const { job_post_id } = req.params;
+    const data = await getNumberOfApplicationByJobPostIdService(job_post_id);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getApplicationsByJobPostId = async (req, res, next) => {
+  try {
+    const { job_post_id } = req.params;
+    const data = await getApplicationsByJobPostIdService(job_post_id);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -87,6 +109,8 @@ module.exports = {
   createApplication,
   getListApplication,
   getApplicationById,
+  getApplicationsByJobPostId,
+  getNumberOfApplicationByJobPostId,
   updateApplicationStatus,
   deleteApplication,
   deleteAllApplications,

@@ -76,6 +76,59 @@ const getApplicationByIdService = async (application_id) => {
   return application;
 };
 
+const getApplicationsByJobPostIdService = async (job_post_id) => {
+  if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
+    throw new AppError("ID job_post không hợp lệ", 400);
+  }
+
+  let result = await Application.find({ job_post_id })
+    .populate("resume_file_id online_resume_id")
+    .populate({
+      path: "candidate_id",
+      populate: [{ path: "user_id" }],
+    })
+    .populate({
+      path: "job_post_id",
+      populate: [{ path: "employer_id" }, { path: "job_position_id" }],
+    });
+
+  result = await Promise.all(
+    result.map(async (application) => {
+      const appObj = application.toObject();
+
+      if (appObj.job_post_id?._id) {
+        const skills = await getSkillsRequirementByJobPostIdService(
+          appObj.job_post_id._id
+        ).catch(() => []);
+        appObj.job_post_id.skills = skills.map(
+          (skill) => skill.skills_requirement_id.name
+        );
+
+        const locations = await getWorkAddressByJobPostIdService(
+          appObj.job_post_id._id
+        ).catch(() => []);
+        appObj.job_post_id.locations = locations.map((location) => ({
+          address: location.work_address_id.address,
+          province: location.work_address_id.province_id.name,
+        }));
+      }
+
+      return appObj;
+    })
+  );
+
+  return result;
+};
+
+const getNumberOfApplicationByJobPostIdService = async (job_post_id) => {
+  if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
+    throw new AppError("ID job_post không hợp lệ", 400);
+  }
+
+  const count = await Application.countDocuments({ job_post_id });
+  return { job_post_id, count };
+};
+
 const updateApplicationStatusService = async (application_id, status) => {
   if (
     !status ||
@@ -155,6 +208,8 @@ module.exports = {
   createApplicationService,
   getListApplicationService,
   getApplicationByIdService,
+  getApplicationsByJobPostIdService,
+  getNumberOfApplicationByJobPostIdService,
   updateApplicationStatusService,
   deleteApplicationService,
   deleteAllApplicationsService,

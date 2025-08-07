@@ -46,6 +46,12 @@ const LoadingText = styled(Text)`
   color: #1a1a1a;
 `;
 
+const FooterWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+`;
+
 const ApplyJobModal = ({
   visible,
   onCancel,
@@ -53,8 +59,9 @@ const ApplyJobModal = ({
   onSubmit,
   isSubmitting,
   hasOnlineResume,
+  onlineResume,
 }) => {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const [selectedCV, setSelectedCV] = useState(null);
   const [newFile, setNewFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
@@ -75,6 +82,20 @@ const ApplyJobModal = ({
     }
   };
 
+  const checkOnlineResumeFields = () => {
+    if (!onlineResume?.data) return 0;
+    const fields = [
+      onlineResume.data.jobExpectations,
+      onlineResume.data.education,
+      onlineResume.data.highlights,
+      onlineResume.data.workExperience,
+      onlineResume.data.projects,
+      onlineResume.data.skills,
+    ];
+    return fields.filter((field) => Array.isArray(field) && field.length > 0)
+      .length;
+  };
+
   const handleSubmit = async () => {
     if (!selectedCV) {
       message.error("Vui lòng chọn một CV để ứng tuyển!");
@@ -83,6 +104,39 @@ const ApplyJobModal = ({
     if (selectedCV === "new" && !newFile) {
       message.error("Vui lòng chọn file CV mới trước khi gửi!");
       return;
+    }
+    if (selectedCV === "online") {
+      const nonEmptyFields = checkOnlineResumeFields();
+      if (nonEmptyFields < 2) {
+        const modalInstance = modal.warning({
+          title: "Thông tin CV trực tuyến chưa đủ",
+          content: (
+            <div>
+              Vui lòng bổ sung thông tin vào CV trực tuyến để có thể ứng tuyển
+              bằng hình thức này!
+            </div>
+          ),
+          centered: true,
+          footer: (
+            <FooterWrapper>
+              <Button key="cancel" onClick={() => modalInstance.destroy()}>
+                Đóng
+              </Button>
+              <Button
+                key="fillMore"
+                type="primary"
+                onClick={() => {
+                  modalInstance.destroy();
+                  navigate("/online-resume");
+                }}
+              >
+                Bổ sung ngay
+              </Button>
+            </FooterWrapper>
+          ),
+        });
+        return;
+      }
     }
 
     try {
