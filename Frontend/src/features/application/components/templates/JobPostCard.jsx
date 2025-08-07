@@ -23,6 +23,8 @@ import styled from "styled-components";
 import useGetApplicationsByJobPostId from "../../hooks/useGetApplicationsByJobPostId";
 import useGetNumberOfApplicationByJobPostId from "../../hooks/useGetNumberOfApplicationByJobPostId";
 import useUpdateApplicationStatus from "../../hooks/useUpdateApplicationStatus";
+import useGetOnlineResume from "../../../cv_online/hooks/useGetOnlineResume";
+import PreviewResumeModal from "../../../cv_online/components/organisms/PreviewResumeModal";
 import PreviewCVModal from "../../../candidate/components/organisms/PreviewCVModal";
 import { useState } from "react";
 
@@ -293,6 +295,13 @@ const JobPostCard = ({ job }) => {
     useUpdateApplicationStatus();
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [previewFileUrl, setPreviewFileUrl] = useState("");
+  const [isResumeModalVisible, setIsResumeModalVisible] = useState(false);
+  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const {
+    data: resumeData,
+    isLoading: isLoadingResumeData,
+    isError: isErrorResumeData,
+  } = useGetOnlineResume(selectedCandidateId);
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
     applicationId: null,
@@ -307,7 +316,13 @@ const JobPostCard = ({ job }) => {
     return supportedFormats.includes(extension) || isRawFile;
   };
 
-  const handleViewProfile = (applicationId, profileUrl, status) => {
+  const handleViewProfile = (
+    applicationId,
+    profileUrl,
+    status,
+    candidateId,
+    profileType
+  ) => {
     if (status === "pending") {
       updateApplicationStatus(
         { id: applicationId, status: "reviewed" },
@@ -319,7 +334,10 @@ const JobPostCard = ({ job }) => {
       );
     }
 
-    if (isPreviewable(profileUrl)) {
+    if (profileType === "online") {
+      setSelectedCandidateId(candidateId);
+      setIsResumeModalVisible(true);
+    } else if (isPreviewable(profileUrl)) {
       setPreviewFileUrl(profileUrl);
       setIsPreviewModalVisible(true);
     } else {
@@ -330,6 +348,11 @@ const JobPostCard = ({ job }) => {
   const handlePreviewModalCancel = () => {
     setIsPreviewModalVisible(false);
     setPreviewFileUrl("");
+  };
+
+  const handleResumeModalCancel = () => {
+    setIsResumeModalVisible(false);
+    setSelectedCandidateId(null);
   };
 
   const handleStatusAction = (applicationId, action) => {
@@ -517,7 +540,13 @@ const JobPostCard = ({ job }) => {
           }
           size="small"
           onClick={() =>
-            handleViewProfile(record.id, record.profileUrl, record.status)
+            handleViewProfile(
+              record.id,
+              record.profileUrl,
+              record.status,
+              record.candidateId,
+              record.profileType
+            )
           }
           disabled={
             record.status === "withdrawn" || record.status === "rejected"
@@ -544,6 +573,7 @@ const JobPostCard = ({ job }) => {
       status: app?.status || "pending",
       profileUrl: app?.resume_file_id?.path || "#",
       profileType: app?.resume_file_id ? "pdf" : "online",
+      candidateId: app?.candidate_id?._id,
     })) || [];
 
   if (isApplicationsLoading || isCountLoading) {
@@ -583,6 +613,13 @@ const JobPostCard = ({ job }) => {
         visible={isPreviewModalVisible}
         onCancel={handlePreviewModalCancel}
         previewUrl={previewFileUrl}
+      />
+      <PreviewResumeModal
+        isModalVisible={isResumeModalVisible}
+        handleCancel={handleResumeModalCancel}
+        resumeData={resumeData}
+        isLoadingResumeData={isLoadingResumeData}
+        isErrorResumeData={isErrorResumeData}
       />
       <Modal
         title={
