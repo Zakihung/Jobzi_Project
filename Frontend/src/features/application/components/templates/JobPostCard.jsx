@@ -8,6 +8,7 @@ import {
   Avatar,
   App,
   Modal,
+  Skeleton,
 } from "antd";
 import {
   UserOutlined,
@@ -38,10 +39,18 @@ const JobCard = styled(Card)`
   background: #ffffff;
   padding: 24px;
   margin-bottom: 24px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (max-width: 992px) {
+    padding: 20px;
+    margin: 0 16px 16px;
+  }
 
   @media (max-width: 576px) {
     padding: 16px;
-    margin: 0 8px;
+    margin: 0 8px 12px;
   }
 `;
 
@@ -56,7 +65,7 @@ const CardHeader = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 12px;
   }
 `;
 
@@ -66,7 +75,7 @@ const JobTitle = styled(Title)`
   font-weight: 600 !important;
   margin: 0 !important;
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     font-size: 24px !important;
   }
 
@@ -81,6 +90,10 @@ const CandidateCount = styled(Text)`
 
   @media (max-width: 768px) {
     font-size: 14px;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 13px;
   }
 `;
 
@@ -102,7 +115,7 @@ const CandidateTable = styled(Table)`
     color: #1a1a1a;
     padding: 16px 20px;
 
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
       font-size: 14px;
       padding: 12px 16px;
     }
@@ -118,7 +131,7 @@ const CandidateTable = styled(Table)`
     border-bottom: 1px solid #f0f0f0;
     vertical-align: top;
 
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
       padding: 16px;
     }
 
@@ -152,6 +165,13 @@ const CandidateTable = styled(Table)`
       background: #666;
     }
   }
+
+  @media (max-width: 768px) {
+    .ant-table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
 `;
 
 const CandidateInfo = styled.div`
@@ -159,7 +179,7 @@ const CandidateInfo = styled.div`
   align-items: center;
   gap: 12px;
 
-  @media (max-width: 1200px) {
+  @media (max-width: 992px) {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -171,7 +191,7 @@ const CandidateName = styled(Title)`
   font-weight: 600 !important;
   margin: 0 !important;
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     font-size: 16px !important;
   }
 
@@ -189,6 +209,10 @@ const ContactInfo = styled.div`
 const ContactIcon = styled(MailOutlined)`
   color: #577cf6;
   font-size: 14px;
+
+  @media (max-width: 576px) {
+    font-size: 12px;
+  }
 `;
 
 const ApplicationInfo = styled.div`
@@ -274,14 +298,35 @@ const ViewProfileButton = styled(Button)`
   font-weight: 500;
   padding: 16px 12px;
 
-  @media (max-width: 1200px) {
+  @media (max-width: 992px) {
     width: auto;
-    min-width: 120px;
+    min-width: 100px;
+    padding: 8px 12px;
   }
 
   @media (max-width: 576px) {
     font-size: 11px;
     padding: 4px 8px;
+  }
+`;
+
+const SkeletonWrapper = styled.div`
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (max-width: 992px) {
+    padding: 20px;
+    margin: 0 16px 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 16px;
+    margin: 0 8px 12px;
   }
 `;
 
@@ -577,7 +622,11 @@ const JobPostCard = ({ job }) => {
     })) || [];
 
   if (isApplicationsLoading || isCountLoading) {
-    return <JobCard>Đang tải dữ liệu ứng tuyển...</JobCard>;
+    return (
+      <SkeletonWrapper>
+        <Skeleton active paragraph={{ rows: 4 }} />
+      </SkeletonWrapper>
+    );
   }
 
   return (

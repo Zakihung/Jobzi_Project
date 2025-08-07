@@ -10,10 +10,15 @@ import useGetFilteredJobPosts from "../../../postjob/hooks/Job_Post/useGetFilter
 const { Title, Text } = Typography;
 
 const FeaturedJobsSectionWrapper = styled.section`
-  padding: 2rem;
-  margin-top: 2rem;
+  padding: 1rem;
+  margin-top: 1rem;
   background: #f8f9fa;
-  border-radius: 24px;
+  border-radius: 16px;
+  @media (min-width: 768px) {
+    padding: 2rem;
+    margin-top: 2rem;
+    border-radius: 24px;
+  }
 `;
 
 const SectionContainer = styled.div`
@@ -25,9 +30,13 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #f0f0f0;
+  @media (min-width: 768px) {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
 `;
 
 const SectionTitleGroup = styled.div`
@@ -37,25 +46,36 @@ const SectionTitleGroup = styled.div`
 const SectionTitle = styled(Title)`
   && {
     color: #1a1a1a !important;
-    font-size: 36px !important;
+    font-size: 24px !important;
     font-weight: 700 !important;
     margin: 0 !important;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    @media (min-width: 768px) {
+      font-size: 36px !important;
+      gap: 12px;
+    }
   }
 `;
 
 const SectionIcon = styled(FireOutlined)`
   color: #577cf6;
-  font-size: 32px;
+  font-size: 24px;
+  @media (min-width: 768px) {
+    font-size: 32px;
+  }
 `;
 
 const SectionSubtitle = styled(Text)`
   color: #666;
-  font-size: 16px;
-  margin-top: 8px;
+  font-size: 14px;
+  margin-top: 4px;
   display: block;
+  @media (min-width: 768px) {
+    font-size: 16px;
+    margin-top: 8px;
+  }
 `;
 
 const ViewAllBtn = styled(Button)`
@@ -63,8 +83,8 @@ const ViewAllBtn = styled(Button)`
     color: #577cf6 !important;
     border-color: #577cf6 !important;
     font-weight: 600;
-    height: 40px;
-    padding: 0 20px;
+    height: 32px;
+    padding: 0 16px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -73,11 +93,18 @@ const ViewAllBtn = styled(Button)`
       background: #577cf6 !important;
       color: #ffffff !important;
     }
+    @media (min-width: 768px) {
+      height: 40px;
+      padding: 0 20px;
+    }
   }
 `;
 
 const SkeletonContainer = styled.div`
-  padding: 16px;
+  padding: 12px;
+  @media (min-width: 768px) {
+    padding: 16px;
+  }
 `;
 
 const FeaturedJobsSection = () => {
@@ -86,13 +113,12 @@ const FeaturedJobsSection = () => {
   const { data: companies, isLoading: isLoadingCompanies } =
     useGetListCompany();
 
-  // Chuẩn hóa dữ liệu cho JobGrid
   const featuredJobs = React.useMemo(() => {
     if (!jobPosts || !companies) return [];
 
     return jobPosts
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, 6) // Lấy 6 việc làm nổi bật
+      .slice(0, 6)
       .map((job) => {
         const company = companies.find(
           (c) => c._id === job?.employer_id?.company_id

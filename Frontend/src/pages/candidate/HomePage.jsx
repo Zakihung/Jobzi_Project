@@ -15,28 +15,31 @@ const HomepageLayout = styled(Layout)`
 
 const HomepageContent = styled(Content)`
   background: #ffffff;
+  padding: 0 16px;
+  @media (min-width: 768px) {
+    padding: 0 24px;
+  }
 `;
 
 const HomePage = () => {
   return (
     <HomepageLayout>
       <HomepageContent>
-        <Row justify={"center"}>
-          <Col span={21}>
+        <Row justify="center" gutter={[16, 16]}>
+          <Col xs={24} sm={22} md={22} lg={22} xl={22}>
             <HeroSection />
           </Col>
         </Row>
-        <Row justify={"center"}>
-          <Col span={21}>
+        <Row justify="center" gutter={[16, 16]}>
+          <Col xs={24} sm={22} md={22} lg={22} xl={22}>
             <FeaturedJobsSection />
           </Col>
         </Row>
-        {/* <Row justify={"center"}>
-          <Col span={21}>
-            <TopCompaniesSection />
+        <Row justify="center" gutter={[16, 16]}>
+          <Col xs={24} sm={22} md={22} lg={22} xl={22}>
+            <FeaturesSection />
           </Col>
-        </Row> */}
-        <FeaturesSection />
+        </Row>
       </HomepageContent>
     </HomepageLayout>
   );

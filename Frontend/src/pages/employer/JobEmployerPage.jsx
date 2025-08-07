@@ -12,6 +12,7 @@ import {
   Popconfirm,
   App,
   Modal,
+  Skeleton,
 } from "antd";
 import {
   EyeOutlined,
@@ -47,7 +48,18 @@ const JobEmployerPage = () => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
 
-  if (isLoading) return;
+  // Hiển thị skeleton loading khi dữ liệu đang tải
+  if (isLoading) {
+    return (
+      <Row gutter={[16, 16]} justify="center">
+        <Col xs={24} sm={22} md={20} lg={18}>
+          <Card className={styles.jobCard}>
+            <Skeleton active paragraph={{ rows: 6 }} />
+          </Card>
+        </Col>
+      </Row>
+    );
+  }
 
   // Chuyển đổi dữ liệu từ API sang định dạng phù hợp với Table
   const jobs =
@@ -128,12 +140,13 @@ const JobEmployerPage = () => {
     return { color: "green", text: `${daysLeft} ngày còn lại` };
   };
 
+  // Định nghĩa cột, bỏ thuộc tính responsive cho cột Trạng thái
   const columns = [
     {
       title: "Vị trí tuyển dụng",
       dataIndex: "title",
       key: "title",
-      width: "35%",
+      width: "50%", // Giảm chiều rộng để nhường chỗ cho cột Trạng thái
       render: (text, record) => {
         const expiryStatus = getExpiryStatus(record.daysLeft);
         return (
@@ -175,7 +188,7 @@ const JobEmployerPage = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      width: "20%",
+      width: "25%", // Tăng chiều rộng để chứa nội dung
       render: (_, record) => (
         <div className={styles.statusControl}>
           <Switch
@@ -188,7 +201,7 @@ const JobEmployerPage = () => {
           />
           <div className={styles.statusText}>
             <Text type={record.status === "active" ? "success" : "secondary"}>
-              {record.status === "active" ? "Hiển thị việc làm" : "Ẩn việc làm"}
+              {record.status === "active" ? "Hiển thị" : "Ẩn"}
             </Text>
           </div>
         </div>
@@ -198,7 +211,7 @@ const JobEmployerPage = () => {
       title: "Thao tác",
       dataIndex: "actions",
       key: "actions",
-      width: "15%",
+      width: "25%",
       render: (_, record) => (
         <Space size="small" className={styles.actionButtons}>
           <Button
@@ -234,17 +247,17 @@ const JobEmployerPage = () => {
   return (
     <>
       <Row
-        gutter={[24, 24]}
+        gutter={[16, 16]}
         style={{
           background: "#fff",
           borderRadius: "24px",
         }}
-        justify={"center"}
+        justify="center"
       >
-        <Col span={21}>
+        <Col xs={24} sm={23} md={22} lg={22} xl={21}>
           <Card className={styles.jobCard}>
             <div className={styles.cardHeader}>
-              <Title level={2} className={styles.pageTitle}>
+              <Title level={3} className={styles.pageTitle}>
                 Danh sách việc làm
               </Title>
               <Text type="secondary" className={styles.jobCount}>
@@ -257,7 +270,7 @@ const JobEmployerPage = () => {
               dataSource={jobs}
               rowKey="id"
               className={styles.jobTable}
-              scroll={{ x: 800 }}
+              scroll={{ x: false }} // Tắt cuộn ngang
             />
           </Card>
         </Col>

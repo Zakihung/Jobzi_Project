@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Card, Typography, Space, Select, Col } from "antd";
+import { Card, Typography, Space, Select, Col, Skeleton } from "antd";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { AuthContext } from "../../../../contexts/auth.context";
@@ -17,6 +17,7 @@ const RightColumn = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
 `;
 
 const ChartCard = styled(Card)`
@@ -25,22 +26,21 @@ const ChartCard = styled(Card)`
   box-shadow: none;
   border: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
   padding: 24px;
   overflow: hidden;
   height: 100%;
-  width: 100%;
+  min-height: 300px;
 
   @media (max-width: 1200px) {
-    padding: 24px;
-  }
-
-  @media (max-width: 768px) {
     padding: 20px;
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
   }
 
   @media print {
@@ -87,10 +87,11 @@ const ChartControls = styled(Space)`
 const ChartFilter = styled(Select)`
   min-width: 220px;
   height: 40px;
+  width: 100%;
 
-  @media (max-width: 992px) {
+  @media (max-width: 576px) {
     min-width: auto;
-    width: 100%;
+    height: 36px;
   }
 `;
 
@@ -102,27 +103,53 @@ const TotalApplicationsText = styled(Text)`
   @media (max-width: 768px) {
     font-size: 14px;
   }
+
+  @media (max-width: 576px) {
+    font-size: 13px;
+  }
 `;
 
 const ChartWrapper = styled.div`
-  max-width: 420px;
-  margin: 0 auto;
+  width: 100%;
+  height: 400px;
   padding: 20px;
   background: #f9fafb;
   border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   @media (max-width: 1200px) {
-    max-width: 350px;
+    height: 320px;
+    padding: 16px;
+  }
+
+  @media (max-width: 768px) {
+    height: 280px;
+    padding: 12px;
+  }
+
+  @media (max-width: 576px) {
+    height: 240px;
+    padding: 10px;
+  }
+`;
+
+const SkeletonWrapper = styled.div`
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+
+  @media (max-width: 1200px) {
+    max-width: 400px;
   }
 
   @media (max-width: 768px) {
     max-width: 280px;
-    padding: 16px;
   }
 
   @media (max-width: 576px) {
-    max-width: 240px;
-    padding: 12px;
+    max-width: 100%;
   }
 `;
 
@@ -189,8 +216,24 @@ const ApplicationChartColumn = () => {
     })),
   ];
 
+  if (isLoadingJobPosts || isLoadingEmployerStats || isLoadingJobPostStats) {
+    return (
+      <Col xs={24} sm={24} md={12} lg={14}>
+        <RightColumn>
+          <ChartCard>
+            <CardTitle level={4}>Tỷ lệ hồ sơ ứng tuyển</CardTitle>
+            <SkeletonWrapper>
+              <Skeleton active paragraph={{ rows: 1 }} />
+              <Skeleton active avatar paragraph={{ rows: 0 }} />
+            </SkeletonWrapper>
+          </ChartCard>
+        </RightColumn>
+      </Col>
+    );
+  }
+
   return (
-    <Col span={14}>
+    <Col xs={24} sm={24} md={12} lg={14}>
       <RightColumn>
         <ChartCard>
           <CardTitle level={4}>Tỷ lệ hồ sơ ứng tuyển</CardTitle>
@@ -213,6 +256,7 @@ const ApplicationChartColumn = () => {
               data={chartData}
               options={{
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                   legend: {
                     position: "bottom",

@@ -1,19 +1,29 @@
 import React from "react";
-import { Carousel, Typography } from "antd";
+import { Carousel, Typography, Skeleton } from "antd";
 import styled from "styled-components";
 
 const { Title, Text } = Typography;
 
-const HeroCarouselWrapper = styled.div``;
+const HeroCarouselWrapper = styled.div`
+  border-radius: 16px;
+  overflow: hidden;
+  @media (min-width: 768px) {
+    border-radius: 20px;
+  }
+`;
 
 const CarouselItem = styled.div`
-  height: 540px;
-  border-radius: 20px;
+  height: 300px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  @media (min-width: 768px) {
+    height: 540px;
+    border-radius: 20px;
+  }
 `;
 
 const CarouselItemIt = styled(CarouselItem)`
@@ -32,29 +42,55 @@ const CarouselContent = styled.div`
   text-align: center;
   z-index: 2;
   position: relative;
-  padding: 40px;
+  padding: 20px;
+  @media (min-width: 768px) {
+    padding: 40px;
+  }
 `;
 
 const CarouselIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: 32px;
+  margin-bottom: 12px;
   display: block;
+  @media (min-width: 768px) {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
 `;
 
 const CarouselTitle = styled(Title)`
   && {
     color: #ffffff !important;
-    font-size: 28px !important;
+    font-size: 20px !important;
     font-weight: 700 !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 12px !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    @media (min-width: 768px) {
+      font-size: 28px !important;
+      margin-bottom: 16px !important;
+    }
   }
 `;
 
 const CarouselSubtitle = styled(Text)`
   color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5;
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const SkeletonContainer = styled.div`
+  padding: 20px;
+  height: 300px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #577cf6 0%, #667eea 100%);
+  @media (min-width: 768px) {
+    height: 540px;
+    border-radius: 20px;
+    padding: 40px;
+  }
 `;
 
 const HeroCarousel = () => {
@@ -79,6 +115,13 @@ const HeroCarousel = () => {
     },
   ];
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const getCarouselItem = (className) => {
     switch (className) {
       case "it":
@@ -91,6 +134,16 @@ const HeroCarousel = () => {
         return CarouselItem;
     }
   };
+
+  if (isLoading) {
+    return (
+      <HeroCarouselWrapper>
+        <SkeletonContainer>
+          <Skeleton active avatar={{ size: 80 }} paragraph={{ rows: 2 }} />
+        </SkeletonContainer>
+      </HeroCarouselWrapper>
+    );
+  }
 
   return (
     <HeroCarouselWrapper>

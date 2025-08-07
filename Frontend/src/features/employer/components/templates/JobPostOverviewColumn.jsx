@@ -1,12 +1,12 @@
 import React from "react";
-import { Card, Typography, Button, List, Row, Col } from "antd";
+import { Card, Typography, Button, List, Row, Col, Skeleton } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useGetJobPostsByEmployerId from "../../../postjob/hooks/Job_Post/useGetJobPostsByEmployerId";
 import JobPostOverviewCard from "../organisms/JobPostOverviewCard";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const JobPostingsCard = styled(Card)`
   border-radius: 24px;
@@ -18,17 +18,18 @@ const JobPostingsCard = styled(Card)`
   overflow: hidden;
   height: 100%;
   width: 100%;
+  min-height: 300px;
 
   @media (max-width: 1200px) {
-    padding: 24px;
-  }
-
-  @media (max-width: 768px) {
     padding: 20px;
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
   }
 
   @media print {
@@ -59,80 +60,6 @@ const CardTitle = styled(Title)`
   }
 `;
 
-const JobItem = styled(List.Item)`
-  padding: 20px 0;
-  border-bottom: 1px solid #e5e7eb;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out;
-  border-radius: 16px;
-  margin-bottom: 8px;
-
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-  }
-
-  @media (max-width: 576px) {
-    padding: 16px 0;
-  }
-`;
-
-const JobIcon = styled(FileTextOutlined)`
-  color: #577cf6;
-  font-size: 24px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(87, 124, 246, 0.1);
-  border-radius: 16px;
-`;
-
-const JobTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 8px;
-`;
-
-const JobMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const JobStatus = styled.span`
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  &.active {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-  }
-
-  &.paused {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-  }
-
-  &.closed {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-  }
-
-  &.expired {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-  }
-`;
-
 const ActionButton = styled(Button)`
   background: #577cf6 !important;
   border-color: #577cf6 !important;
@@ -143,8 +70,6 @@ const ActionButton = styled(Button)`
   font-size: 15px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
   margin-top: 12px;
 
   @media (max-width: 768px) {
@@ -154,11 +79,16 @@ const ActionButton = styled(Button)`
 
   @media (max-width: 576px) {
     height: 40px !important;
+    font-size: 13px !important;
   }
 
   @media print {
     display: none;
   }
+`;
+
+const SkeletonWrapper = styled.div`
+  padding: 16px 0;
 `;
 
 const JobPostOverviewColumn = ({ employerId }) => {
@@ -198,10 +128,23 @@ const JobPostOverviewColumn = ({ employerId }) => {
         .slice(0, 3)
     : [];
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <Col xs={24} sm={24} md={12} lg={10}>
+        <JobPostingsCard>
+          <CardTitle level={4}>Việc làm đã tạo</CardTitle>
+          <SkeletonWrapper>
+            <Skeleton active paragraph={{ rows: 3 }} />
+            <Skeleton active paragraph={{ rows: 3 }} />
+            <Skeleton active paragraph={{ rows: 3 }} />
+          </SkeletonWrapper>
+        </JobPostingsCard>
+      </Col>
+    );
+  }
 
   return (
-    <Col span={10}>
+    <Col xs={24} sm={24} md={12} lg={10}>
       <JobPostingsCard>
         <CardTitle level={4}>Việc làm đã tạo</CardTitle>
         <List

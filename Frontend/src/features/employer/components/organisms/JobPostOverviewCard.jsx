@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Typography, Row, Col } from "antd";
+import { List, Typography, Row, Col, Skeleton } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import useGetNumberOfApplicationByJobPostId from "../../../application/hooks/useGetNumberOfApplicationByJobPostId";
@@ -20,7 +20,7 @@ const JobItem = styled(List.Item)`
   }
 
   @media (max-width: 576px) {
-    padding: 16px 0;
+    padding: 12px 0;
   }
 `;
 
@@ -34,6 +34,12 @@ const JobIcon = styled(FileTextOutlined)`
   justify-content: center;
   background: rgba(87, 124, 246, 0.1);
   border-radius: 16px;
+
+  @media (max-width: 576px) {
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 const JobTitle = styled.div`
@@ -41,6 +47,11 @@ const JobTitle = styled.div`
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 8px;
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
 `;
 
 const JobStatus = styled.span`
@@ -72,12 +83,21 @@ const JobStatus = styled.span`
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
   }
+
+  @media (max-width: 576px) {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
 `;
 
 const JobMeta = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  @media (max-width: 576px) {
+    gap: 2px;
+  }
 `;
 
 const JobPostOverviewCard = ({ job }) => {
@@ -108,6 +128,21 @@ const JobPostOverviewCard = ({ job }) => {
   if (isNaN(createdAt.getTime())) {
     console.warn(`Invalid createdAt for job ${job?.id}`);
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <JobItem>
+        <Row style={{ width: "100%" }}>
+          <Col span={4}>
+            <Skeleton.Avatar active size={48} />
+          </Col>
+          <Col span={20}>
+            <Skeleton active title paragraph={{ rows: 2 }} />
+          </Col>
+        </Row>
+      </JobItem>
+    );
   }
 
   return (
