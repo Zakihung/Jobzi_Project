@@ -229,6 +229,42 @@ const getJobPostsByJobPositionIdService = async (job_position_id) => {
   return jobPosts;
 };
 
+const getFilteredJobPostsService = async () => {
+  const today = new Date();
+
+  let jobPosts = await JobPost.find({
+    expired_date: { $gt: today },
+    status: "active",
+  })
+    .populate("employer_id")
+    .populate("job_position_id");
+
+  jobPosts = await Promise.all(
+    jobPosts.map(async (jobPost) => {
+      const jobPostObj = jobPost.toObject();
+
+      const skills = await getSkillsRequirementByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.skills = skills.map(
+        (skill) => skill.skills_requirement_id.name
+      );
+
+      const locations = await getWorkAddressByJobPostIdService(
+        jobPost._id
+      ).catch(() => []);
+      jobPostObj.locations = locations.map((location) => ({
+        address: location.work_address_id.address,
+        province: location.work_address_id.province_id.name,
+      }));
+
+      return jobPostObj;
+    })
+  );
+
+  return jobPosts;
+};
+
 const updateJobPostService = async (job_post_id, jobPostData) => {
   // Kiểm tra jobPostData có tồn tại không
   if (!jobPostData) {
@@ -445,6 +481,7 @@ const deleteAllJobPostsService = async () => {
 module.exports = {
   createJobPostService,
   getAllJobPostsService,
+  getFilteredJobPostsService,
   getJobPostByIdService,
   getJobPostsByEmployerIdService,
   getJobPostsByJobPositionIdService,

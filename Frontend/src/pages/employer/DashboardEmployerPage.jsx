@@ -38,6 +38,11 @@ const DashboardEmployerPage = () => {
     ? jobsData
         .map((job) => {
           const createdAt = new Date(job?.createdAt);
+          const expiredDate = new Date(job?.expired_date);
+          const today = new Date();
+          const daysLeft = Math.ceil(
+            (expiredDate - today) / (1000 * 60 * 60 * 24)
+          );
           // Kiểm tra createdAt hợp lệ
           if (isNaN(createdAt.getTime())) {
             console.warn(`Invalid createdAt for job ${job?._id}`);
@@ -55,6 +60,7 @@ const DashboardEmployerPage = () => {
             applications: job?.applications?.length || 0, // Số lượng ứng tuyển
             postedDate: createdAt.toLocaleDateString("vi-VN"), // Định dạng ngày
             createdAt: createdAt,
+            daysLeft,
           };
         })
         .filter((job) => job !== null) // Loại bỏ các job không hợp lệ
@@ -99,6 +105,8 @@ const DashboardEmployerPage = () => {
         return `${styles.jobStatus} ${styles.paused}`;
       case "Đã đóng":
         return `${styles.jobStatus} ${styles.closed}`;
+      case "Hết hạn":
+        return `${styles.jobStatus} ${styles.expired}`;
       default:
         return styles.jobStatus;
     }
@@ -137,8 +145,12 @@ const DashboardEmployerPage = () => {
                               <div className={styles.jobTitle}>
                                 {item.title}
                               </div>
-                              <span className={getStatusClass(item.status)}>
-                                {item.status}
+                              <span
+                                className={getStatusClass(
+                                  item.daysLeft <= 0 ? "Hết hạn" : item.status
+                                )}
+                              >
+                                {item.daysLeft <= 0 ? "Hết hạn" : item.status}
                               </span>
                             </div>
                           }

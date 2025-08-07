@@ -4,8 +4,8 @@ import { FireOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import JobGrid from "../../../job/components/templates/JobGrid";
 import { useNavigate } from "react-router-dom";
-import useGetAllJobPosts from "../../../postjob/hooks/Job_Post/useGetAllJobPosts";
 import useGetListCompany from "../../../company/hooks/Company/useGetListCompany";
+import useGetFilteredJobPosts from "../../../postjob/hooks/Job_Post/useGetFilteredJobPosts";
 
 const { Title, Text } = Typography;
 
@@ -82,7 +82,7 @@ const SkeletonContainer = styled.div`
 
 const FeaturedJobsSection = () => {
   const navigate = useNavigate();
-  const { data: jobPosts, isLoading: isLoadingJobs } = useGetAllJobPosts();
+  const { data: jobPosts, isLoading: isLoadingJobs } = useGetFilteredJobPosts();
   const { data: companies, isLoading: isLoadingCompanies } =
     useGetListCompany();
 

@@ -260,6 +260,21 @@ const JobCard = ({ job }) => {
     setModalVisible(false);
   };
 
+  const isJobExpired = () => {
+    if (!job?.expired || !job?.status) return false;
+    const today = new Date();
+    const expiredDate = new Date(job.expired);
+    return expiredDate < today || job.status === "inactive";
+  };
+
+  const handleNavigate = () => {
+    if (isJobExpired()) {
+      navigate("/expired-job");
+    } else {
+      navigate(`/jobpost/${job?.id}`);
+    }
+  };
+
   if (isLoadingSavedJobPosts) {
     return (
       <JobCardWrapper>
@@ -275,7 +290,7 @@ const JobCard = ({ job }) => {
   }
 
   return (
-    <JobCardWrapper onClick={() => navigate(`/jobpost/${job?.id}`)}>
+    <JobCardWrapper onClick={handleNavigate}>
       <JobHeader>
         <CompanyLogo src={job?.logo} size={70} />
         <JobContent>

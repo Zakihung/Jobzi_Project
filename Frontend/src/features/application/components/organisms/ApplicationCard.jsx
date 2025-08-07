@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Card, Avatar, Typography, Button, Modal, Tag, Skeleton } from "antd";
 import {
   InfoCircleOutlined,
@@ -295,9 +295,7 @@ const getStatusDescription = (status) => {
 };
 
 const ApplicationCard = ({ application }) => {
-  const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { message } = App.useApp();
   const { data: companyData, isLoading } = useGetCompanyById(
     application.job_post_id?.employer_id?.company_id
   );
@@ -313,6 +311,18 @@ const ApplicationCard = ({ application }) => {
     const currentTime = new Date().getTime();
     const hoursDifference = (currentTime - applicationTime) / (1000 * 60 * 60);
     return hoursDifference <= 24;
+  };
+
+  // Kiểm tra xem tin tuyển dụng đã hết hạn hay không
+  const isJobExpired = () => {
+    if (
+      !application.job_post_id?.expired_date ||
+      !application.job_post_id?.status
+    )
+      return false;
+    const today = new Date();
+    const expiredDate = new Date(application.job_post_id.expired_date);
+    return expiredDate < today || application.job_post_id.status === "inactive";
   };
 
   const handleCancelApplication = (e) => {
@@ -341,6 +351,14 @@ const ApplicationCard = ({ application }) => {
     e.stopPropagation();
     setConfirmModalVisible(false);
     setCannotCancelModalVisible(false);
+  };
+
+  const handleNavigate = () => {
+    if (isJobExpired()) {
+      navigate("/expired-job");
+    } else {
+      navigate(`/jobpost/${application.job_post_id?._id}`);
+    }
   };
 
   if (isLoading) {
@@ -392,9 +410,7 @@ const ApplicationCard = ({ application }) => {
             alignItems: "flex-end",
           }}
         >
-          <ViewDetailBtn
-            onClick={() => navigate(`/jobpost/${application.job_post_id?._id}`)}
-          >
+          <ViewDetailBtn onClick={handleNavigate}>
             Xem chi tiết tin
           </ViewDetailBtn>
           {isWithin24Hours() && (

@@ -2,6 +2,7 @@ const {
   createJobPostService,
   getAllJobPostsService,
   getJobPostByIdService,
+  getFilteredJobPostsService,
   getJobPostsByEmployerIdService,
   getJobPostsByJobPositionIdService,
   updateJobPostService,
@@ -37,6 +38,15 @@ const createJobPost = async (req, res, next) => {
 const getAllJobPosts = async (req, res, next) => {
   try {
     const data = await getAllJobPostsService();
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFilteredJobPosts = async (req, res, next) => {
+  try {
+    const data = await getFilteredJobPostsService();
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -119,6 +129,7 @@ module.exports = {
   createJobPost,
   getAllJobPosts,
   getJobPostById,
+  getFilteredJobPosts,
   getJobPostsByEmployerId,
   getJobPostsByJobPositionId,
   updateJobPost,

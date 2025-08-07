@@ -1,52 +1,48 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Button, Typography, Result } from "antd";
-import { FrownOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/auth.context";
 
 const { Title, Text } = Typography;
 
-const NotFoundPage = () => {
-  const { auth } = useContext(AuthContext);
-  const role = auth?.user?.role;
+const ExpiredJobPostPage = () => {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
-    role === "cadidate"
-      ? navigate("/")
-      : role === "employer"
-      ? navigate("/employer")
-      : navigate("/");
+  const handleGoBack = () => {
+    navigate(-1); // Quay lại trang trước đó
   };
 
   return (
-    <div className="not-found-container">
+    <div className="expired-job-container">
       <Result
-        icon={<FrownOutlined style={{ fontSize: 64, color: "#577cf6" }} />}
-        status="404"
+        icon={
+          <ClockCircleOutlined style={{ fontSize: 64, color: "#577cf6" }} />
+        }
+        status="info"
         title={
-          <Title level={1} className="not-found-title">
+          <Title level={1} className="expired-job-title">
             404
           </Title>
         }
         subTitle={
-          <Text className="not-found-description">
-            Xin lỗi, trang bạn truy cập không tồn tại.
+          <Text className="expired-job-description">
+            Xin lỗi, việc làm này không tồn tại do đã hết hạn hoặc đã được ẩn
+            đi.
           </Text>
         }
         extra={
           <Button
             type="primary"
             size="large"
-            onClick={handleGoHome}
-            className="home-button"
+            onClick={handleGoBack}
+            className="back-button"
           >
-            Quay lại trang chủ
+            Quay lại
           </Button>
         }
       />
       <style jsx>{`
-        .not-found-container {
+        .expired-job-container {
           min-height: 100vh;
           display: flex;
           align-items: center;
@@ -55,15 +51,15 @@ const NotFoundPage = () => {
           padding: 24px;
         }
 
-        .not-found-title {
+        .expired-job-title {
           color: #1a1a1a !important;
-          font-size: 72px !important;
+          font-size: 48px !important;
           font-weight: 800 !important;
           margin-bottom: 16px !important;
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .not-found-description {
+        .expired-job-description {
           color: #666 !important;
           font-size: 18px !important;
           line-height: 1.6;
@@ -72,7 +68,7 @@ const NotFoundPage = () => {
           display: block;
         }
 
-        .home-button {
+        .back-button {
           background: #577cf6 !important;
           border-color: #577cf6 !important;
           border-radius: 8px;
@@ -84,22 +80,22 @@ const NotFoundPage = () => {
           transition: all 0.3s ease;
         }
 
-        .home-button:hover {
+        .back-button:hover {
           background: #4c6ef5 !important;
           border-color: #4c6ef5 !important;
           box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
         }
 
         @media (max-width: 576px) {
-          .not-found-title {
-            font-size: 48px !important;
+          .expired-job-title {
+            font-size: 36px !important;
           }
 
-          .not-found-description {
+          .expired-job-description {
             font-size: 16px !important;
           }
 
-          .home-button {
+          .back-button {
             height: 40px;
             font-size: 14px;
             padding: 0 16px;
@@ -110,4 +106,4 @@ const NotFoundPage = () => {
   );
 };
 
-export default NotFoundPage;
+export default ExpiredJobPostPage;

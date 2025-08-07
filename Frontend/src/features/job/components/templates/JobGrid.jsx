@@ -23,6 +23,8 @@ const JobGrid = ({ jobs, fullWidth = false }) => {
               saved: job?.saved,
               posted: job?.posted,
               logo: job?.logo,
+              status: job?.status,
+              expired: job?.expired,
             }}
           />
         </Col>

@@ -163,6 +163,20 @@ const salaryTypeData = {
   range: "Khoảng lương",
 };
 
+const formatCurrency = (value) => {
+  if (!value) return "";
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+const parseCurrency = (value) => {
+  return parseInt(value.replace(/,/g, ""), 10) || 0;
+};
+
+const isValidMoney = (value) => {
+  const number = parseCurrency(value);
+  return number >= 1000 && number % 1000 === 0;
+};
+
 const GeneralInfoSection = ({
   control,
   errors,
@@ -568,17 +582,20 @@ const GeneralInfoSection = ({
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder="Lương tối thiểu (triệu)"
+                placeholder="Lương tối thiểu (đ/tháng)"
                 size="large"
                 disabled={disabled || salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
+                value={formatCurrency(field.value ?? "")}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*$/.test(value)) {
-                    field.onChange(value ? parseInt(value) : 0);
+                  const raw = e.target.value.replace(/,/g, "");
+                  if (/^\d*$/.test(raw)) {
+                    const number = parseInt(raw, 10) || 0;
+                    if (number % 1000 === 0 || raw === "") {
+                      field.onChange(number);
+                    }
                   }
                 }}
-                value={field.value ?? ""}
               />
             )}
           />
@@ -610,17 +627,20 @@ const GeneralInfoSection = ({
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder="Lương tối đa (triệu)"
+                placeholder="Lương tối đa (đ/tháng)"
                 size="large"
                 disabled={disabled || salary_type !== "range"}
                 style={{ width: "100%", marginBottom: 16 }}
+                value={formatCurrency(field.value ?? "")}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*$/.test(value)) {
-                    field.onChange(value ? parseInt(value) : 0);
+                  const raw = e.target.value.replace(/,/g, "");
+                  if (/^\d*$/.test(raw)) {
+                    const number = parseInt(raw, 10) || 0;
+                    if (number % 1000 === 0 || raw === "") {
+                      field.onChange(number);
+                    }
                   }
                 }}
-                value={field.value ?? ""}
               />
             )}
           />

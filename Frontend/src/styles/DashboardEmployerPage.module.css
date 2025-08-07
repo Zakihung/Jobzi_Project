@@ -291,6 +291,11 @@
   color: var(--error);
 }
 
+.jobStatus.expired {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
 /* Statistics Cards */
 .statsGrid {
   display: grid;

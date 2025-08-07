@@ -44,6 +44,7 @@ import AdminJobPostManagementPage from "./pages/admin/AdminJobPostManagementPage
 import AdminIndustryManagementPage from "./pages/admin/AdminIndustryManagementPage.jsx";
 import AdminPositionManagementPage from "./pages/admin/AdminPositionManagementPage.jsx";
 import AdminStatisticsPage from "./pages/admin/AdminStatisticsPage.jsx";
+import ExpiredJobPostPage from "./pages/candidate/ExpiredJobPostPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
   {
     path: "signin",
     element: <SigninCandidatePage />,
+  },
+  {
+    path: "expired-job",
+    element: <ExpiredJobPostPage />,
   },
 
   //Routes cho Employer

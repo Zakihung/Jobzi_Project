@@ -209,11 +209,6 @@ const PostJobForm = ({
   }, [jobData, reset, descriptionEditor, requirementsEditor, benefitsEditor]);
 
   const onSubmit = async (data) => {
-    console.log("onSubmit called with data:", data);
-    console.log("isEditing:", isEditing);
-    console.log("completedSections:", completedSections);
-    console.log("locations:", locations);
-
     if (!isEditing) {
       console.log("Exiting onSubmit because isEditing is false");
       message.warning("Vui lòng bật chế độ chỉnh sửa trước khi đăng!");

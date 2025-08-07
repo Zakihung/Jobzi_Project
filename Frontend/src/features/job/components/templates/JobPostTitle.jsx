@@ -277,7 +277,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           </IconWrapper>
           <TagContent>
             <Text>Hạn nộp</Text>
-            <Text strong>{formatDate(job.createdAt)}</Text>
+            <Text strong>{formatDate(job.expired_date)}</Text>
           </TagContent>
         </JobTag>
       </Row>

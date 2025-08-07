@@ -4,8 +4,8 @@ import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
 import AllJobsSection from "../../features/job/components/templates/AllJobsSection";
 import { useLocation } from "react-router-dom";
-import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
 import useGetListCompany from "../../features/company/hooks/Company/useGetListCompany";
+import useGetFilteredJobPosts from "../../features/postjob/hooks/Job_Post/useGetFilteredJobPosts";
 
 const { Content } = Layout;
 
@@ -41,7 +41,7 @@ const JobCandidatePage = () => {
     }
   }, []);
 
-  const { data: jobPosts, isLoading: isLoadingJobs } = useGetAllJobPosts();
+  const { data: jobPosts, isLoading: isLoadingJobs } = useGetFilteredJobPosts();
   const { data: companies, isLoading: isLoadingCompanies } =
     useGetListCompany();
 

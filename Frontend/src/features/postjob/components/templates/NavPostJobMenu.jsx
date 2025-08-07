@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Menu } from "antd";
 import {
   FileTextOutlined,
@@ -64,6 +64,8 @@ const StyledMenu = styled(Menu)`
 `;
 
 const NavPostJobMenu = ({ sectionRefs }) => {
+  const [selectedKey, setSelectedKey] = useState("title");
+
   const handleMenuClick = ({ key }) => {
     const section = sectionRefs[key].current;
     if (section) {
@@ -72,15 +74,39 @@ const NavPostJobMenu = ({ sectionRefs }) => {
         section.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - topOffset;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      setSelectedKey(key);
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const topOffset = 76;
+      let currentSection = "title";
+
+      for (const key in sectionRefs) {
+        const section = sectionRefs[key].current;
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= topOffset + 100 && rect.bottom >= topOffset) {
+            currentSection = key;
+            break;
+          }
+        }
+      }
+
+      setSelectedKey(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sectionRefs]);
 
   return (
     <StickyMenu>
       <StyledCard>
         <StyledMenu
           mode="vertical"
-          defaultSelectedKeys={["title"]}
+          selectedKeys={[selectedKey]}
           onClick={handleMenuClick}
         >
           <Menu.Item key="title" icon={<FileTextOutlined />}>

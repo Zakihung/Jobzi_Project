@@ -137,6 +137,8 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
           tags: job?.skills || [],
           saved: true, // Công việc đã lưu nên mặc định true
           posted: job?.createdAt,
+          status: job?.status,
+          expired: job?.expired_date,
         };
       });
   }, [savedJobPosts, companies]);

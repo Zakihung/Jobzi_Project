@@ -12,6 +12,12 @@ const getAllJobPostsApi = () => {
   return axios.get(URL_API);
 };
 
+// API để lấy danh sách job post còn hiệu lực và active
+const getFilteredJobPostsApi = () => {
+  const URL_API = "/api/job-post/filter/active";
+  return axios.get(URL_API);
+};
+
 // API để lấy job post theo ID
 const getJobPostByIdApi = (id) => {
   const URL_API = `/api/job-post/${id}`;
@@ -58,6 +64,7 @@ export {
   createJobPostApi,
   getAllJobPostsApi,
   getJobPostByIdApi,
+  getFilteredJobPostsApi,
   getJobPostsByEmployerIdApi,
   getJobPostsByJobPositionIdApi,
   updateJobPostApi,

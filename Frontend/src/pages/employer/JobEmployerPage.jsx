@@ -148,6 +148,15 @@ const JobEmployerPage = () => {
             <Tag color={expiryStatus.color} className={styles.expiryTag}>
               {expiryStatus.text}
             </Tag>
+            {record.daysLeft <= 0 && (
+              <div className={styles.expiredNote}>
+                <Text type="danger">
+                  Tin này đã hết hạn, để gia hạn hiển thị tin vui lòng nhấn{" "}
+                  <strong>"Xem và chỉnh sửa"</strong> và thay đổi thời gian nhận
+                  CV.
+                </Text>
+              </div>
+            )}
             <div className={styles.dateInfo}>
               <div className={styles.dateItem}>
                 <CalendarOutlined className={styles.dateIcon} />
@@ -194,12 +203,11 @@ const JobEmployerPage = () => {
         <Space size="small" className={styles.actionButtons}>
           <Button
             type="primary"
-            icon={<EyeOutlined />}
             size="small"
             onClick={() => handleView(record)}
             className={styles.editButton}
           >
-            Xem
+            Xem/Chỉnh sửa
           </Button>
           <Popconfirm
             title="Xóa công việc"
@@ -211,7 +219,6 @@ const JobEmployerPage = () => {
           >
             <Button
               danger
-              icon={<DeleteOutlined />}
               size="small"
               className={styles.deleteButton}
               loading={isDeleting}
