@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Card, Typography, Button, Space, Select, Col } from "antd";
+import React, { useState, useContext } from "react";
+import { Card, Typography, Space, Select, Col } from "antd";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { BarChartOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../../contexts/auth.context";
 import styled from "styled-components";
+import useGetJobPostsByEmployerId from "../../../postjob/hooks/Job_Post/useGetJobPostsByEmployerId";
+import useGetApplicationCountByStatusForEmployer from "../../../application/hooks/useGetApplicationCountByStatusForEmployer";
+import useGetApplicationCountByStatusForJobPost from "../../../application/hooks/useGetApplicationCountByStatusForJobPost";
+import useGetTotalApplicationsForEmployer from "../../../application/hooks/useGetTotalApplicationsForEmployer";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -91,24 +94,13 @@ const ChartFilter = styled(Select)`
   }
 `;
 
-const SecondaryButton = styled(Button)`
-  background: #ffffff !important;
-  border-color: #d1d5db !important;
-  color: #1f2937 !important;
-  border-radius: 16px !important;
-  font-weight: 500 !important;
-  height: 40px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+const TotalApplicationsText = styled(Text)`
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 500;
 
-  &:hover {
-    background: #f9fafb !important;
-    border-color: #577cf6 !important;
-    color: #577cf6 !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
-
-  @media print {
-    display: none;
+  @media (max-width: 768px) {
+    font-size: 14px;
   }
 `;
 
@@ -135,39 +127,67 @@ const ChartWrapper = styled.div`
 `;
 
 const ApplicationChartColumn = () => {
-  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
+  const employerId = auth?.user?.employer_id;
   const [chartFilter, setChartFilter] = useState("all");
-  const [chartData, setChartData] = useState({
-    labels: ["Nhận", "Duyệt", "Không đạt"],
+
+  const { data: jobPosts = [], isLoading: isLoadingJobPosts } =
+    useGetJobPostsByEmployerId(employerId);
+  const { data: employerStats, isLoading: isLoadingEmployerStats } =
+    useGetApplicationCountByStatusForEmployer(employerId);
+  const { data: jobPostStats, isLoading: isLoadingJobPostStats } =
+    useGetApplicationCountByStatusForJobPost(
+      chartFilter !== "all" ? chartFilter : null
+    );
+  const { data: totalApplications, isLoading: isLoadingTotal } =
+    useGetTotalApplicationsForEmployer(employerId);
+
+  const chartData = {
+    labels: [
+      "Đang chờ duyệt",
+      "Đã xem",
+      "Đã chấp nhận",
+      "Đã từ chối",
+      "Đã rút",
+    ],
     datasets: [
       {
-        data: [60, 25, 15],
-        backgroundColor: ["#577cf6", "#10b981", "#ef4444"],
+        data:
+          chartFilter === "all"
+            ? [
+                employerStats?.counts?.pending || 0,
+                employerStats?.counts?.reviewed || 0,
+                employerStats?.counts?.accepted || 0,
+                employerStats?.counts?.rejected || 0,
+                employerStats?.counts?.withdrawn || 0,
+              ]
+            : [
+                jobPostStats?.counts?.pending || 0,
+                jobPostStats?.counts?.reviewed || 0,
+                jobPostStats?.counts?.accepted || 0,
+                jobPostStats?.counts?.rejected || 0,
+                jobPostStats?.counts?.withdrawn || 0,
+              ],
+        backgroundColor: [
+          "#eab308",
+          "#577cf6",
+          "#10b981",
+          "#ef4444",
+          "#6b7280",
+        ],
         borderColor: ["#ffffff"],
         borderWidth: 2,
       },
     ],
-  });
+  };
 
-  useEffect(() => {
-    const dataMap = {
-      all: [60, 25, 15],
-      job1: [50, 30, 20],
-      job2: [70, 20, 10],
-      job3: [55, 25, 20],
-    };
-    setChartData({
-      labels: ["Nhận", "Duyệt", "Không đạt"],
-      datasets: [
-        {
-          data: dataMap[chartFilter],
-          backgroundColor: ["#577cf6", "#10b981", "#ef4444"],
-          borderColor: ["#ffffff"],
-          borderWidth: 2,
-        },
-      ],
-    });
-  }, [chartFilter]);
+  const jobPostOptions = [
+    { value: "all", label: "Tất cả việc làm" },
+    ...jobPosts.map((job) => ({
+      value: job._id,
+      label: job.title,
+    })),
+  ];
 
   return (
     <Col span={14}>
@@ -177,20 +197,16 @@ const ApplicationChartColumn = () => {
           <ChartControls>
             <ChartFilter
               value={chartFilter}
-              onChange={setChartFilter}
-              options={[
-                { value: "all", label: "Tất cả việc làm" },
-                { value: "job1", label: "Senior React Developer" },
-                { value: "job2", label: "UI/UX Designer" },
-                { value: "job3", label: "Backend Developer" },
-              ]}
+              onChange={(value) => setChartFilter(value)}
+              options={jobPostOptions}
+              loading={isLoadingJobPosts}
+              placeholder="Chọn tin tuyển dụng"
+              disabled={isLoadingJobPosts || !jobPosts.length}
             />
-            <SecondaryButton
-              icon={<BarChartOutlined />}
-              onClick={() => navigate("/employer/reports")}
-            >
-              Xem tất cả báo cáo
-            </SecondaryButton>
+            <TotalApplicationsText>
+              Tổng số ứng viên:{" "}
+              {isLoadingTotal ? "Đang tải..." : totalApplications?.count || 0}
+            </TotalApplicationsText>
           </ChartControls>
           <ChartWrapper>
             <Pie

@@ -4,6 +4,9 @@ const {
   getListApplication,
   getApplicationById,
   getApplicationsByJobPostId,
+  getApplicationCountByStatusForEmployer,
+  getTotalApplicationsForEmployer,
+  getApplicationCountByStatusForJobPost,
   getNumberOfApplicationByJobPostId,
   updateApplicationStatus,
   deleteApplication,
@@ -20,6 +23,18 @@ router.get("/job-post/:job_post_id", getApplicationsByJobPostId);
 router.get("/job-post/:job_post_id/count", getNumberOfApplicationByJobPostId);
 router.delete("/all", deleteAllApplications);
 router.get("/candidate/:candidate_id", getApplicationsByCandidateId);
+router.get(
+  "/employer/:employer_id/status-count",
+  getApplicationCountByStatusForEmployer
+);
+router.get(
+  "/employer/:employer_id/total-count",
+  getTotalApplicationsForEmployer
+);
+router.get(
+  "/job-post/:job_post_id/status-count",
+  getApplicationCountByStatusForJobPost
+);
 router.get("/:id", getApplicationById);
 router.delete("/:id", deleteApplication);
 

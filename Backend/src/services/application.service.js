@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const Application = require("../models/application.model");
+const JobPost = require("../models/job_post.model");
 const {
   getSkillsRequirementByJobPostIdService,
 } = require("./job_post_skills_requirement.service");
@@ -27,6 +28,21 @@ const createApplicationService = async (applicationData) => {
   });
 
   return result;
+};
+
+const getTotalApplicationsForEmployerService = async (employer_id) => {
+  if (!mongoose.Types.ObjectId.isValid(employer_id)) {
+    throw new AppError("ID employer không hợp lệ", 400);
+  }
+
+  const jobPosts = await JobPost.find({ employer_id }).select("_id");
+  const jobPostIds = jobPosts.map((jp) => jp._id);
+
+  const count = await Application.countDocuments({
+    job_post_id: { $in: jobPostIds },
+  });
+
+  return { employer_id, count };
 };
 
 const getListApplicationService = async () => {
@@ -120,6 +136,36 @@ const getApplicationsByJobPostIdService = async (job_post_id) => {
   return result;
 };
 
+const getApplicationCountByStatusForEmployerService = async (employer_id) => {
+  if (!mongoose.Types.ObjectId.isValid(employer_id)) {
+    throw new AppError("ID employer không hợp lệ", 400);
+  }
+
+  // Lấy danh sách job_post của employer
+  const jobPosts = await JobPost.find({ employer_id }).select("_id");
+  const jobPostIds = jobPosts.map((jp) => jp._id);
+
+  // Đếm số lượng ứng tuyển theo trạng thái
+  const result = await Application.aggregate([
+    { $match: { job_post_id: { $in: jobPostIds } } },
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Đảm bảo trả về đầy đủ các trạng thái
+  const statuses = ["pending", "reviewed", "accepted", "rejected", "withdrawn"];
+  const counts = {};
+  statuses.forEach((status) => {
+    counts[status] = result.find((r) => r._id === status)?.count || 0;
+  });
+
+  return { employer_id, counts };
+};
+
 const getNumberOfApplicationByJobPostIdService = async (job_post_id) => {
   if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
     throw new AppError("ID job_post không hợp lệ", 400);
@@ -161,6 +207,30 @@ const deleteApplicationService = async (application_id) => {
 const deleteAllApplicationsService = async () => {
   let result = await Application.deleteMany({}); // Xóa cứng toàn bộ
   return result;
+};
+
+const getApplicationCountByStatusForJobPostService = async (job_post_id) => {
+  if (!mongoose.Types.ObjectId.isValid(job_post_id)) {
+    throw new AppError("ID job_post không hợp lệ", 400);
+  }
+
+  const result = await Application.aggregate([
+    { $match: { job_post_id: new mongoose.Types.ObjectId(job_post_id) } },
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const statuses = ["pending", "reviewed", "accepted", "rejected", "withdrawn"];
+  const counts = {};
+  statuses.forEach((status) => {
+    counts[status] = result.find((r) => r._id === status)?.count || 0;
+  });
+
+  return { job_post_id, counts };
 };
 
 const getApplicationsByCandidateIdService = async (candidate_id) => {
@@ -208,6 +278,9 @@ module.exports = {
   createApplicationService,
   getListApplicationService,
   getApplicationByIdService,
+  getTotalApplicationsForEmployerService,
+  getApplicationCountByStatusForEmployerService,
+  getApplicationCountByStatusForJobPostService,
   getApplicationsByJobPostIdService,
   getNumberOfApplicationByJobPostIdService,
   updateApplicationStatusService,

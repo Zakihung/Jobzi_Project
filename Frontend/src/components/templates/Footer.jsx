@@ -31,7 +31,6 @@ const Footer = () => {
     { label: "Tổng quan", path: "/employer" },
     { label: "Việc làm", path: "/employer/jobs" },
     { label: "Ứng viên", path: "/employer/candidates" },
-    { label: "Báo cáo", path: "/employer/reports" },
     { label: "Công ty", path: "/employer/company" },
   ];
 

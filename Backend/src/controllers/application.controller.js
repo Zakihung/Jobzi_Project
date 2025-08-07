@@ -3,6 +3,9 @@ const {
   getListApplicationService,
   getApplicationByIdService,
   getApplicationsByJobPostIdService,
+  getTotalApplicationsForEmployerService,
+  getApplicationCountByStatusForJobPostService,
+  getApplicationCountByStatusForEmployerService,
   getNumberOfApplicationByJobPostIdService,
   updateApplicationStatusService,
   deleteApplicationService,
@@ -26,6 +29,28 @@ const createApplication = async (req, res, next) => {
   }
 };
 
+const getApplicationCountByStatusForEmployer = async (req, res, next) => {
+  try {
+    const { employer_id } = req.params;
+    const data = await getApplicationCountByStatusForEmployerService(
+      employer_id
+    );
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getTotalApplicationsForEmployer = async (req, res, next) => {
+  try {
+    const { employer_id } = req.params;
+    const data = await getTotalApplicationsForEmployerService(employer_id);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getListApplication = async (req, res, next) => {
   try {
     const data = await getListApplicationService();
@@ -39,6 +64,18 @@ const getApplicationById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const data = await getApplicationByIdService(id);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getApplicationCountByStatusForJobPost = async (req, res, next) => {
+  try {
+    const { job_post_id } = req.params;
+    const data = await getApplicationCountByStatusForJobPostService(
+      job_post_id
+    );
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -109,6 +146,9 @@ module.exports = {
   createApplication,
   getListApplication,
   getApplicationById,
+  getTotalApplicationsForEmployer,
+  getApplicationCountByStatusForEmployer,
+  getApplicationCountByStatusForJobPost,
   getApplicationsByJobPostId,
   getNumberOfApplicationByJobPostId,
   updateApplicationStatus,

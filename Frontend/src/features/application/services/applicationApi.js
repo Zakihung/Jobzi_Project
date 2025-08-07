@@ -54,10 +54,31 @@ const getNumberOfApplicationByJobPostIdApi = (job_post_id) => {
   return axios.get(URL_API);
 };
 
+// Lấy số lượng hồ sơ theo trạng thái của employer
+const getApplicationCountByStatusForEmployerApi = (employer_id) => {
+  const URL_API = `/api/application/employer/${employer_id}/status-count`;
+  return axios.get(URL_API);
+};
+
+// Lấy tổng số hồ sơ của employer
+const getTotalApplicationsForEmployerApi = (employer_id) => {
+  const URL_API = `/api/application/employer/${employer_id}/total-count`;
+  return axios.get(URL_API);
+};
+
+// Lấy số lượng hồ sơ theo trạng thái của job post
+const getApplicationCountByStatusForJobPostApi = (job_post_id) => {
+  const URL_API = `/api/application/job-post/${job_post_id}/status-count`;
+  return axios.get(URL_API);
+};
+
 export {
   createApplicationApi,
   getListApplicationApi,
   getApplicationByIdApi,
+  getTotalApplicationsForEmployerApi,
+  getApplicationCountByStatusForEmployerApi,
+  getApplicationCountByStatusForJobPostApi,
   getApplicationsByJobPostIdApi,
   getNumberOfApplicationByJobPostIdApi,
   updateApplicationStatusApi,

@@ -58,7 +58,6 @@ const NavSection = () => {
       path: "/employer/jobs",
     },
     { key: "candidates", label: "Ứng viên", path: "/employer/candidates" },
-    { key: "reports", label: "Báo cáo", path: "/employer/reports" },
     { key: "company", label: "Công ty", path: "/employer/company" },
   ];
 
