@@ -186,7 +186,7 @@ const FeaturedJobsSection = () => {
           <SectionTitleGroup>
             <SectionTitle level={2}>
               <SectionIcon />
-              Việc làm nổi bật
+              Việc làm mới nhất
             </SectionTitle>
           </SectionTitleGroup>
           <ViewAllBtn type="primary" ghost onClick={() => navigate("/jobs")}>

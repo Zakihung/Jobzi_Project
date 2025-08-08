@@ -33,7 +33,7 @@ const CompanyPage = () => {
     companySize: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 12;
 
   const { data: companies, isLoading: isLoadingCompanies } =
     useGetListCompany();

@@ -36,7 +36,7 @@ const JobCandidatePage = () => {
     salary: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 12;
 
   useEffect(() => {
     const savedKeyword = localStorage.getItem("searchKeyword");
