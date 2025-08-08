@@ -163,18 +163,9 @@ const salaryTypeData = {
   range: "Khoảng lương",
 };
 
-const formatCurrency = (value) => {
-  if (!value) return "";
+const formatNumberWithCommas = (value) => {
+  if (value === null || value === undefined || value === "") return "";
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-
-const parseCurrency = (value) => {
-  return parseInt(value.replace(/,/g, ""), 10) || 0;
-};
-
-const isValidMoney = (value) => {
-  const number = parseCurrency(value);
-  return number >= 1000 && number % 1000 === 0;
 };
 
 const GeneralInfoSection = ({
@@ -571,33 +562,32 @@ const GeneralInfoSection = ({
             name="min_salary_range"
             control={control}
             rules={{
-              validate: (value, formValues) => {
+              validate: (value) => {
                 if (salary_type !== "range") return true;
-                if (value === undefined || value === null || value === "") {
+                if (!value && value !== 0)
                   return "Vui lòng nhập lương tối thiểu";
-                }
+                if (value % 1000 !== 0) return "Lương phải chia hết cho 1000";
                 return true;
               },
             }}
-            render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Lương tối thiểu (đ/tháng)"
-                size="large"
-                disabled={disabled || salary_type !== "range"}
-                style={{ width: "100%", marginBottom: 16 }}
-                value={formatCurrency(field.value ?? "")}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/,/g, "");
-                  if (/^\d*$/.test(raw)) {
-                    const number = parseInt(raw, 10) || 0;
-                    if (number % 1000 === 0 || raw === "") {
-                      field.onChange(number);
+            render={({ field }) => {
+              const displayValue = formatNumberWithCommas(field.value ?? "");
+              return (
+                <Input
+                  placeholder="Lương tối thiểu (đ/tháng)"
+                  size="large"
+                  disabled={disabled || salary_type !== "range"}
+                  style={{ width: "100%", marginBottom: 16 }}
+                  value={displayValue}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/,/g, "");
+                    if (/^\d*$/.test(raw)) {
+                      field.onChange(raw === "" ? "" : parseInt(raw, 10));
                     }
-                  }
-                }}
-              />
-            )}
+                  }}
+                />
+              );
+            }}
           />
           {errors.min_salary_range && (
             <Text type="danger">{errors.min_salary_range.message}</Text>
@@ -611,9 +601,8 @@ const GeneralInfoSection = ({
             rules={{
               validate: (value, formValues) => {
                 if (salary_type !== "range") return true;
-                if (value === undefined || value === null || value === "") {
-                  return "Vui lòng nhập lương tối đa";
-                }
+                if (!value && value !== 0) return "Vui lòng nhập lương tối đa";
+                if (value % 1000 !== 0) return "Lương phải chia hết cho 1000";
                 if (
                   formValues.min_salary_range !== undefined &&
                   formValues.min_salary_range !== null &&
@@ -624,25 +613,24 @@ const GeneralInfoSection = ({
                 return true;
               },
             }}
-            render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Lương tối đa (đ/tháng)"
-                size="large"
-                disabled={disabled || salary_type !== "range"}
-                style={{ width: "100%", marginBottom: 16 }}
-                value={formatCurrency(field.value ?? "")}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/,/g, "");
-                  if (/^\d*$/.test(raw)) {
-                    const number = parseInt(raw, 10) || 0;
-                    if (number % 1000 === 0 || raw === "") {
-                      field.onChange(number);
+            render={({ field }) => {
+              const displayValue = formatNumberWithCommas(field.value ?? "");
+              return (
+                <Input
+                  placeholder="Lương tối đa (đ/tháng)"
+                  size="large"
+                  disabled={disabled || salary_type !== "range"}
+                  style={{ width: "100%", marginBottom: 16 }}
+                  value={displayValue}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/,/g, "");
+                    if (/^\d*$/.test(raw)) {
+                      field.onChange(raw === "" ? "" : parseInt(raw, 10));
                     }
-                  }
-                }}
-              />
-            )}
+                  }}
+                />
+              );
+            }}
           />
           {errors.max_salary_range && (
             <Text type="danger">{errors.max_salary_range.message}</Text>

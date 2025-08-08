@@ -3,6 +3,7 @@ const {
   processResumeAnalysisService,
   updateResumeAnalysisService,
   getListResumeAnalysisService,
+  getListResumeAnalysisByCandidateIdService,
   getResumeAnalysisByIdService,
   getLatestResumeAnalysisService,
   getResumeAnalysisByOnlineResumeIdService,
@@ -67,6 +68,16 @@ const updateResumeAnalysis = async (req, res, next) => {
 const getListResumeAnalysis = async (req, res, next) => {
   try {
     const data = await getListResumeAnalysisService();
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getListResumeAnalysisByCandidateId = async (req, res, next) => {
+  try {
+    const { candidate_id } = req.params;
+    const data = await getListResumeAnalysisByCandidateIdService(candidate_id);
     res.status(200).json(data);
   } catch (error) {
     next(error);
@@ -143,6 +154,7 @@ module.exports = {
   processResumeAnalysis,
   updateResumeAnalysis,
   getListResumeAnalysis,
+  getListResumeAnalysisByCandidateId,
   getResumeAnalysisById,
   getLatestResumeAnalysis,
   getResumeAnalysisByOnlineResumeId,

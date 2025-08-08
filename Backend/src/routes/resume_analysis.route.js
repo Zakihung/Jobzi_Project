@@ -4,6 +4,7 @@ const {
   processResumeAnalysis,
   updateResumeAnalysis,
   getListResumeAnalysis,
+  getListResumeAnalysisByCandidateId,
   getResumeAnalysisById,
   getResumeAnalysisByOnlineResumeId,
   getResumeAnalysisByResumeFileId,
@@ -23,6 +24,7 @@ router.get(
   getResumeAnalysisByOnlineResumeId
 );
 router.get("/resume-file/:resume_file_id", getResumeAnalysisByResumeFileId);
+router.get("/candidate/:candidate_id", getListResumeAnalysisByCandidateId);
 router.get("/latest", getLatestResumeAnalysis);
 router.patch("/:analysis_id", updateResumeAnalysis);
 router.get("/:id", getResumeAnalysisById);

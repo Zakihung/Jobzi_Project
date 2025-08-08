@@ -32,7 +32,7 @@ import {
   ArrowLeftOutlined,
 } from "@ant-design/icons";
 import styles from "../../styles/ResumeAnalysisPage.module.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useGetLatestResumeAnalysis from "../../features/analysis/hooks/useGetLatestResumeAnalysis";
 
 const { Content } = Layout;
@@ -40,8 +40,12 @@ const { Title, Text, Paragraph } = Typography;
 
 const ResumeAnalysisPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { job_post_id, resume_file_id, online_resume_id } = useParams();
   const [selectedMenu, setSelectedMenu] = useState("overview");
+
+  const isResumeAnalysisDetail =
+    location.pathname.startsWith("/resume-analysis/");
 
   const {
     data: analysisData,
@@ -603,7 +607,9 @@ const ResumeAnalysisPage = () => {
                     onClick={() => navigate(-1)}
                     className={styles.backButton}
                   >
-                    Về trang chi tiết việc làm
+                    {isResumeAnalysisDetail
+                      ? "Về trang chi tiết việc làm"
+                      : "Về trang quản lý hồ sơ"}
                   </Button>
                   <Card className={styles.menuCard}>
                     <div className={styles.menuHeader}>Kết quả phân tích</div>

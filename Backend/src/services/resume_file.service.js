@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const ResumeFile = require("../models/resume_file.model");
 const cloudinary = require("../configs/cloudinary");
+const ResumeAnalysis = require("../models/resume_analysis.model");
 
 const createResumeFileService = async (candidate_id, name, file) => {
   if (!candidate_id || !name) {
@@ -132,12 +133,19 @@ const deleteResumeFileService = async (resume_file_id) => {
   if (!resumeFile) {
     throw new AppError("Không tìm thấy resume", 404);
   }
+
+  // Xóa file trên Cloudinary nếu có
   if (resumeFile.path) {
     const publicId = resumeFile.path.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(`resumes/${publicId}`, {
       resource_type: "raw",
     });
   }
+
+  // Xóa các bản ghi ResumeAnalysis liên quan
+  await ResumeAnalysis.deleteMany({ resume_file_id });
+
+  // Xóa ResumeFile
   const result = await ResumeFile.deleteOne({ _id: resume_file_id });
   return result;
 };

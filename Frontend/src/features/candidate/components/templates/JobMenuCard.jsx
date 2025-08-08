@@ -10,8 +10,10 @@ import { AuthContext } from "../../../../contexts/auth.context";
 import useGetJobPostSaveByCandidate from "../../../candidate/hooks/Candidate_Save_Job_Post/useGetJobPostSaveByCandidate";
 import useGetListCompany from "../../../company/hooks/Company/useGetListCompany";
 import useGetApplicationsByCandidateId from "../../../application/hooks/useGetApplicationsByCandidateId";
+import useGetListResumeAnalysisByCandidateId from "../../../analysis/hooks/useGetListResumeAnalysisByCandidateId";
 import JobGrid from "../../../job/components/templates/JobGrid";
 import ApplicationGrid from "../../../application/components/templates/ApplicationGrid";
+import AnalyzeGrid from "../../../analysis/components/templates/AnalyzeGrid";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
@@ -101,6 +103,12 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
   const { data: savedJobPosts, isLoading: isLoadingSavedJobPosts } =
     useGetJobPostSaveByCandidate(candidateId);
 
+  const {
+    data: resumeAnalyses,
+    isLoading: isLoadingResumeAnalyses,
+    isError: isErrorResumeAnalyses,
+  } = useGetListResumeAnalysisByCandidateId(candidateId);
+
   const { data: companies, isLoading: isLoadingCompanies } =
     useGetListCompany();
 
@@ -135,13 +143,34 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
                   job?.max_salary_range / 1000000
                 ).toFixed(0)} triệu`,
           tags: job?.skills || [],
-          saved: true, // Công việc đã lưu nên mặc định true
+          saved: true,
           posted: job?.createdAt,
           status: job?.status,
           expired: job?.expired_date,
         };
       });
   }, [savedJobPosts, companies]);
+
+  // Chuẩn hóa dữ liệu resumeAnalyses
+  const sortedResumeAnalyses = React.useMemo(() => {
+    if (!resumeAnalyses || !companies) return [];
+
+    return resumeAnalyses
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map((item) => {
+        const job = item.job_post_id;
+        const company = companies.find(
+          (c) => c._id === job?.employer_id?.company_id
+        );
+        return {
+          ...item,
+          company: company ? company.name : "Công ty không xác định",
+          logo:
+            company?.logo ||
+            "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750609630/CompanyLogoDefault_c61eos.png",
+        };
+      });
+  }, [resumeAnalyses, companies]);
 
   const sortedApplications = Array.isArray(applications)
     ? [...applications].sort(
@@ -173,16 +202,26 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
           <ApplicationGrid applications={sortedApplications} fullWidth={true} />
         );
       case "resumeAnalysisHistory":
-        return (
-          <EmptyState>
-            <EmptyText>
-              Chưa có lịch sử! Khám phá việc làm để phân tích CV
-            </EmptyText>
-            <ExploreButton onClick={() => navigate("/jobs")}>
-              Khám phá việc làm
-            </ExploreButton>
-          </EmptyState>
-        );
+        if (isLoadingResumeAnalyses) {
+          return <Spin tip="Đang tải lịch sử phân tích CV..." />;
+        }
+        if (
+          isErrorResumeAnalyses ||
+          !sortedResumeAnalyses ||
+          sortedResumeAnalyses.length === 0
+        ) {
+          return (
+            <EmptyState>
+              <EmptyText>
+                Chưa có lịch sử! Khám phá việc làm để phân tích CV
+              </EmptyText>
+              <ExploreButton onClick={() => navigate("/jobs")}>
+                Khám phá việc làm
+              </ExploreButton>
+            </EmptyState>
+          );
+        }
+        return <AnalyzeGrid analyses={sortedResumeAnalyses} fullWidth={true} />;
       case "saved":
         if (isLoadingSavedJobPosts || isLoadingCompanies) {
           return <Spin tip="Đang tải bài đăng đã lưu..." />;

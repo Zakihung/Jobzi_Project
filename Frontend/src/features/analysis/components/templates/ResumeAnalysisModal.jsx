@@ -67,13 +67,10 @@ const ResumeAnalysisModal = ({
 
       // Xác định resume_file_id và online_resume_id dựa trên selectedCV
       const resume_file_id = selectedCV !== "online" ? selectedCV : "null";
-      const online_resume_id =
-        selectedCV === "online" ? result.online_resume_id : "null";
+      result?.online_resume_id === "null";
 
       // Chuyển hướng đến ResumeAnalysisPage với các tham số
-      navigate(
-        `/resume-analysis/${jobPostId}/${resume_file_id}/${online_resume_id}`
-      );
+      navigate(`/resume-analysis/${jobPostId}/${resume_file_id}`);
       setSelectedCV(null);
     } catch (error) {
       // Lỗi đã được xử lý trong onSubmit

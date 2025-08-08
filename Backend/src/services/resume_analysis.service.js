@@ -308,6 +308,26 @@ const getLatestResumeAnalysisService = async (
   return analysis;
 };
 
+const getListResumeAnalysisByCandidateIdService = async (candidate_id) => {
+  if (!mongoose.Types.ObjectId.isValid(candidate_id)) {
+    throw new AppError("ID ứng viên không hợp lệ", 400);
+  }
+
+  // Tìm tất cả resume_file_id của candidate
+  const resumeFiles = await ResumeFile.find({ candidate_id }).select("_id");
+  const resumeFileIds = resumeFiles.map((file) => file._id);
+
+  // Lấy tất cả phân tích có resume_file_id thuộc danh sách trên
+  const result = await ResumeAnalysis.find({
+    resume_file_id: { $in: resumeFileIds },
+  })
+    .populate("job_post_id")
+    .populate("online_resume_id")
+    .populate("resume_file_id");
+
+  return result;
+};
+
 const deleteResumeAnalysisService = async (analysis_id) => {
   if (!mongoose.Types.ObjectId.isValid(analysis_id)) {
     throw new AppError("ID phân tích không hợp lệ", 400);
@@ -330,6 +350,7 @@ module.exports = {
   processResumeAnalysisService,
   updateResumeAnalysisService,
   getListResumeAnalysisService,
+  getListResumeAnalysisByCandidateIdService,
   getResumeAnalysisByIdService,
   getLatestResumeAnalysisService,
   getResumeAnalysisByOnlineResumeIdService,

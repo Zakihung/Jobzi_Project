@@ -24,6 +24,12 @@ const getListResumeAnalysisApi = () => {
   return axios.get(URL_API);
 };
 
+// API để lấy danh sách resume analysis theo candidate_id
+const getListResumeAnalysisByCandidateIdApi = (candidate_id) => {
+  const URL_API = `/api/resume-analysis/candidate/${candidate_id}`;
+  return axios.get(URL_API);
+};
+
 // API để lấy resume analysis theo ID
 const getResumeAnalysisByIdApi = (id) => {
   const URL_API = `/api/resume-analysis/${id}`;
@@ -76,6 +82,7 @@ export {
   processResumeAnalysisByFileApi,
   processResumeAnalysisByOnlineApi,
   getListResumeAnalysisApi,
+  getListResumeAnalysisByCandidateIdApi,
   getResumeAnalysisByIdApi,
   getResumeAnalysisByOnlineResumeIdApi,
   getResumeAnalysisByResumeFileIdApi,
