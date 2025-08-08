@@ -12,15 +12,43 @@ const AllJobsSectionWrapper = styled.section`
   background: #f8f9fa;
   border-radius: 24px;
   margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0;
+    border-radius: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0.5rem 0;
+    border-radius: 12px;
+  }
 `;
 
 const SectionContainer = styled.div`
   margin: 0 20px;
   padding: 0;
+
+  @media (max-width: 576px) {
+    margin: 0 10px;
+  }
 `;
 
 const SkeletonContainer = styled.div`
   padding: 16px;
+
+  @media (max-width: 576px) {
+    padding: 8px;
+  }
+`;
+
+const FilterRow = styled(Row)`
+  gap: 8px;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const AllJobsSection = ({
@@ -86,11 +114,7 @@ const AllJobsSection = ({
     return (
       <AllJobsSectionWrapper>
         <SectionContainer>
-          <Row
-            align="middle"
-            justify="space-between"
-            style={{ gap: "8px", marginBottom: "24px" }}
-          >
+          <FilterRow align="middle" justify="space-between">
             <Col>
               <Row style={{ gap: "8px" }}>
                 {Array(4)
@@ -103,13 +127,13 @@ const AllJobsSection = ({
             <Col>
               <Skeleton.Button active size="large" />
             </Col>
-          </Row>
+          </FilterRow>
           <SkeletonContainer>
             <Row gutter={[16, 16]}>
               {Array(6)
                 .fill()
                 .map((_, index) => (
-                  <Col key={index} xs={24} sm={12} md={8}>
+                  <Col key={index} xs={24} sm={12} md={8} lg={6}>
                     <Skeleton
                       active
                       avatar={{ size: 70, shape: "square" }}
@@ -128,11 +152,7 @@ const AllJobsSection = ({
   return (
     <AllJobsSectionWrapper>
       <SectionContainer>
-        <Row
-          align="middle"
-          justify="space-between"
-          style={{ gap: "8px", marginBottom: "24px" }}
-        >
+        <FilterRow align="middle" justify="space-between">
           <Col>
             <Row style={{ gap: "8px" }}>
               <FilterPopover
@@ -168,7 +188,7 @@ const AllJobsSection = ({
           <Col>
             <ResetFilterButton onClick={handleResetFilters} />
           </Col>
-        </Row>
+        </FilterRow>
         {currentJobs.length > 0 ? (
           <JobGrid jobs={currentJobs} />
         ) : (

@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom";
 const AuthButtonContainer = styled.div`
   display: flex;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 // Nút chính

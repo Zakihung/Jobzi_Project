@@ -7,7 +7,7 @@ import { AuthContext } from "../../contexts/auth.context";
 const NavSectionWrapper = styled.div`
   flex: 1;
   margin-left: 15px;
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -38,7 +38,7 @@ const NavButton = styled(Button)`
   }
 `;
 
-const NavSection = () => {
+const NavSection = ({ current, setCurrent, isMobileMenuOpen }) => {
   const { auth } = useContext(AuthContext);
   const role = auth?.user?.role;
   const navigate = useNavigate();
@@ -52,16 +52,13 @@ const NavSection = () => {
 
   const menuEmployerItems = [
     { key: "dashboard", label: "Tổng quan", path: "/employer" },
-    {
-      key: "jobs",
-      label: "Việc làm",
-      path: "/employer/jobs",
-    },
+    { key: "jobs", label: "Việc làm", path: "/employer/jobs" },
     { key: "candidates", label: "Ứng viên", path: "/employer/candidates" },
     { key: "company", label: "Công ty", path: "/employer/company" },
   ];
 
-  const handleClick = (path) => {
+  const handleClick = (path, key) => {
+    setCurrent(key);
     navigate(path);
   };
 
@@ -79,7 +76,7 @@ const NavSection = () => {
             <NavButton
               key={item.key}
               className={isActive ? "active" : ""}
-              onClick={() => handleClick(item.path)}
+              onClick={() => handleClick(item.path, item.key)}
             >
               {item.label}
             </NavButton>

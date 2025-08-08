@@ -27,7 +27,7 @@ const LogoImage = styled.img`
     transform: scale(1.05);
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     height: 36px;
   }
 `;
@@ -39,9 +39,9 @@ const LogoTextWrapper = styled.div`
 `;
 
 const LogoText = styled.span`
-  font-size: 25px; /* Tăng kích thước */
+  font-size: 25px;
   font-weight: 700;
-  letter-spacing: 3px; /* Tăng khoảng cách giữa các chữ */
+  letter-spacing: 3px;
   background: linear-gradient(to right, #7b9bff, #577cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -55,7 +55,7 @@ const LogoText = styled.span`
 `;
 
 const Slogan = styled.span`
-  font-size: 10px; /* Giảm để slogan gọn */
+  font-size: 10px;
   font-weight: 500;
   background: linear-gradient(to right, #7b9bff, #577cf6);
   -webkit-background-clip: text;

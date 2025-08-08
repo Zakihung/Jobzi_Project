@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Layout, Row, Col } from "antd";
 import styled from "styled-components";
 import LogoSection from "../organisms/LogoSection";
@@ -6,6 +6,7 @@ import NavSection from "../organisms/NavSection";
 import UserMenu from "../../features/auth/components/templates/UserMenu";
 import MobileMenuButton from "../organisms/MobileMenuButton";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/auth.context";
 
 const { Header: AntHeader } = Layout;
 
@@ -40,16 +41,20 @@ const HeaderContainer = styled.div`
 
 const Header = () => {
   const [current, setCurrent] = useState("home");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Xử lý sự kiện đăng nhập
   const handleSignin = () => {
     navigate("/signin");
   };
 
-  // Xử lý sự kiện đăng ký
   const handleSignup = () => {
     navigate("/signup");
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
@@ -58,9 +63,22 @@ const Header = () => {
         <JobziHeader>
           <HeaderContainer>
             <LogoSection setCurrent={setCurrent} />
-            <NavSection current={current} setCurrent={setCurrent} />
-            <MobileMenuButton />
-            <UserMenu onSignin={handleSignin} onSignup={handleSignup} />
+            <NavSection
+              current={current}
+              setCurrent={setCurrent}
+              isMobileMenuOpen={isMobileMenuOpen}
+            />
+            {auth?.isAuthenticated ? (
+              <>
+                <MobileMenuButton onClick={toggleMobileMenu} />
+                <UserMenu onSignin={handleSignin} onSignup={handleSignup} />
+              </>
+            ) : (
+              <>
+                <UserMenu onSignin={handleSignin} onSignup={handleSignup} />
+                <MobileMenuButton onClick={toggleMobileMenu} />
+              </>
+            )}
           </HeaderContainer>
         </JobziHeader>
       </Col>

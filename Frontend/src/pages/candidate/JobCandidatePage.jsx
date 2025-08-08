@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Layout, Row, Col } from "antd";
+import { Layout, Row, Col, Skeleton } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
 import AllJobsSection from "../../features/job/components/templates/AllJobsSection";
@@ -17,6 +17,11 @@ const JobpageLayout = styled(Layout)`
 
 const JobpageContent = styled(Content)`
   background: #ffffff;
+  padding: 16px 0;
+
+  @media (max-width: 576px) {
+    padding: 8px 0;
+  }
 `;
 
 const JobCandidatePage = () => {
@@ -185,11 +190,39 @@ const JobCandidatePage = () => {
     setCurrentPage(page);
   };
 
+  if (isLoadingJobs || isLoadingCompanies) {
+    return (
+      <JobpageLayout>
+        <JobpageContent>
+          <Row justify={"center"}>
+            <Col xs={24} sm={22} md={21}>
+              <Skeleton
+                active
+                paragraph={{ rows: 4 }}
+                title={{ width: "80%" }}
+                style={{ margin: "16px 0" }}
+              />
+            </Col>
+          </Row>
+          <Row justify={"center"}>
+            <Col xs={24} sm={22} md={21}>
+              <Skeleton
+                active
+                paragraph={{ rows: 6 }}
+                title={{ width: "60%" }}
+              />
+            </Col>
+          </Row>
+        </JobpageContent>
+      </JobpageLayout>
+    );
+  }
+
   return (
     <JobpageLayout>
       <JobpageContent>
         <Row justify={"center"}>
-          <Col span={21}>
+          <Col xs={24} sm={22} md={21}>
             <BannerSection
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
@@ -201,7 +234,7 @@ const JobCandidatePage = () => {
           </Col>
         </Row>
         <Row justify={"center"}>
-          <Col span={21}>
+          <Col xs={24} sm={22} md={21}>
             <AllJobsSection
               filters={filters}
               handleFilterChange={handleFilterChange}

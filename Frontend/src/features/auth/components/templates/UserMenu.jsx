@@ -95,12 +95,6 @@ const GreetingText = styled.div`
   align-items: center;
 
   @media (max-width: 768px) {
-    font-size: 14px;
-    padding: 6px 10px;
-    margin-right: 12px;
-  }
-
-  @media (max-width: 480px) {
     display: none;
   }
 `;
@@ -255,23 +249,7 @@ const UserMenu = ({ onSignin, onSignup }) => {
           Đăng tuyển dụng
         </PostJobButton>
       )}
-      {/* <NotificationButton
-        icon={
-          <Badge
-            count={5}
-            style={{
-              backgroundColor: "#ff0000",
-              top: "-3px",
-              right: "-3px",
-            }}
-          >
-            <BellOutlined style={{ fontSize: "24px" }} />
-          </Badge>
-        }
-        onClick={() => handleMenuClick("notifications")}
-      /> */}
       {role === "candidate" && <GreetingText>Chào, {name}</GreetingText>}
-
       <Dropdown
         menu={{ items: menuItems }}
         placement="bottomRight"

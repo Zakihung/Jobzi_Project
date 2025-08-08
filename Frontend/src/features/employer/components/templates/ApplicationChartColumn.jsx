@@ -8,6 +8,7 @@ import useGetJobPostsByEmployerId from "../../../postjob/hooks/Job_Post/useGetJo
 import useGetApplicationCountByStatusForEmployer from "../../../application/hooks/useGetApplicationCountByStatusForEmployer";
 import useGetApplicationCountByStatusForJobPost from "../../../application/hooks/useGetApplicationCountByStatusForJobPost";
 import useGetTotalApplicationsForEmployer from "../../../application/hooks/useGetTotalApplicationsForEmployer";
+import useGetNumberOfApplicationByJobPostId from "../../../application/hooks/useGetNumberOfApplicationByJobPostId"; // Thêm hook mới
 
 const { Title, Text } = Typography;
 
@@ -85,12 +86,11 @@ const ChartControls = styled(Space)`
 `;
 
 const ChartFilter = styled(Select)`
-  min-width: 220px;
+  width: 255px;
   height: 40px;
-  width: 100%;
 
   @media (max-width: 576px) {
-    min-width: auto;
+    width: 220px;
     height: 36px;
   }
 `;
@@ -168,6 +168,10 @@ const ApplicationChartColumn = () => {
     );
   const { data: totalApplications, isLoading: isLoadingTotal } =
     useGetTotalApplicationsForEmployer(employerId);
+  const { data: jobPostApplications, isLoading: isLoadingJobPostApplications } =
+    useGetNumberOfApplicationByJobPostId(
+      chartFilter !== "all" ? chartFilter : null
+    ); // Thêm hook mới
 
   const chartData = {
     labels: [
@@ -216,7 +220,12 @@ const ApplicationChartColumn = () => {
     })),
   ];
 
-  if (isLoadingJobPosts || isLoadingEmployerStats || isLoadingJobPostStats) {
+  if (
+    isLoadingJobPosts ||
+    isLoadingEmployerStats ||
+    isLoadingJobPostStats ||
+    isLoadingJobPostApplications
+  ) {
     return (
       <Col xs={24} sm={24} md={12} lg={14}>
         <RightColumn>
@@ -248,7 +257,13 @@ const ApplicationChartColumn = () => {
             />
             <TotalApplicationsText>
               Tổng số ứng viên:{" "}
-              {isLoadingTotal ? "Đang tải..." : totalApplications?.count || 0}
+              {chartFilter === "all"
+                ? isLoadingTotal
+                  ? "Đang tải..."
+                  : totalApplications?.count || 0
+                : isLoadingJobPostApplications
+                ? "Đang tải..."
+                : jobPostApplications?.count || 0}
             </TotalApplicationsText>
           </ChartControls>
           <ChartWrapper>

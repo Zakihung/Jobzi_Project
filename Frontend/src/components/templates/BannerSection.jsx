@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography } from "antd";
+import { Typography, Skeleton } from "antd";
 import styled from "styled-components";
 import SearchBar from "../organisms/SearchBar";
 
@@ -12,8 +12,15 @@ const BannerSectionWrapper = styled.section`
   position: relative;
   overflow: hidden;
   border-radius: 24px;
+
+  @media (max-width: 768px) {
+    padding: 24px 0;
+    border-radius: 16px;
+  }
+
   @media (max-width: 576px) {
-    padding: 40px 0;
+    padding: 16px 0;
+    border-radius: 12px;
   }
 `;
 
@@ -42,6 +49,10 @@ const BannerContainer = styled.div`
   position: relative;
   z-index: 2;
   text-align: center;
+
+  @media (max-width: 576px) {
+    padding: 0 12px;
+  }
 `;
 
 const BannerTitle = styled(Title)`
@@ -52,11 +63,13 @@ const BannerTitle = styled(Title)`
     margin-bottom: 16px !important;
     line-height: 1.2 !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
     @media (max-width: 768px) {
       font-size: 36px !important;
     }
+
     @media (max-width: 576px) {
-      font-size: 28px !important;
+      font-size: 24px !important;
     }
   }
 `;
@@ -77,8 +90,25 @@ const BannerDescription = styled(Text)`
   margin-left: auto;
   margin-right: auto;
   display: block;
+
   @media (max-width: 768px) {
     font-size: 16px;
+    max-width: 500px;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+    max-width: 100%;
+  }
+`;
+
+const SkeletonContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (max-width: 576px) {
+    padding: 0 12px;
   }
 `;
 
@@ -89,7 +119,24 @@ const BannerSection = ({
   setSelectedLocation,
   handleSearch,
   page,
+  isLoading,
 }) => {
+  if (isLoading) {
+    return (
+      <BannerSectionWrapper>
+        <SkeletonContainer>
+          <Skeleton
+            active
+            title={{ width: "60%" }}
+            paragraph={{ rows: 1, width: "80%" }}
+            style={{ marginBottom: 24 }}
+          />
+          <Skeleton.Input active size="large" block />
+        </SkeletonContainer>
+      </BannerSectionWrapper>
+    );
+  }
+
   return (
     <BannerSectionWrapper>
       <BannerBackground />

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Layout, Row, Col } from "antd";
+import { Layout, Row, Col, Skeleton } from "antd";
 import styled from "styled-components";
 import BannerSection from "../../components/templates/BannerSection";
 import AllCompaniesSection from "../../features/company/components/templates/AllCompaniesSection";
@@ -16,6 +16,11 @@ const CompanypageLayout = styled(Layout)`
 
 const CompanypageContent = styled(Content)`
   background: #ffffff;
+  padding: 16px 0;
+
+  @media (max-width: 576px) {
+    padding: 8px 0;
+  }
 `;
 
 const CompanyPage = () => {
@@ -120,11 +125,39 @@ const CompanyPage = () => {
     setCurrentPage(page);
   };
 
+  if (isLoadingCompanies) {
+    return (
+      <CompanypageLayout>
+        <CompanypageContent>
+          <Row justify={"center"}>
+            <Col xs={24} sm={22} md={21}>
+              <Skeleton
+                active
+                paragraph={{ rows: 4 }}
+                title={{ width: "80%" }}
+                style={{ margin: "16px 0" }}
+              />
+            </Col>
+          </Row>
+          <Row justify={"center"}>
+            <Col xs={24} sm={22} md={21}>
+              <Skeleton
+                active
+                paragraph={{ rows: 6 }}
+                title={{ width: "60%" }}
+              />
+            </Col>
+          </Row>
+        </CompanypageContent>
+      </CompanypageLayout>
+    );
+  }
+
   return (
     <CompanypageLayout>
       <CompanypageContent>
         <Row justify={"center"}>
-          <Col span={21}>
+          <Col xs={24} sm={22} md={21}>
             <BannerSection
               searchKeyword={searchKeyword}
               setSearchKeyword={setSearchKeyword}
@@ -132,11 +165,12 @@ const CompanyPage = () => {
               setSelectedLocation={setSelectedLocation}
               handleSearch={handleSearch}
               page={page}
+              isLoading={isLoadingCompanies}
             />
           </Col>
         </Row>
         <Row justify={"center"}>
-          <Col span={21}>
+          <Col xs={24} sm={22} md={21}>
             <AllCompaniesSection
               filters={filters}
               handleFilterChange={handleFilterChange}
