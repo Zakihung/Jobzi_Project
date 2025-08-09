@@ -81,7 +81,7 @@ const HeroTitle = styled(Title)`
     line-height: 1.2 !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     @media (min-width: 768px) {
-      font-size: 52px !important;
+      font-size: 45px !important;
       margin-bottom: 24px !important;
     }
   }
