@@ -38,6 +38,14 @@ const StyledContent = styled(Content)`
 const StyledRow = styled(Row)`
   margin: 0 auto;
   padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0.5rem;
+  }
 `;
 
 const NoResults = styled.div`
@@ -46,6 +54,10 @@ const NoResults = styled.div`
   text-align: center;
   display: block;
   margin: 40px 0;
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+  }
 `;
 
 const JobPostDetailPage = () => {
@@ -196,15 +208,17 @@ const JobPostDetailPage = () => {
         <StyledContent>
           <Row justify={"center"}>
             <Col
-              span={21}
+              xs={24}
+              sm={22}
+              md={21}
               style={{ backgroundColor: "#f8f9fa", borderRadius: 24 }}
             >
-              <StyledRow gutter={[24, 24]} justify="center">
-                <Col span={17}>
+              <StyledRow gutter={[16, 16]} justify="center">
+                <Col xs={24} md={17}>
                   <SkeletonJobPostTitle />
                   <SkeletonJobPostDetail />
                 </Col>
-                <Col span={7}>
+                <Col xs={24} md={7}>
                   <SkeletonJobPostCompany />
                   <SkeletonJobPostGeneralInfo />
                 </Col>
@@ -221,13 +235,14 @@ const JobPostDetailPage = () => {
       <StyledContent>
         <Row justify={"center"}>
           <Col
-            span={21}
+            xs={24}
+            sm={23}
+            md={22}
+            lg={21}
             style={{ backgroundColor: "#f8f9fa", borderRadius: 24 }}
           >
-            <StyledRow gutter={[24, 24]} justify="center">
-              {/* Left Section */}
-              <Col span={17}>
-                {/* Row 1 Col 1: Job Title */}
+            <StyledRow gutter={[16, 16]} justify="center">
+              <Col xs={24} md={17}>
                 <JobPostTitle
                   job={jobPostData}
                   isSaved={isSaved}
@@ -235,17 +250,10 @@ const JobPostDetailPage = () => {
                   onApply={handleApply}
                   onAnalyze={handleAnalyze}
                 />
-
-                {/* Row 2 Col 1: Job Detail */}
                 <JobPostDetail job={jobPostData} />
               </Col>
-
-              {/* Right Section */}
-              <Col span={7}>
-                {/* Row 1 Col 2: Company Info */}
+              <Col xs={24} md={7}>
                 <JobPostCompany companyId={companyId} />
-
-                {/* Row 2 Col 2: General Info */}
                 <JobPostGeneralInfo job={jobPostData} />
               </Col>
             </StyledRow>

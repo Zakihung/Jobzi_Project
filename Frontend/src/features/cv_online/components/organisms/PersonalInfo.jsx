@@ -239,7 +239,7 @@ const PersonalInfo = ({
           if (avatarUrl) {
             setAuth({
               ...auth,
-              user: { ...auth.user, avatar: avatarUrl },
+              user: { ...auth?.user, avatar: avatarUrl },
             });
             // Reset modal state
             setIsUploadingAvatar(false);
@@ -310,16 +310,16 @@ const PersonalInfo = ({
   };
 
   const showEditModal = () => {
-    const dateOfBirth = parseDateToDayjs(personalInfo.date_of_birth);
+    const dateOfBirth = parseDateToDayjs(personalInfo?.date_of_birth);
 
     form.setFieldsValue({
-      full_name: personalInfo.full_name,
-      phone_number: personalInfo.phone_number,
+      full_name: personalInfo?.full_name,
+      phone_number: personalInfo?.phone_number,
       date_of_birth: dateOfBirth,
-      email: personalInfo.email,
-      address: personalInfo.address,
-      zalo: personalInfo.zalo,
-      facebook: personalInfo.facebook,
+      email: personalInfo?.email,
+      address: personalInfo?.address,
+      zalo: personalInfo?.zalo,
+      facebook: personalInfo?.facebook,
     });
     setIsEditModalVisible(true);
   };
@@ -332,11 +332,11 @@ const PersonalInfo = ({
         date_of_birth: values.date_of_birth
           ? values.date_of_birth.format("YYYY-MM-DD")
           : "",
-        email: personalInfo.email, // Không cập nhật email
+        email: personalInfo?.email, // Không cập nhật email
         address: values.address || "",
         zalo: values.zalo || "",
         facebook: values.facebook || "",
-        avatar: personalInfo.avatar || "",
+        avatar: personalInfo?.avatar || "",
       };
 
       mutate(
@@ -346,7 +346,7 @@ const PersonalInfo = ({
             setPersonalInfo({
               ...personalInfo,
               ...updatedPersonalInfo,
-              jobStatus: personalInfo.jobStatus,
+              jobStatus: personalInfo?.jobStatus,
             });
             setIsEditModalVisible(false);
             message.success("Cập nhật thông tin cá nhân thành công");
@@ -401,7 +401,7 @@ const PersonalInfo = ({
   };
 
   return (
-    <Section ref={sectionRefs.personalInfo}>
+    <Section ref={sectionRefs?.personalInfo}>
       <SectionTitle level={3}>Thông tin cá nhân</SectionTitle>
 
       {/* Hàng 1 */}
@@ -409,7 +409,7 @@ const PersonalInfo = ({
         <AvatarContainer>
           <AvatarSpace
             size={80}
-            src={personalInfo.avatar}
+            src={personalInfo?.avatar}
             onClick={() => setIsChangeAvatarModalVisible(true)}
           />
           <AvatarOverlay onClick={() => setIsChangeAvatarModalVisible(true)}>
@@ -420,10 +420,10 @@ const PersonalInfo = ({
         <InfoRight>
           <NameAndStatus>
             <Title level={4} style={{ marginBottom: 4 }}>
-              {personalInfo.full_name || "---"}
+              {personalInfo?.full_name || "---"}
             </Title>
             <Text type="secondary" style={{ fontWeight: 500 }}>
-              Trạng thái: {personalInfo.jobStatus || "---"}
+              Trạng thái: {personalInfo?.jobStatus || "---"}
             </Text>
           </NameAndStatus>
 
@@ -449,7 +449,7 @@ const PersonalInfo = ({
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Số điện thoại</InfoTitle>
-            <InfoValue>{personalInfo.phone_number || "---"}</InfoValue>
+            <InfoValue>{personalInfo?.phone_number || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -460,7 +460,7 @@ const PersonalInfo = ({
           <InfoContent>
             <InfoTitle>Ngày sinh</InfoTitle>
             <InfoValue>
-              {formatDateForDisplay(personalInfo.date_of_birth)}
+              {formatDateForDisplay(personalInfo?.date_of_birth)}
             </InfoValue>
           </InfoContent>
         </InfoItem>
@@ -471,7 +471,7 @@ const PersonalInfo = ({
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Email</InfoTitle>
-            <InfoValue>{personalInfo.email || "---"}</InfoValue>
+            <InfoValue>{personalInfo?.email || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -481,7 +481,7 @@ const PersonalInfo = ({
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Địa chỉ</InfoTitle>
-            <InfoValue>{personalInfo.address || "---"}</InfoValue>
+            <InfoValue>{personalInfo?.address || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -502,7 +502,7 @@ const PersonalInfo = ({
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Zalo</InfoTitle>
-            <InfoValue>{personalInfo.zalo || "---"}</InfoValue>
+            <InfoValue>{personalInfo?.zalo || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
 
@@ -512,7 +512,7 @@ const PersonalInfo = ({
           </InfoIcon>
           <InfoContent>
             <InfoTitle>Facebook</InfoTitle>
-            <InfoValue>{personalInfo.facebook || "---"}</InfoValue>
+            <InfoValue>{personalInfo?.facebook || "---"}</InfoValue>
           </InfoContent>
         </InfoItem>
       </InfoGrid>

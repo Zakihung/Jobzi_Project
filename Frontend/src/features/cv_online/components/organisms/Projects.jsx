@@ -246,7 +246,7 @@ const Projects = ({
   };
 
   return (
-    <Section ref={sectionRefs.projects}>
+    <Section ref={sectionRefs?.projects}>
       <SectionTitle level={3}>Kinh nghiệm dự án</SectionTitle>
       {projectList.length === 0 && (
         <div style={{ marginBottom: 16 }}>

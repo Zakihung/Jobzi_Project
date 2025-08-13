@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Menu } from "antd";
+import { Card, Menu, Skeleton } from "antd";
 import {
   UserOutlined,
   SearchOutlined,
@@ -16,6 +16,7 @@ const StickyMenu = styled.div`
   position: sticky;
   top: 76px;
   z-index: 100;
+
   @media (max-width: 768px) {
     position: static;
   }
@@ -26,18 +27,22 @@ const MenuCard = styled(Card)`
   border: none;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: #ffffff;
-  padding: 5px;
-  margin-bottom: 16px;
+  padding: 4px; /* Giảm padding */
+  margin-bottom: 12px;
+
+  @media (max-width: 768px) {
+    padding: 3px;
+  }
 `;
 
 const NavMenu = styled(Menu)`
   border: none !important;
 
   .ant-menu-item {
-    font-size: 14px;
+    font-size: 13px; /* Giảm font-size */
     font-weight: 500;
     color: #666;
-    border-radius: 12px;
+    border-radius: 10px;
     transition: all 0.3s ease;
   }
 
@@ -52,7 +57,7 @@ const NavMenu = styled(Menu)`
   }
 
   .ant-menu-item-icon {
-    font-size: 18px;
+    font-size: 16px; /* Giảm kích thước icon */
     color: #577cf6;
   }
 
@@ -62,6 +67,9 @@ const NavMenu = styled(Menu)`
 
   @media (max-width: 768px) {
     .ant-menu-item {
+      font-size: 12px;
+    }
+    .ant-menu-item-icon {
       font-size: 14px;
     }
   }
@@ -106,6 +114,7 @@ const NavigationColumn = ({ sectionRefs }) => {
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
+
   return (
     <StickyMenu>
       <MenuCard>

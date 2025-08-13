@@ -48,7 +48,7 @@ const JobStatus = ({ jobStatus, setJobStatus, sectionRefs, candidateId }) => {
     );
   };
   return (
-    <Section ref={sectionRefs.jobStatus}>
+    <Section ref={sectionRefs?.jobStatus}>
       <SectionTitle level={3}>Trạng thái tìm việc</SectionTitle>
       <StatusSelect value={jobStatus} onChange={handleChange}>
         {Object.entries(jobStatusOptions).map(([value, label]) => (

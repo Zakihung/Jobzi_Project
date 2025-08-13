@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Card, Menu, Typography, Space, Spin, Button } from "antd";
+import { Card, Menu, Typography, Space, Spin, Button, Skeleton } from "antd";
 import {
   FileTextOutlined,
   HeartOutlined,
@@ -30,11 +30,11 @@ const StyledMenu = styled(Menu)`
   border-bottom: 2px solid #f0f0f0;
 
   .ant-menu-item {
-    font-size: 16px;
+    font-size: 15px; /* Giảm font-size */
     font-weight: 600;
-    padding: 0 24px;
-    height: 48px;
-    line-height: 48px;
+    padding: 0 20px;
+    height: 44px; /* Giảm chiều cao */
+    line-height: 44px;
   }
 
   .ant-menu-item-selected {
@@ -45,32 +45,44 @@ const StyledMenu = styled(Menu)`
     border-bottom-color: #577cf6 !important;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 576px) {
     flex-wrap: wrap;
 
     .ant-menu-item {
-      padding: 0 16px;
-      font-size: 14px;
-      height: 40px;
-      line-height: 40px;
+      padding: 0 12px;
+      font-size: 13px;
+      height: 36px;
+      line-height: 36px;
     }
   }
 `;
 
 const MenuContent = styled.div`
-  padding: 24px;
+  padding: 20px; /* Giảm padding */
+
+  @media (max-width: 576px) {
+    padding: 16px;
+  }
 `;
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 40px 0;
+  padding: 32px 0; /* Giảm padding */
+
+  @media (max-width: 576px) {
+    padding: 24px 0;
+  }
 `;
 
 const EmptyText = styled(Text)`
   display: block;
-  font-size: 16px;
+  font-size: 15px; /* Giảm font-size */
   color: #666;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+
+  @media (max-width: 576px) {
+    font-size: 13px;
+  }
 `;
 
 const ExploreButton = styled(Button)`
@@ -78,14 +90,19 @@ const ExploreButton = styled(Button)`
   border-color: #577cf6 !important;
   border-radius: 8px;
   font-weight: 600;
-  height: 40px;
-  padding: 0 24px;
+  height: 36px; /* Giảm chiều cao */
+  padding: 0 20px;
   color: #ffffff !important;
 
   &:hover {
     background: #4c6ef5 !important;
     border-color: #4c6ef5 !important;
     box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+  }
+
+  @media (max-width: 576px) {
+    height: 32px;
+    font-size: 13px;
   }
 `;
 
@@ -181,8 +198,14 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
   const renderContent = () => {
     switch (selectedMenu) {
       case "applied":
-        if (isLoadingApplications) {
-          return <Spin tip="Đang tải danh sách đơn ứng tuyển..." />;
+        if (isLoadingApplications || isLoadingCompanies) {
+          return (
+            <Skeleton
+              active
+              paragraph={{ rows: 6 }}
+              style={{ padding: "20px" }}
+            />
+          );
         }
         if (
           isErrorApplications ||
@@ -202,8 +225,14 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
           <ApplicationGrid applications={sortedApplications} fullWidth={true} />
         );
       case "resumeAnalysisHistory":
-        if (isLoadingResumeAnalyses) {
-          return <Spin tip="Đang tải lịch sử phân tích CV..." />;
+        if (isLoadingResumeAnalyses || isLoadingCompanies) {
+          return (
+            <Skeleton
+              active
+              paragraph={{ rows: 6 }}
+              style={{ padding: "20px" }}
+            />
+          );
         }
         if (
           isErrorResumeAnalyses ||
@@ -224,7 +253,13 @@ const JobMenuCard = ({ selectedMenu, onMenuClick }) => {
         return <AnalyzeGrid analyses={sortedResumeAnalyses} fullWidth={true} />;
       case "saved":
         if (isLoadingSavedJobPosts || isLoadingCompanies) {
-          return <Spin tip="Đang tải bài đăng đã lưu..." />;
+          return (
+            <Skeleton
+              active
+              paragraph={{ rows: 6 }}
+              style={{ padding: "20px" }}
+            />
+          );
         }
         if (!sortedJobPosts || sortedJobPosts.length === 0) {
           return (

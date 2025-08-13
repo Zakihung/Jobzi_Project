@@ -250,7 +250,7 @@ const Education = ({
   };
 
   return (
-    <Section ref={sectionRefs.education}>
+    <Section ref={sectionRefs?.education}>
       <SectionTitle level={3}>Học vấn</SectionTitle>
       {educationList.length === 0 && (
         <div style={{ marginBottom: 16 }}>

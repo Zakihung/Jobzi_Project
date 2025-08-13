@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Typography, Button, Tag, Card, Row, Col, App } from "antd";
 import {
   HeartOutlined,
@@ -32,6 +32,10 @@ const StyledCard = styled(Card)`
 
   @media (max-width: 768px) {
     padding: 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 12px;
   }
 `;
 
@@ -83,6 +87,11 @@ const SaveButton = styled(Button)`
     height: 36px;
     font-size: 13px;
   }
+
+  @media (max-width: 576px) {
+    height: 32px;
+    font-size: 12px;
+  }
 `;
 
 const ApplyButton = styled(Button)`
@@ -105,6 +114,12 @@ const ApplyButton = styled(Button)`
     height: 36px;
     font-size: 13px;
   }
+
+  @media (max-width: 576px) {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 16px;
+  }
 `;
 
 const AnalyzeButton = styled(Button)`
@@ -126,6 +141,11 @@ const AnalyzeButton = styled(Button)`
     height: 36px;
     font-size: 13px;
   }
+
+  @media (max-width: 576px) {
+    height: 32px;
+    font-size: 12px;
+  }
 `;
 
 const JobTag = styled(Tag)`
@@ -134,14 +154,14 @@ const JobTag = styled(Tag)`
   border-radius: 12px;
   font-size: 13px;
   padding: 0;
-  margin: 0;
+  margin: 0 8px 8px 0;
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
 
   @media (max-width: 576px) {
     font-size: 12px;
-    padding: 2px 8px;
+    gap: 0.5rem;
   }
 `;
 
@@ -153,9 +173,16 @@ const IconWrapper = styled.div`
   justify-content: center;
   width: 24px;
   height: 24px;
-  font-size: 20px;
+  font-size: 16px;
   border-radius: 50%;
   padding: 20px;
+
+  @media (max-width: 576px) {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    padding: 16px;
+  }
 `;
 
 const TagContent = styled.div`
@@ -170,6 +197,17 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
   const { mutate: saveJobPost, isLoading: isSaving } = useSaveJobPost();
   const { mutate: unSaveJobPost, isLoading: isUnSaving } = useUnSaveJobPost();
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Thêm state kiểm tra màn hình lớn
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 992);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Handle modal cancel
   const handleModalCancel = () => {
@@ -187,7 +225,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
       unSaveJobPost(data, {
         onSuccess: () => {
           message.success("Đã hủy lưu việc làm này");
-          onSaveJob(false); // Cập nhật trạng thái isSaved
+          onSaveJob(false);
         },
         onError: (error) => {
           message.error(
@@ -199,7 +237,7 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
       saveJobPost(data, {
         onSuccess: () => {
           message.success("Đã lưu việc làm này");
-          onSaveJob(true); // Cập nhật trạng thái isSaved
+          onSaveJob(true);
         },
         onError: (error) => {
           message.error(
@@ -237,7 +275,12 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           <JobTitle level={2}>{job.title}</JobTitle>
         </JobHeader>
       </Row>
-      <Row justify={"space-between"}>
+      <Row
+        wrap={true}
+        gutter={[8, 8]}
+        style={{ marginBottom: "1rem" }}
+        justify={isLargeScreen ? "space-between" : undefined}
+      >
         <JobTag>
           <IconWrapper>
             <DollarOutlined />
@@ -281,8 +324,8 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
           </TagContent>
         </JobTag>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginTop: "1rem" }}>
-        <Col span={13}>
+      <Row gutter={[8, 8]} style={{ marginTop: "1rem" }}>
+        <Col xs={24} sm={12} md={13}>
           <ApplyButton
             type="primary"
             size="large"
@@ -292,12 +335,12 @@ const JobPostTitle = ({ job, isSaved, onSaveJob, onApply, onAnalyze }) => {
             Ứng tuyển ngay
           </ApplyButton>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={6} md={6}>
           <AnalyzeButton type="primary" onClick={handleAnalyze}>
-            Phân tích hồ sơ AI (Beta)
+            Phân tích hồ sơ AI
           </AnalyzeButton>
         </Col>
-        <Col span={5}>
+        <Col xs={24} sm={6} md={5}>
           <SaveButton
             type="text"
             icon={

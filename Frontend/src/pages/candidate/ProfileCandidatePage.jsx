@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Layout, Row, Col, App } from "antd";
+import { Layout, Row, Col, App, Skeleton } from "antd";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AuthContext } from "../../contexts/auth.context";
@@ -34,6 +34,26 @@ const ContentRow = styled(Row)`
 
   @media (max-width: 576px) {
     padding: 0 16px;
+  }
+`;
+
+const ProfileCol = styled(Col)`
+  @media (max-width: 576px) {
+    order: 1; /* ProfileCard hiển thị đầu tiên */
+    margin-bottom: 16px;
+  }
+`;
+
+const JobMenuCol = styled(Col)`
+  @media (max-width: 576px) {
+    order: 2; /* JobMenuCard hiển thị thứ hai */
+    margin-bottom: 16px;
+  }
+`;
+
+const CVManagementCol = styled(Col)`
+  @media (max-width: 576px) {
+    order: 3; /* CVManagementCard hiển thị cuối cùng */
   }
 `;
 
@@ -99,13 +119,13 @@ const ProfileCandidatePage = () => {
 
   const handleStatusChange = (status) => {
     setCandidateStatus(status);
-    setIsPopoverVisible(true); // Mở Popover nếu cần (tùy thuộc vào UX)
+    setIsPopoverVisible(true);
     updateCandidateStatus(
       { id: candidateId, data: { status } },
       {
         onSuccess: () => {
           message.success(`Cập nhật trạng thái thành công`);
-          setIsPopoverVisible(false); // Đóng Popover khi cập nhật thành công
+          setIsPopoverVisible(false);
         },
         onError: () => {
           message.error("Cập nhật trạng thái thất bại!");
@@ -251,24 +271,36 @@ const ProfileCandidatePage = () => {
     setPreviewFileUrl("");
   };
 
-  if (isLoadingCandidateProfile) {
-    return <div>Loading...</div>;
+  // Skeleton loading khi dữ liệu chưa sẵn sàng
+  if (isLoadingCandidateProfile || isLoadingResumeFiles) {
+    return (
+      <ProfileLayout>
+        <Row justify="center">
+          <Col xs={24} sm={23} md={22} lg={21}>
+            <ContentRow gutter={[24, 24]}>
+              <ProfileCol xs={24} lg={9}>
+                <Skeleton active avatar paragraph={{ rows: 2 }} />
+              </ProfileCol>
+              <JobMenuCol xs={24} lg={15}>
+                <Skeleton active paragraph={{ rows: 4 }} />
+              </JobMenuCol>
+              <CVManagementCol xs={24} lg={9}>
+                <Skeleton active paragraph={{ rows: 3 }} />
+              </CVManagementCol>
+            </ContentRow>
+          </Col>
+        </Row>
+      </ProfileLayout>
+    );
   }
 
   return (
     <ProfileLayout>
       <Row justify="center">
-        <Col span={21}>
+        <Col xs={24} sm={23} md={22} lg={21}>
           <ContentRow gutter={[24, 24]}>
-            {/* Left Section: Job Menu */}
-            <Col xs={24} lg={15}>
-              <JobMenuCard
-                selectedMenu={selectedMenu}
-                onMenuClick={handleMenuClick}
-              />
-            </Col>
             {/* Right Section: Profile & CV Management */}
-            <Col span={9}>
+            <ProfileCol xs={24} lg={9}>
               <ProfileCard
                 userData={userData}
                 candidateStatus={candidateStatus}
@@ -284,7 +316,14 @@ const ProfileCandidatePage = () => {
                 onDeleteFile={showDeleteModal}
                 onUploadFile={showUploadModal}
               />
-            </Col>
+            </ProfileCol>
+            {/* Left Section: Job Menu */}
+            <JobMenuCol xs={24} lg={15}>
+              <JobMenuCard
+                selectedMenu={selectedMenu}
+                onMenuClick={handleMenuClick}
+              />
+            </JobMenuCol>
           </ContentRow>
         </Col>
       </Row>

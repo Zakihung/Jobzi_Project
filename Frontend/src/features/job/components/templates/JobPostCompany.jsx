@@ -25,6 +25,10 @@ const StyledCard = styled(Card)`
   @media (max-width: 992px) {
     position: static;
   }
+
+  @media (max-width: 576px) {
+    padding: 16px;
+  }
 `;
 
 const CompanyHeader = styled.div`
@@ -40,12 +44,21 @@ const CompanyHeader = styled.div`
 const CompanyLogo = styled(Avatar)`
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 576px) {
+    width: 60px !important;
+    height: 60px !important;
+  }
 `;
 
 const CompanyNameSpace = styled.div`
   flex: 1;
   height: 80px;
-  overlow: hidden;
+  overflow: hidden;
+
+  @media (max-width: 576px) {
+    height: 60px;
+  }
 `;
 
 const CompanyName = styled(Text)`
@@ -58,6 +71,10 @@ const CompanyName = styled(Text)`
   text-overflow: ellipsis;
   line-height: 1.4em;
   max-height: calc(1.4em * 3);
+
+  @media (max-width: 576px) {
+    font-size: 1rem;
+  }
 `;
 
 const CompanyDetails = styled(Space)`
@@ -77,6 +94,10 @@ const DetailIcon = styled.span`
   color: #577cf6;
   font-size: 16px;
   margin-top: -2px;
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+  }
 `;
 
 const DetailLabel = styled(Text)`
@@ -84,8 +105,12 @@ const DetailLabel = styled(Text)`
   font-size: 14px;
   white-space: nowrap;
   line-height: 1.4em;
-  height: 1.4em; /* cố định chiều cao để luôn 1 dòng */
+  height: 1.4em;
   align-self: flex-start;
+
+  @media (max-width: 576px) {
+    font-size: 12px;
+  }
 `;
 
 const DetailValue = styled(Text)`
@@ -99,7 +124,11 @@ const DetailValue = styled(Text)`
   text-overflow: ellipsis;
   line-height: 1.4em;
   max-height: calc(1.4em * 3);
-  flex: 1; /* giúp chiếm hết phần còn lại */
+  flex: 1;
+
+  @media (max-width: 576px) {
+    font-size: 12px;
+  }
 `;
 
 const ViewCompanyButton = styled(Button)`
@@ -113,6 +142,11 @@ const ViewCompanyButton = styled(Button)`
     background: #4c6ef5 !important;
     border-color: #4c6ef5 !important;
     box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
+  }
+
+  @media (max-width: 576px) {
+    height: 36px;
+    font-size: 12px;
   }
 `;
 

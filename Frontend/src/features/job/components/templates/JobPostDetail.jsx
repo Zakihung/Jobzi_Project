@@ -19,6 +19,10 @@ const StyledCard = styled(Card)`
   @media (max-width: 768px) {
     padding: 16px;
   }
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
 `;
 
 const JobHeader = styled.div`
@@ -55,7 +59,7 @@ const JobSection = styled.div`
 const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-top: 8px;
   margin-bottom: 24px;
 `;
@@ -67,6 +71,11 @@ const TagItem = styled.span`
   padding: 4px 14px;
   border-radius: 16px;
   font-weight: 500;
+
+  @media (max-width: 576px) {
+    font-size: 12px;
+    padding: 3px 10px;
+  }
 `;
 
 const SectionTitle = styled(Title)`
@@ -78,6 +87,10 @@ const SectionTitle = styled(Title)`
   @media (max-width: 768px) {
     font-size: 18px !important;
   }
+
+  @media (max-width: 576px) {
+    font-size: 16px !important;
+  }
 `;
 
 const HtmlContent = styled.div`
@@ -86,7 +99,7 @@ const HtmlContent = styled.div`
   line-height: 1.6;
 
   @media (max-width: 576px) {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   ul {
@@ -115,7 +128,7 @@ const SectionList = styled.ul`
   }
 
   @media (max-width: 576px) {
-    font-size: 14px;
+    font-size: 13px;
   }
 `;
 
@@ -132,13 +145,17 @@ const InfoItem = styled.div`
   margin-bottom: 12px;
 
   @media (max-width: 576px) {
-    font-size: 14px;
+    font-size: 13px;
   }
 `;
 
 const InfoIcon = styled.span`
   color: #577cf6;
   font-size: 16px;
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+  }
 `;
 
 const JobPostDetail = ({ job }) => {
@@ -187,7 +204,7 @@ const JobPostDetail = ({ job }) => {
 
       <JobSection>
         <SectionTitle level={4}>Địa điểm làm việc</SectionTitle>
-        <AdditionalInfo>
+        <AdditionalInfo direction="vertical">
           {detailedLocations.map((loc, index) => (
             <InfoItem key={index}>
               <InfoIcon>
@@ -197,14 +214,6 @@ const JobPostDetail = ({ job }) => {
             </InfoItem>
           ))}
         </AdditionalInfo>
-        {/* <AdditionalInfo direction="vertical">
-          <InfoItem>
-            <InfoIcon>
-              <ClockCircleOutlined />
-            </InfoIcon>
-            <Text>Thời gian làm việc: {job?.workingHours}</Text>
-          </InfoItem>
-        </AdditionalInfo> */}
       </JobSection>
     </StyledCard>
   );

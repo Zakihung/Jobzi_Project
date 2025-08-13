@@ -246,7 +246,7 @@ const WorkExperience = ({
   };
 
   return (
-    <Section ref={sectionRefs.workExperience}>
+    <Section ref={sectionRefs?.workExperience}>
       <SectionTitle level={3}>Kinh nghiệm làm việc</SectionTitle>
       {workExperienceList.length === 0 && (
         <div style={{ marginBottom: 16 }}>

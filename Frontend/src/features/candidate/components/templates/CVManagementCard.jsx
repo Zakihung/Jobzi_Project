@@ -26,7 +26,11 @@ const StyledCard = styled(Card)`
   border: none;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: white;
-  padding: 24px;
+  padding: 16px; /* Giảm padding trên màn hình nhỏ */
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
 `;
 
 const StyledMenu = styled(Menu)`
@@ -36,8 +40,8 @@ const StyledMenu = styled(Menu)`
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
     .ant-dropdown-menu-item {
-      padding: 10px 16px;
-      font-size: 14px;
+      padding: 8px 12px;
+      font-size: 13px; /* Giảm font-size trên màn hình nhỏ */
       transition: all 0.2s ease;
 
       &:hover {
@@ -61,7 +65,7 @@ const MoreButton = styled.button`
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 18px; /* Giảm font-size trên màn hình nhỏ */
     color: #595959;
     padding: 4px;
     border-radius: 4px;
@@ -70,6 +74,10 @@ const MoreButton = styled.button`
     &:hover {
       background-color: #f0f0f0;
     }
+
+    @media (max-width: 576px) {
+      font-size: 16px;
+    }
   }
 `;
 
@@ -77,11 +85,15 @@ const CVManagementTitle = styled(Title)`
   color: #1a1a1a !important;
   font-size: 16px !important;
   font-weight: 600 !important;
-  margin-bottom: 16px !important;
+  margin-bottom: 12px !important;
+
+  @media (max-width: 576px) {
+    font-size: 14px !important;
+  }
 `;
 
 const CVItem = styled(List.Item)`
-  padding: 12px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
@@ -97,27 +109,32 @@ const CVItem = styled(List.Item)`
 
   .ant-list-item-action {
     display: flex;
-    gap: 8px;
+    gap: 6px; /* Giảm gap trên màn hình nhỏ */
   }
 
   .ant-list-item-action .ant-btn {
-    padding: 0 8px;
+    padding: 0 6px;
     font-size: 12px;
-    line-height: 24px;
+    line-height: 22px;
   }
 
   .ant-list-item-action .anticon {
-    font-size: 18px;
+    font-size: 16px; /* Giảm kích thước icon */
   }
 
   @media (max-width: 576px) {
-    font-size: 14px;
+    font-size: 13px;
+    padding: 8px 0;
   }
 `;
 
 const CVIcon = styled(FileTextOutlined)`
   color: #577cf6;
-  font-size: 20px;
+  font-size: 18px; /* Giảm kích thước icon trên màn hình nhỏ */
+
+  @media (max-width: 576px) {
+    font-size: 16px;
+  }
 `;
 
 const UploadCVButton = styled(Button)`
@@ -125,20 +142,19 @@ const UploadCVButton = styled(Button)`
   border-color: #577cf6 !important;
   border-radius: 8px;
   font-weight: 600;
-  height: 40px;
-  margin-top: 16px;
+  height: 36px; /* Giảm chiều cao nút */
+  margin-top: 12px;
   transition: all 0.3s ease;
 
   &:hover {
     background: #4c6ef5 !important;
     border-color: #4c6ef5 !important;
     box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
- 2014-4c6ef5 !important;
-    box-shadow: 0 4px 12px rgba(87, 124, 246, 0.3);
   }
 
-  @media (max-width: 768px) {
-    height: 36px;
+  @media (max-width: 576px) {
+    height: 32px;
+    font-size: 13px;
   }
 `;
 
@@ -152,10 +168,8 @@ const CVManagementCard = ({
 }) => {
   const isPreviewable = (file) => {
     if (!file.path) return false;
-    // Kiểm tra phần mở rộng file hoặc URL từ Cloudinary
     const extension = file.path.split(".").pop()?.toLowerCase();
     const supportedFormats = ["pdf", "jpg", "jpeg", "png"];
-    // Kiểm tra thêm trường hợp Cloudinary URL không có phần mở rộng rõ ràng
     const isRawFile = file.path.includes("/raw/upload/");
     return supportedFormats.includes(extension) || isRawFile;
   };
@@ -167,22 +181,21 @@ const CVManagementCard = ({
       </CVManagementTitle>
       {isLoading ? (
         <List
-          dataSource={[1]}
+          dataSource={[1, 2, 3]} // Hiển thị 3 skeleton items
           renderItem={() => (
             <CVItem>
               <List.Item.Meta
                 avatar={<Skeleton.Avatar active size="default" />}
                 title={
-                  <Skeleton.Input active size="small" style={{ width: 120 }} />
+                  <Skeleton.Input active size="small" style={{ width: 100 }} />
                 }
                 description={
-                  <Skeleton.Input active size="small" style={{ width: 180 }} />
+                  <Skeleton.Input active size="small" style={{ width: 150 }} />
                 }
               />
               <div className="ant-list-item-action">
-                <Skeleton.Button active size="small" style={{ width: 60 }} />
-                <Skeleton.Button active size="small" style={{ width: 32 }} />
-                <Skeleton.Button active size="small" style={{ width: 32 }} />
+                <Skeleton.Button active size="small" style={{ width: 50 }} />
+                <Skeleton.Button active size="small" style={{ width: 30 }} />
               </div>
             </CVItem>
           )}
@@ -248,7 +261,6 @@ const CVManagementCard = ({
         icon={<UploadOutlined />}
         onClick={onUploadFile}
         block
-        // disabled={resumeFiles?.length >= 3}
       >
         Đăng tải tệp CV
       </UploadCVButton>

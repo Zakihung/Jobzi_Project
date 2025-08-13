@@ -307,7 +307,7 @@ const JobExpectation = ({
   };
 
   return (
-    <Section ref={sectionRefs.jobExpectation}>
+    <Section ref={sectionRefs?.jobExpectation}>
       <SectionTitle level={3}>
         Mong muốn tìm việc ({jobExpectations.length}/3)
       </SectionTitle>

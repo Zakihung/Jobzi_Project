@@ -18,6 +18,10 @@ const StyledCard = styled(Card)`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: #ffffff;
   padding: 24px;
+
+  @media (max-width: 576px) {
+    padding: 16px;
+  }
 `;
 
 const SectionTitle = styled(Title)`
@@ -25,10 +29,19 @@ const SectionTitle = styled(Title)`
   font-size: 25px !important;
   font-weight: 700 !important;
   margin-bottom: 16px !important;
+
+  @media (max-width: 768px) {
+    font-size: 22px !important;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 20px !important;
+  }
 `;
 
 const GeneralInfoDetails = styled(Space)`
   width: 100%;
+  flex-wrap: wrap;
 `;
 
 const InfoItem = styled.div`
@@ -44,7 +57,7 @@ const InfoItem = styled.div`
 
   @media (max-width: 576px) {
     font-size: 12px;
-    padding: 2px 8px;
+    gap: 0.5rem;
   }
 `;
 
@@ -62,7 +75,18 @@ const InfoIcon = styled.span`
   svg {
     width: 18px;
     height: 18px;
-    stroke-width: 2; /* cho Lucide icon rõ hơn */
+    stroke-width: 2;
+  }
+
+  @media (max-width: 576px) {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 `;
 

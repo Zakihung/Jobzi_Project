@@ -213,7 +213,7 @@ const Highlights = ({
   };
 
   return (
-    <Section ref={sectionRefs.highlights}>
+    <Section ref={sectionRefs?.highlights}>
       <SectionTitle level={3}>Điểm nổi bật</SectionTitle>
       {highlightsList.length === 0 && (
         <div style={{ marginBottom: 16 }}>

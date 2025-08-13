@@ -237,7 +237,7 @@ const Skills = ({
   };
 
   return (
-    <Section ref={sectionRefs.skills}>
+    <Section ref={sectionRefs?.skills}>
       <SectionTitle level={3}>Năng lực chuyên môn</SectionTitle>
       {skillList.length === 0 && (
         <div style={{ marginBottom: 16 }}>

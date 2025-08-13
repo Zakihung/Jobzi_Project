@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Card, Spin } from "antd";
+import { Alert, Card, Spin, Skeleton } from "antd";
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
 import PersonalInfo from "../organisms/PersonalInfo";
@@ -19,8 +19,20 @@ const ContentCard = styled(Card)`
   border: none;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   background: #ffffff;
-  padding: 16px;
+  padding: 12px; /* Giảm padding trên màn hình nhỏ */
   height: 100%;
+
+  @media (max-width: 576px) {
+    padding: 8px;
+  }
+`;
+
+const SectionWrapper = styled.div`
+  margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    margin-bottom: 12px;
+  }
 `;
 
 const ContentColumn = ({
@@ -76,7 +88,6 @@ const ContentColumn = ({
         avatar: personalInfo.avatar || "",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeData, jobStatus]);
 
   useEffect(() => {
@@ -90,11 +101,10 @@ const ContentColumn = ({
       ...prev,
       jobStatus: jobStatusLabels[jobStatus] || "",
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobStatus]);
 
   const checkCompletedSections = (resume) => {
-    const completed = ["Thông tin cá nhân", "Trạng thái tìm việc"]; // Mặc định
+    const completed = ["Thông tin cá nhân", "Trạng thái tìm việc"];
 
     if (resume?.jobExpectations && resume.jobExpectations.length > 0) {
       completed.push("Mong muốn tìm việc");
@@ -139,7 +149,30 @@ const ContentColumn = ({
   if (isLoadingResumeData) {
     return (
       <ContentCard>
-        <Spin tip="Đang tải hồ sơ..." />
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 2 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 1 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 3 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 2 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 2 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 4 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 3 }} />
+        </SectionWrapper>
+        <SectionWrapper>
+          <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 2 }} />
+        </SectionWrapper>
       </ContentCard>
     );
   }
@@ -159,66 +192,74 @@ const ContentColumn = ({
 
   return (
     <ContentCard>
-      <PersonalInfo
-        sectionRefs={sectionRefs}
-        personalInfo={personalInfo}
-        setPersonalInfo={setPersonalInfo}
-        candidateId={candidateId}
-      />
-      <JobStatus
-        sectionRefs={sectionRefs}
-        jobStatus={jobStatus}
-        setJobStatus={setJobStatus}
-        candidateId={candidateId}
-      />
-      <JobExpectation
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
-      <Education
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
-      <Highlights
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
-      <WorkExperience
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
-      <Projects
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
-      <Skills
-        sectionRefs={sectionRefs}
-        addSection={addSection}
-        removeSection={removeSection}
-        completedSections={completedSections}
-        candidateId={candidateId}
-        resume={resume}
-      />
+      <SectionWrapper ref={sectionRefs.personalInfo}>
+        <PersonalInfo
+          personalInfo={personalInfo}
+          setPersonalInfo={setPersonalInfo}
+          candidateId={candidateId}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.jobStatus}>
+        <JobStatus
+          jobStatus={jobStatus}
+          setJobStatus={setJobStatus}
+          candidateId={candidateId}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.jobExpectation}>
+        <JobExpectation
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.education}>
+        <Education
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.highlights}>
+        <Highlights
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.workExperience}>
+        <WorkExperience
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.projects}>
+        <Projects
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
+      <SectionWrapper ref={sectionRefs.skills}>
+        <Skills
+          addSection={addSection}
+          removeSection={removeSection}
+          completedSections={completedSections}
+          candidateId={candidateId}
+          resume={resume}
+        />
+      </SectionWrapper>
     </ContentCard>
   );
 };
