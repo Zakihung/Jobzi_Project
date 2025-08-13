@@ -7,9 +7,11 @@ import {
   Tag,
   Input,
   Card,
-  Avatar,
-  Tooltip,
-  Badge,
+  Modal,
+  Form,
+  Input as AntInput,
+  Select,
+  App,
 } from "antd";
 import styled from "styled-components";
 import {
@@ -17,14 +19,18 @@ import {
   DeleteOutlined,
   SearchOutlined,
   PlusOutlined,
-  UserOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
 import useGetJobPositions from "../../features/postjob/hooks/Job_Position/useGetJobPositions";
+import useCreateJobPosition from "../../features/postjob/hooks/Job_Position/useCreateJobPosition";
+import useUpdateJobPosition from "../../features/postjob/hooks/Job_Position/useUpdateJobPosition";
+import useDeleteJobPosition from "../../features/postjob/hooks/Job_Position/useDeleteJobPosition";
+import useGetIndustries from "../../features/postjob/hooks/Industry/useGetIndustries";
 import dayjs from "dayjs";
+import { useState } from "react";
 
 const { Title } = Typography;
 const { Search } = Input;
+const { Option } = Select;
 
 const PageContainer = styled.div`
   background: #f8f9fa;
@@ -75,17 +81,6 @@ const HeaderActions = styled.div`
   @media (max-width: 768px) {
     width: 100%;
     justify-content: flex-start;
-  }
-`;
-
-const FilterSection = styled(Card)`
-  margin-bottom: 24px;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  .ant-card-body {
-    padding: 20px;
   }
 `;
 
@@ -184,43 +179,97 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
-const StatsCard = styled.div`
-  display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-`;
-
-const StatItem = styled(Card)`
-  flex: 1;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  .ant-card-body {
-    padding: 20px;
-    text-align: center;
-  }
-`;
-
-const StatNumber = styled.div`
-  font-size: 28px;
-  font-weight: 700;
-  color: #1890ff;
-  margin-bottom: 4px;
-`;
-
-const StatLabel = styled.div`
-  color: #8c8c8c;
-  font-size: 14px;
-`;
-
 const AdminPositionManagementPage = () => {
-  const { data: jobPositions = [], isLoading } = useGetJobPositions();
+  const { message } = App.useApp();
+  const { data: jobPositions = [], isLoading: isLoadingPositions } =
+    useGetJobPositions();
+  const { data: industries = [], isLoading: isLoadingIndustries } =
+    useGetIndustries();
+  const { mutate: createJobPosition, isLoading: isCreating } =
+    useCreateJobPosition();
+  const { mutate: updateJobPosition, isLoading: isUpdating } =
+    useUpdateJobPosition();
+  const { mutate: deleteJobPosition, isLoading: isDeleting } =
+    useDeleteJobPosition();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [editingPosition, setEditingPosition] = useState(null);
+
+  const handleAdd = () => {
+    setEditingPosition(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (record) => {
+    setEditingPosition(record);
+    form.setFieldsValue({
+      name: record.name,
+      industry_id: record.industry_id?._id,
+      status: record.status,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    deleteJobPosition(id, {
+      onSuccess: () => {
+        message.success("Xóa vị trí tuyển dụng thành công");
+      },
+      onError: (error) => {
+        message.error(error.message || "Xóa vị trí tuyển dụng thất bại");
+      },
+    });
+  };
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (editingPosition) {
+          updateJobPosition(
+            { id: editingPosition.key, data: values },
+            {
+              onSuccess: () => {
+                message.success("Cập nhật vị trí tuyển dụng thành công");
+                setIsModalOpen(false);
+                form.resetFields();
+              },
+              onError: (error) => {
+                message.error(
+                  error.message || "Cập nhật vị trí tuyển dụng thất bại"
+                );
+              },
+            }
+          );
+        } else {
+          createJobPosition(values, {
+            onSuccess: () => {
+              message.success("Thêm vị trí tuyển dụng thành công");
+              setIsModalOpen(false);
+              form.resetFields();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm vị trí tuyển dụng thất bại");
+            },
+          });
+        }
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
 
   const tableData = jobPositions.map((position, index) => ({
     key: position._id,
     id: index + 1,
     name: position.name,
+    industry_id: position.industry_id,
     status: position.status,
     created_at: dayjs(position.createdAt).format("DD/MM/YYYY"),
   }));
@@ -241,6 +290,9 @@ const AdminPositionManagementPage = () => {
         <PositionInfo>
           <PositionDetails>
             <PositionName>{record.name}</PositionName>
+            <PositionDescription>
+              Ngành: {record.industry_id?.name || "Chưa xác định"}
+            </PositionDescription>
           </PositionDetails>
         </PositionInfo>
       ),
@@ -254,23 +306,12 @@ const AdminPositionManagementPage = () => {
         const statusMap = {
           open: { color: "green", text: "Đang mở" },
           closed: { color: "red", text: "Đã đóng" },
-          under_review: { color: "orange", text: "Chờ duyệt" },
         };
 
         const tag = statusMap[status] || { color: "default", text: status };
         return <Tag color={tag.color}>{tag.text}</Tag>;
       },
     },
-    // {
-    //   title: "Số lượng việc làm",
-    //   dataIndex: "job_count",
-    //   key: "job_count",
-    //   width: 150,
-    //   sorter: (a, b) => a.job_count - b.job_count,
-    //   render: (count) => (
-    //     <Badge count={count} style={{ backgroundColor: "#52c41a" }} showZero />
-    //   ),
-    // },
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
@@ -282,29 +323,27 @@ const AdminPositionManagementPage = () => {
       title: "Hành động",
       key: "action",
       width: 180,
-      render: () => (
+      render: (_, record) => (
         <Space size={8}>
-          <Tooltip title="Chỉnh sửa">
-            <ActionButton
-              className="edit-btn"
-              icon={<EditOutlined />}
-              size="small"
-            />
-          </Tooltip>
+          <ActionButton
+            className="edit-btn"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => handleEdit(record)}
+          ></ActionButton>
           <Popconfirm
             title="Xác nhận xóa"
             description="Bạn có chắc muốn xóa vị trí này?"
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"
+            onConfirm={() => handleDelete(record.key)}
           >
-            <Tooltip title="Xóa">
-              <ActionButton
-                className="delete-btn"
-                icon={<DeleteOutlined />}
-                size="small"
-              />
-            </Tooltip>
+            <ActionButton
+              className="delete-btn"
+              icon={<DeleteOutlined />}
+              size="small"
+            ></ActionButton>
           </Popconfirm>
         </Space>
       ),
@@ -321,46 +360,21 @@ const AdminPositionManagementPage = () => {
               Quản lý danh mục các vị trí tuyển dụng trong hệ thống
             </PageSubtitle>
           </HeaderLeft>
-          {/* <HeaderActions>
-            <PrimaryButton type="primary" icon={<PlusOutlined />}>
+          <HeaderActions>
+            <PrimaryButton
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+            >
               Thêm vị trí
             </PrimaryButton>
-          </HeaderActions> */}
+          </HeaderActions>
         </PageHeader>
-
-        {/* <StatsCard>
-          <StatItem>
-            <StatNumber>{data.length}</StatNumber>
-            <StatLabel>Tổng vị trí</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.filter((item) => item.status === "active").length}
-            </StatNumber>
-            <StatLabel>Đang hoạt động</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.reduce((sum, item) => sum + (item.job_count || 0), 0)}
-            </StatNumber>
-            <StatLabel>Tổng việc làm</StatLabel>
-          </StatItem>
-        </StatsCard> */}
-
-        {/* <FilterSection>
-          <Search
-            placeholder="Tìm kiếm vị trí tuyển dụng..."
-            allowClear
-            style={{ width: 400 }}
-            prefix={<SearchOutlined />}
-            size="large"
-          />
-        </FilterSection> */}
 
         <StyledTable
           columns={columns}
           dataSource={tableData}
-          loading={isLoading}
+          loading={isLoadingPositions || isCreating || isUpdating || isDeleting}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
@@ -370,6 +384,58 @@ const AdminPositionManagementPage = () => {
           }}
           scroll={{ x: 1000 }}
         />
+
+        <Modal
+          title={
+            editingPosition
+              ? "Chỉnh sửa vị trí tuyển dụng"
+              : "Thêm vị trí tuyển dụng"
+          }
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText={editingPosition ? "Cập nhật" : "Thêm"}
+          cancelText="Hủy"
+          confirmLoading={isCreating || isUpdating}
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="name"
+              label="Tên vị trí"
+              rules={[{ required: true, message: "Vui lòng nhập tên vị trí" }]}
+            >
+              <AntInput placeholder="Nhập tên vị trí" />
+            </Form.Item>
+            <Form.Item
+              name="industry_id"
+              label="Ngành nghề"
+              rules={[{ required: true, message: "Vui lòng chọn ngành nghề" }]}
+            >
+              <Select
+                placeholder="Chọn ngành nghề"
+                loading={isLoadingIndustries}
+                showSearch
+                optionFilterProp="children"
+              >
+                {industries.map((industry) => (
+                  <Option key={industry._id} value={industry._id}>
+                    {industry.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="status"
+              label="Trạng thái"
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            >
+              <Select placeholder="Chọn trạng thái">
+                <Option value="open">Đang mở</Option>
+                <Option value="closed">Đã đóng</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
       </ContentWrapper>
     </PageContainer>
   );

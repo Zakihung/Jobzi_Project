@@ -6,6 +6,7 @@ const {
   updateJobPositionStatus,
   deleteJobPosition,
   deleteAllJobPositions,
+  updateJobPosition,
 } = require("../controllers/job_position.controller");
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.post("/create", createJobPosition);
 router.get("/", getListJobPosition);
 router.delete("/", deleteAllJobPositions);
 router.get("/:id", getJobPositionById);
+router.put("/:id", updateJobPosition);
 router.put("/status/:id", updateJobPositionStatus);
 router.delete("/:id", deleteJobPosition);
 

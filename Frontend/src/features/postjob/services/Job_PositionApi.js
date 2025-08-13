@@ -12,6 +12,12 @@ const getListJobPositionApi = () => {
   return axios.get(URL_API);
 };
 
+// API để cập nhật job position
+const updateJobPositionApi = (id, data) => {
+  const URL_API = `/api/job-position/${id}`;
+  return axios.put(URL_API, data);
+};
+
 // API để lấy job position theo ID
 const getJobPositionByIdApi = (id) => {
   const URL_API = `/api/job-position/${id}`;
@@ -43,4 +49,5 @@ export {
   updateJobPositionStatusApi,
   deleteJobPositionApi,
   deleteAllJobPositionsApi,
+  updateJobPositionApi,
 };

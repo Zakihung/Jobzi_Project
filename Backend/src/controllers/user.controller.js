@@ -12,6 +12,8 @@ const {
   changePasswordService,
   updateUserService,
   deleteUserByIdService,
+  createUserByAdminService,
+  updateUserByAdminService,
 } = require("../services/user.service");
 
 const signup = async (req, res) => {
@@ -257,6 +259,71 @@ const uploadAvatarUser = async (req, res) => {
   }
 };
 
+const createUserByAdmin = async (req, res) => {
+  try {
+    // Kiểm tra quyền admin
+    if (req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Chỉ admin mới có thể tạo tài khoản" });
+    }
+    const {
+      email,
+      password,
+      full_name,
+      role,
+      gender,
+      phone_number,
+      date_of_birth,
+    } = req.body;
+    const result = await createUserByAdminService({
+      email,
+      password,
+      full_name,
+      role,
+      gender,
+      phone_number,
+      date_of_birth,
+    });
+    res.status(201).json({
+      message: `Tạo tài khoản ${role} thành công`,
+      ...result,
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    const message = error.message || "Đã xảy ra lỗi máy chủ";
+    res.status(statusCode).json({ message });
+  }
+};
+
+const updateUserByAdmin = async (req, res) => {
+  try {
+    // Kiểm tra quyền admin
+    if (req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Chỉ admin mới có thể chỉnh sửa tài khoản" });
+    }
+    const { id } = req.params;
+    const { email, full_name, role, gender, phone_number, date_of_birth } =
+      req.body;
+    const data = await updateUserByAdminService(id, {
+      email,
+      full_name,
+      role,
+      gender,
+      phone_number,
+      date_of_birth,
+    });
+    res.status(200).json({
+      message: "Chỉnh sửa tài khoản thành công",
+      data,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   signup,
   signupEmployer,
@@ -271,4 +338,6 @@ module.exports = {
   updateUser,
   deleteUserById,
   uploadAvatarUser,
+  createUserByAdmin,
+  updateUserByAdmin,
 };

@@ -64,6 +64,24 @@ const deleteAllJobPositionsService = async () => {
   return result;
 };
 
+const updateJobPositionService = async (job_position_id, updateData) => {
+  const { industry_id, name, status } = updateData;
+
+  let jobPosition = await JobPosition.findById(job_position_id);
+  if (!jobPosition) {
+    throw new AppError("Không tìm thấy vị trí công việc", 404);
+  }
+
+  if (industry_id) jobPosition.industry_id = industry_id;
+  if (name) jobPosition.name = name;
+  if (status && ["open", "closed", "under_review"].includes(status)) {
+    jobPosition.status = status;
+  }
+
+  let result = await jobPosition.save();
+  return result;
+};
+
 module.exports = {
   createJobPositionService,
   getListJobPositionService,
@@ -71,4 +89,5 @@ module.exports = {
   updateJobPositionStatusService,
   deleteJobPositionService,
   deleteAllJobPositionsService,
+  updateJobPositionService,
 };

@@ -15,6 +15,8 @@ const {
   updateUser,
   deleteUserById,
   uploadAvatarUser,
+  createUserByAdmin,
+  updateUserByAdmin,
 } = require("../controllers/user.controller");
 const upload = require("../middleware/uploadAvaUser");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -39,6 +41,10 @@ router.post("/reset-password/:token", resetPassword);
 router.get("/get-email/:token", getEmail);
 // Đổi mật khẩu
 router.post("/change-password", authMiddleware, changePassword);
+// Tạo tài khoản do admin thực hiện
+router.post("/admin-create", createUserByAdmin);
+// Chỉnh sửa tài khoản do admin thực hiện
+router.put("/admin-update/:id", updateUserByAdmin);
 // Lấy danh sách người dùng
 router.get("/", getListUser);
 // Lấy thông tin người dùng theo ID

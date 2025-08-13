@@ -36,11 +36,18 @@ const deleteAllIndustryGroupsApi = () => {
   return axios.delete(URL_API);
 };
 
+// API để cập nhật industry group (cả name và status)
+const updateIndustryGroupApi = (id, data) => {
+  const URL_API = `/api/industry-group/${id}`;
+  return axios.put(URL_API, data);
+};
+
 export {
   createIndustryGroupApi,
   getListIndustryGroupApi,
   getIndustryGroupByIdApi,
   updateIndustryGroupStatusApi,
   deleteIndustryGroupApi,
+  updateIndustryGroupApi,
   deleteAllIndustryGroupsApi,
 };

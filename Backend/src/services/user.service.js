@@ -743,6 +743,306 @@ const deleteUserByIdService = async (user_id) => {
   return { message: "Đã xóa người dùng và dữ liệu liên quan" };
 };
 
+const createUserByAdminService = async ({
+  email,
+  password,
+  full_name,
+  role,
+  gender,
+  date_of_birth,
+  phone_number,
+}) => {
+  // Kiểm tra dữ liệu đầu vào
+  if (
+    !email ||
+    !password ||
+    !full_name ||
+    !role ||
+    !gender ||
+    !date_of_birth ||
+    !phone_number
+  ) {
+    throw new AppError("Dữ liệu trống", 400);
+  }
+
+  // Kiểm tra role hợp lệ
+  if (!["candidate", "admin", "employer"].includes(role)) {
+    throw new AppError(
+      "Vai trò không hợp lệ: chỉ chấp nhận 'candidate', 'admin' hoặc 'employer'",
+      400
+    );
+  }
+
+  // Kiểm tra định dạng email
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    throw new AppError("Email không hợp lệ", 400);
+  }
+
+  // Kiểm tra định dạng mật khẩu
+  if (
+    !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$#!%*?&]{8,}$/.test(
+      password
+    )
+  ) {
+    throw new AppError(
+      "Mật khẩu phải có chữ Hoa, chữ thường, số, ký tự đặc biệt và có độ dài lớn hơn 8 ký tự!",
+      400
+    );
+  }
+
+  // Kiểm tra định dạng họ tên
+  if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+    throw new AppError(
+      "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+      400
+    );
+  }
+
+  // Kiểm tra giới tính
+  if (!["male", "female"].includes(gender)) {
+    throw new AppError(
+      "Giới tính không hợp lệ: chỉ chấp nhận 'male', 'female'",
+      400
+    );
+  }
+
+  // Kiểm tra ngày tháng năm sinh
+  const dob = new Date(date_of_birth);
+  const today = new Date();
+  const minAge = 15;
+  const maxAge = 60;
+  const minDate = new Date(
+    today.getFullYear() - maxAge,
+    today.getMonth(),
+    today.getDate()
+  );
+  const maxDate = new Date(
+    today.getFullYear() - minAge,
+    today.getMonth(),
+    today.getDate()
+  );
+
+  if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
+    throw new AppError(
+      `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
+      400
+    );
+  }
+
+  // Kiểm tra định dạng số điện thoại
+  if (!/^\+?[0-9]{10}$/.test(phone_number)) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải chứa đúng 10 chữ số",
+      400
+    );
+  }
+
+  // Kiểm tra tồn tại email
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new AppError("Email đã tồn tại", 409);
+  }
+
+  // Băm mật khẩu
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Tạo user mới
+  const user = new User({
+    email,
+    password: hashedPassword,
+    role,
+    full_name,
+    gender,
+    date_of_birth: dob,
+    phone_number,
+  });
+
+  // Tạo accessToken và refreshToken
+  const accessToken = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  // Lưu refreshToken vào user
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  // Tạo bản ghi tương ứng dựa trên role
+  if (role === "candidate") {
+    const candidate = new Candidate({
+      user_id: user._id,
+      status: "ready",
+    });
+    await candidate.save();
+
+    // Tạo OnlineResume cho candidate
+    const onlineResume = new OnlineResume({
+      candidate_id: candidate._id,
+      personalInfo: {
+        full_name: user.full_name,
+        phone_number: user.phone_number,
+        date_of_birth: user.date_of_birth,
+        email: user.email,
+        avatar:
+          user.avatar ||
+          "https://res.cloudinary.com/luanvancloudinary/image/upload/v1750090817/avaMacDinh_toiqej.jpg",
+      },
+      jobExpectations: [],
+      education: [],
+      highlights: [],
+      workExperience: [],
+      projects: [],
+      skills: [],
+    });
+    await onlineResume.save();
+
+    return {
+      user: {
+        ...user.toObject(),
+        candidate_id: candidate._id,
+      },
+      candidate,
+      onlineResume,
+      accessToken,
+      refreshToken,
+    };
+  } else if (role === "employer") {
+    // Nếu là employer, cần thêm thông tin công ty
+    throw new AppError("Vui lòng sử dụng API tạo tài khoản employer", 400);
+  } else {
+    // Nếu là admin, không tạo thêm bản ghi
+    return {
+      user: {
+        ...user.toObject(),
+        candidate_id: null,
+      },
+      accessToken,
+      refreshToken,
+    };
+  }
+};
+
+const updateUserByAdminService = async (user_id, updateData) => {
+  const { email, full_name, role, gender, date_of_birth, phone_number } =
+    updateData;
+  let user = await User.findById(user_id);
+  if (!user) {
+    throw new AppError("Không tìm thấy người dùng", 404);
+  }
+
+  // Kiểm tra dữ liệu đầu vào
+  if (email !== undefined) {
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      throw new AppError("Email không hợp lệ", 400);
+    }
+    const existingUser = await User.findOne({ email, _id: { $ne: user_id } });
+    if (existingUser) {
+      throw new AppError("Email đã tồn tại", 409);
+    }
+    user.email = email;
+  }
+
+  if (full_name !== undefined) {
+    if (!full_name) {
+      throw new AppError("Tên đầy đủ không được để trống", 400);
+    }
+    if (!/^[a-zA-ZÀ-ỹ\s.-]{1,100}$/.test(full_name)) {
+      throw new AppError(
+        "Họ tên không hợp lệ! Chỉ được chứa chữ cái, khoảng trắng, dấu chấm hoặc dấu gạch nối, tối đa 100 ký tự.",
+        400
+      );
+    }
+    user.full_name = full_name;
+  }
+
+  if (role !== undefined) {
+    if (!["candidate", "admin", "employer"].includes(role)) {
+      throw new AppError(
+        "Vai trò không hợp lệ: chỉ chấp nhận 'candidate', 'admin' hoặc 'employer'",
+        400
+      );
+    }
+    if (role === "employer") {
+      throw new AppError("Vui lòng sử dụng API chỉnh sửa employer", 400);
+    }
+    user.role = role;
+  }
+
+  if (gender !== undefined && gender && !["male", "female"].includes(gender)) {
+    throw new AppError(
+      "Giới tính không hợp lệ: chỉ chấp nhận 'male' hoặc 'female'",
+      400
+    );
+  }
+  if (
+    phone_number !== undefined &&
+    phone_number &&
+    !/^(?:\+84|0)(?:3[2-9]|5[2689]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(
+      phone_number
+    )
+  ) {
+    throw new AppError(
+      "Số điện thoại không hợp lệ! Phải bắt đầu bằng +84 hoặc 0, theo sau là 9-10 chữ số.",
+      400
+    );
+  }
+  if (date_of_birth !== undefined) {
+    const dob = new Date(date_of_birth);
+    const today = new Date();
+    const minAge = 15;
+    const maxAge = 60;
+    const minDate = new Date(
+      today.getFullYear() - maxAge,
+      today.getMonth(),
+      today.getDate()
+    );
+    const maxDate = new Date(
+      today.getFullYear() - minAge,
+      today.getMonth(),
+      today.getDate()
+    );
+    if (isNaN(dob.getTime()) || dob < minDate || dob > maxDate) {
+      throw new AppError(
+        `Ngày sinh không hợp lệ! Phải từ ${minAge} đến ${maxAge} tuổi.`,
+        400
+      );
+    }
+    user.date_of_birth = dob;
+  }
+
+  user.gender = gender !== undefined ? gender : user.gender;
+  user.phone_number =
+    phone_number !== undefined ? phone_number : user.phone_number;
+
+  await user.save();
+
+  // Đồng bộ với OnlineResume nếu người dùng là candidate
+  if (user.role === "candidate") {
+    const candidate = await Candidate.findOne({ user_id: user._id });
+    if (candidate) {
+      await OnlineResume.findOneAndUpdate(
+        { candidate_id: candidate._id },
+        {
+          $set: {
+            "personalInfo.full_name": user.full_name,
+            "personalInfo.date_of_birth": user.date_of_birth,
+            "personalInfo.phone_number": user.phone_number,
+            "personalInfo.email": user.email,
+          },
+        }
+      );
+    }
+  }
+
+  return user;
+};
+
 module.exports = {
   signupService,
   signupEmployerService,
@@ -757,4 +1057,6 @@ module.exports = {
   changePasswordService,
   updateUserService,
   deleteUserByIdService,
+  createUserByAdminService,
+  updateUserByAdminService,
 };

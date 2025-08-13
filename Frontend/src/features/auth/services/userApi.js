@@ -81,6 +81,26 @@ const deleteUserById = (user_id) => {
   });
 };
 
+// API tạo tài khoản do admin thực hiện
+const createUserByAdmin = (data) => {
+  const URL_API = "/api/user/admin-create";
+  return axios.post(URL_API, data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+};
+
+// API chỉnh sửa tài khoản do admin thực hiện
+const updateUserByAdmin = (user_id, data) => {
+  const URL_API = `/api/user/admin-update/${user_id}`;
+  return axios.put(URL_API, data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+    },
+  });
+};
+
 export {
   signinUser,
   signupUser,
@@ -91,4 +111,6 @@ export {
   getListUser,
   getUserById,
   deleteUserById,
+  createUserByAdmin,
+  updateUserByAdmin,
 };

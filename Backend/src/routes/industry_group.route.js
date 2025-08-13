@@ -6,6 +6,7 @@ const {
   updateIndustryGroupStatus,
   deleteIndustryGroup,
   deleteAllIndustryGroups,
+  updateIndustryGroup,
 } = require("../controllers/industry_group.controller");
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.post("/create", createIndustryGroup);
 router.get("/", getListIndustryGroup);
 router.delete("/", deleteAllIndustryGroups);
 router.get("/:id", getIndustryGroupById);
+router.put("/:id", updateIndustryGroup);
 router.put("/status/:id", updateIndustryGroupStatus);
 router.delete("/:id", deleteIndustryGroup);
 

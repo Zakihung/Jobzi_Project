@@ -5,6 +5,7 @@ const {
   updateJobPositionStatusService,
   deleteJobPositionService,
   deleteAllJobPositionsService,
+  updateJobPositionService,
 } = require("../services/job_position.service");
 
 const createJobPosition = async (req, res, next) => {
@@ -66,6 +67,16 @@ const deleteAllJobPositions = async (req, res, next) => {
   }
 };
 
+const updateJobPosition = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await updateJobPositionService(id, req.body);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createJobPosition,
   getListJobPosition,
@@ -73,4 +84,5 @@ module.exports = {
   updateJobPositionStatus,
   deleteJobPosition,
   deleteAllJobPositions,
+  updateJobPosition,
 };

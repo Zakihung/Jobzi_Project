@@ -5,14 +5,16 @@ import {
   Space,
   Popconfirm,
   Tag,
-  Input,
-  Select,
   Card,
   Avatar,
   Tooltip,
   Badge,
   Modal,
   Descriptions,
+  Form,
+  Input as AntInput,
+  Select,
+  DatePicker,
 } from "antd";
 import styled from "styled-components";
 import {
@@ -28,11 +30,12 @@ import {
 } from "@ant-design/icons";
 import useGetAllJobPosts from "../../features/postjob/hooks/Job_Post/useGetAllJobPosts";
 import useGetListCompany from "../../features/company/hooks/Company/useGetListCompany";
+import useUpdateJobPost from "../../features/postjob/hooks/Job_Post/useUpdateJobPost";
+import useDeleteJobPost from "../../features/postjob/hooks/Job_Post/useDeleteJobPost";
 import dayjs from "dayjs";
 import { useState } from "react";
 
 const { Title } = Typography;
-const { Search } = Input;
 const { Option } = Select;
 
 const PageContainer = styled.div`
@@ -205,7 +208,7 @@ const ActionButton = styled(Button)`
       border-color: #ff4d4f;
     }
   }
-`;
+ `;
 
 const StatusTag = styled(Tag)`
   border-radius: 20px;
@@ -251,14 +254,8 @@ const PrimaryButton = styled(Button)`
   background: #1890ff;
   border-color: #1890ff;
   border-radius: 8px;
-  font-weight: 500;
-  height: 40px;
-  padding: 0 20px;
-
-  &:hover {
-    background: #40a9ff;
-    border-color: #40a9ff;
-  }
+  font-weight:  Ascending
+  font-size: 14px;
 `;
 
 const StatsCard = styled.div`
@@ -293,10 +290,14 @@ const StatLabel = styled.div`
 
 const AdminJobPostManagementPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [form] = Form.useForm();
 
   const { data: jobPosts = [], isLoading } = useGetAllJobPosts();
   const { data: companies = [] } = useGetListCompany();
+  const { mutate: updateJobPost, isLoading: isUpdating } = useUpdateJobPost();
+  const { mutate: deleteJobPost, isLoading: isDeleting } = useDeleteJobPost();
 
   const tableData = jobPosts.map((job, index) => {
     const company = companies.find(
@@ -319,6 +320,15 @@ const AdminJobPostManagementPage = () => {
       applicants: job?.applicants || 0,
       posted_date: dayjs(job?.createdAt).format("DD/MM/YYYY"),
       expiry_date: dayjs(job?.expired_date).format("DD/MM/YYYY"),
+      description: job?.description,
+      requirements: job?.requirements,
+      benefits: job?.benefits,
+      min_years_experience: job?.min_years_experience,
+      education_level: job?.education_level,
+      work_type: job?.work_type,
+      recipient_email: job?.recipient_email,
+      recipient_name: job?.recipient_name,
+      recipient_phone_number: job?.recipient_phone_number,
     };
   });
 
@@ -343,9 +353,65 @@ const AdminJobPostManagementPage = () => {
     setIsModalVisible(true);
   };
 
+  const handleEdit = (job) => {
+    setSelectedJob(job);
+    form.setFieldsValue({
+      title: job.title,
+      description: job.description,
+      requirements: job.requirements,
+      benefits: job.benefits,
+      min_years_experience: job.min_years_experience,
+      education_level: job.education_level,
+      work_type: job.work_type,
+      salary_type: job.salary_type || "negotiable",
+      min_salary_range:
+        job.salary_type === "range" ? job.min_salary_range : null,
+      max_salary_range:
+        job.salary_type === "range" ? job.max_salary_range : null,
+      recipient_email: job.recipient_email,
+      recipient_name: job.recipient_name,
+      recipient_phone_number: job.recipient_phone_number,
+      expired_date: dayjs(job.expiry_date, "DD/MM/YYYY"),
+    });
+    setIsEditModalVisible(true);
+  };
+
+  const handleUpdateJobPost = (values) => {
+    updateJobPost(
+      {
+        id: selectedJob.key,
+        data: {
+          ...values,
+          expired_date: values.expired_date.format("YYYY-MM-DD"),
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsEditModalVisible(false);
+          setSelectedJob(null);
+          form.resetFields();
+        },
+      }
+    );
+  };
+
+  const handleDelete = (id) => {
+    deleteJobPost(id, {
+      onSuccess: () => {
+        setSelectedJob(null);
+      },
+    });
+  };
+
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedJob(null);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalVisible(false);
+    setSelectedJob(null);
+    form.resetFields();
   };
 
   const columns = [
@@ -425,6 +491,7 @@ const AdminJobPostManagementPage = () => {
               className="edit-btn"
               icon={<EditOutlined />}
               size="small"
+              onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Popconfirm
@@ -433,6 +500,7 @@ const AdminJobPostManagementPage = () => {
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"
+            onConfirm={() => handleDelete(record.key)}
           >
             <Tooltip title="Xóa">
               <ActionButton
@@ -457,67 +525,12 @@ const AdminJobPostManagementPage = () => {
               Quản lý các tin đăng tuyển dụng trong hệ thống
             </PageSubtitle>
           </HeaderLeft>
-          {/* <HeaderActions>
-            <PrimaryButton type="primary" icon={<PlusOutlined />}>
-              Thêm tin tuyển dụng
-            </PrimaryButton>
-          </HeaderActions> */}
         </PageHeader>
-
-        {/* <StatsCard>
-          <StatItem>
-            <StatNumber>{data.length}</StatNumber>
-            <StatLabel>Tổng tin tuyển dụng</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.filter((item) => item.status === "active").length}
-            </StatNumber>
-            <StatLabel>Đang tuyển</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.reduce((sum, item) => sum + (item.applicants || 0), 0)}
-            </StatNumber>
-            <StatLabel>Tổng ứng viên</StatLabel>
-          </StatItem>
-        </StatsCard> */}
-
-        {/* <FilterSection>
-          <FilterRow>
-            <Search
-              placeholder="Tìm kiếm theo tiêu đề hoặc công ty..."
-              allowClear
-              style={{ width: 300 }}
-              prefix={<SearchOutlined />}
-            />
-            <Select
-              placeholder="Lọc theo trạng thái"
-              style={{ width: 200 }}
-              allowClear
-              suffixIcon={<FilterOutlined />}
-            >
-              <Option value="active">Đang tuyển</Option>
-              <Option value="expired">Hết hạn</Option>
-              <Option value="pending">Chờ duyệt</Option>
-            </Select>
-            <Select placeholder="Độ ưu tiên" style={{ width: 150 }} allowClear>
-              <Option value="urgent">Gấp</Option>
-              <Option value="normal">Bình thường</Option>
-            </Select>
-            <Select placeholder="Địa điểm" style={{ width: 150 }} allowClear>
-              <Option value="hcm">Hồ Chí Minh</Option>
-              <Option value="hn">Hà Nội</Option>
-              <Option value="dn">Đà Nẵng</Option>
-              <Option value="remote">Remote</Option>
-            </Select>
-          </FilterRow>
-        </FilterSection> */}
 
         <StyledTable
           columns={columns}
           dataSource={tableData}
-          loading={isLoading}
+          loading={isLoading || isUpdating || isDeleting}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
@@ -549,6 +562,37 @@ const AdminJobPostManagementPage = () => {
             <Descriptions.Item label="Mức lương">
               {selectedJob.salary}
             </Descriptions.Item>
+            <Descriptions.Item label="Mô tả">
+              <div
+                dangerouslySetInnerHTML={{ __html: selectedJob.description }}
+              />
+            </Descriptions.Item>
+            <Descriptions.Item label="Yêu cầu">
+              <div
+                dangerouslySetInnerHTML={{ __html: selectedJob.requirements }}
+              />
+            </Descriptions.Item>
+            <Descriptions.Item label="Phúc lợi">
+              <div dangerouslySetInnerHTML={{ __html: selectedJob.benefits }} />
+            </Descriptions.Item>
+            <Descriptions.Item label="Kinh nghiệm tối thiểu">
+              {selectedJob.min_years_experience} năm
+            </Descriptions.Item>
+            <Descriptions.Item label="Trình độ học vấn">
+              {selectedJob.education_level}
+            </Descriptions.Item>
+            <Descriptions.Item label="Loại công việc">
+              {selectedJob.work_type}
+            </Descriptions.Item>
+            <Descriptions.Item label="Email liên hệ">
+              {selectedJob.recipient_email}
+            </Descriptions.Item>
+            <Descriptions.Item label="Người liên hệ">
+              {selectedJob.recipient_name}
+            </Descriptions.Item>
+            <Descriptions.Item label="Số điện thoại liên hệ">
+              {selectedJob.recipient_phone_number}
+            </Descriptions.Item>
             <Descriptions.Item label="Ngày đăng">
               {selectedJob.posted_date}
             </Descriptions.Item>
@@ -560,6 +604,162 @@ const AdminJobPostManagementPage = () => {
             </Descriptions.Item>
           </Descriptions>
         )}
+      </Modal>
+      <Modal
+        title="Chỉnh sửa tin tuyển dụng"
+        visible={isEditModalVisible}
+        onCancel={handleCloseEditModal}
+        footer={[
+          <Button key="cancel" onClick={handleCloseEditModal}>
+            Hủy
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={isUpdating}
+            onClick={() => form.submit()}
+          >
+            Lưu
+          </Button>,
+        ]}
+        width={700}
+      >
+        <Form form={form} onFinish={handleUpdateJobPost} layout="vertical">
+          <Form.Item
+            name="title"
+            label="Tiêu đề"
+            rules={[{ required: true, message: "Vui lòng nhập tiêu đề!" }]}
+          >
+            <AntInput />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="Mô tả"
+            rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
+          >
+            <AntInput.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="requirements"
+            label="Yêu cầu"
+            rules={[{ required: true, message: "Vui lòng nhập yêu cầu!" }]}
+          >
+            <AntInput.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="benefits"
+            label="Phúc lợi"
+            rules={[{ required: true, message: "Vui lòng nhập phúc lợi!" }]}
+          >
+            <AntInput.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="min_years_experience"
+            label="Kinh nghiệm tối thiểu (năm)"
+            rules={[{ required: true, message: "Vui lòng nhập kinh nghiệm!" }]}
+          >
+            <AntInput type="number" />
+          </Form.Item>
+          <Form.Item
+            name="education_level"
+            label="Trình độ học vấn"
+            rules={[{ required: true, message: "Vui lòng nhập trình độ!" }]}
+          >
+            <AntInput />
+          </Form.Item>
+          <Form.Item
+            name="work_type"
+            label="Loại công việc"
+            rules={[
+              { required: true, message: "Vui lòng chọn loại công việc!" },
+            ]}
+          >
+            <Select>
+              <Option value="full_time">Toàn thời gian</Option>
+              <Option value="part_time">Bán thời gian</Option>
+              <Option value="contract">Hợp đồng</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="salary_type"
+            label="Loại lương"
+            rules={[{ required: true, message: "Vui lòng chọn loại lương!" }]}
+          >
+            <Select>
+              <Option value="range">Khoảng</Option>
+              <Option value="negotiable">Thỏa thuận</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) =>
+              prevValues.salary_type !== currentValues.salary_type
+            }
+          >
+            {({ getFieldValue }) =>
+              getFieldValue("salary_type") === "range" ? (
+                <>
+                  <Form.Item
+                    name="min_salary_range"
+                    label="Mức lương tối thiểu"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập lương tối thiểu!",
+                      },
+                    ]}
+                  >
+                    <AntInput type="number" />
+                  </Form.Item>
+                  <Form.Item
+                    name="max_salary_range"
+                    label="Mức lương tối đa"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập lương tối đa!",
+                      },
+                    ]}
+                  >
+                    <AntInput type="number" />
+                  </Form.Item>
+                </>
+              ) : null
+            }
+          </Form.Item>
+          <Form.Item
+            name="recipient_email"
+            label="Email liên hệ"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          >
+            <AntInput />
+          </Form.Item>
+          <Form.Item
+            name="recipient_name"
+            label="Người liên hệ"
+            rules={[
+              { required: true, message: "Vui lòng nhập tên người liên hệ!" },
+            ]}
+          >
+            <AntInput />
+          </Form.Item>
+          <Form.Item
+            name="recipient_phone_number"
+            label="Số điện thoại liên hệ"
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại!" },
+            ]}
+          >
+            <AntInput />
+          </Form.Item>
+          <Form.Item
+            name="expired_date"
+            label="Ngày hết hạn"
+            rules={[{ required: true, message: "Vui lòng chọn ngày hết hạn!" }]}
+          >
+            <DatePicker format="DD/MM/YYYY" />
+          </Form.Item>
+        </Form>
       </Modal>
     </PageContainer>
   );

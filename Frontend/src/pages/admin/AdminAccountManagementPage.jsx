@@ -12,6 +12,8 @@ import {
   Tooltip,
   Modal,
   Descriptions,
+  App,
+  Form,
 } from "antd";
 import styled from "styled-components";
 import {
@@ -25,6 +27,8 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import useGetListUser from "../../features/auth/hooks/useGetListUser";
+import useDeleteUser from "../../features/auth/hooks/useDeleteUser";
+import useUpdateUserByAdmin from "../../features/auth/hooks/useUpdateUserByAdmin";
 import dayjs from "dayjs";
 import { useState } from "react";
 
@@ -229,8 +233,25 @@ const PrimaryButton = styled(Button)`
 `;
 
 const AdminAccountManagementPage = () => {
+  const { message } = App.useApp();
+  const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: updateUserByAdmin } = useUpdateUserByAdmin();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editForm] = Form.useForm();
+
+  const handleDeleteUser = (userId) => {
+    deleteUser(userId, {
+      onSuccess: () => {
+        message.success("Xóa tài khoản thành công");
+      },
+      onError: () => {
+        message.error("Xóa tài khoản thất bại");
+      },
+    });
+  };
 
   const { data: users = [], isLoading } = useGetListUser();
   const tableData = users.map((user, index) => ({
@@ -254,6 +275,36 @@ const AdminAccountManagementPage = () => {
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedUser(null);
+  };
+
+  const handleOpenEditModal = (user) => {
+    setSelectedUser(user);
+    editForm.setFieldsValue({
+      full_name: user.full_name,
+      email: user.email,
+      role: user.role,
+      gender: user.gender,
+      phone_number: user.phone_number,
+    });
+    setIsEditModalVisible(true);
+  };
+
+  // NEW - Lưu thay đổi
+  const handleSaveEdit = () => {
+    editForm.validateFields().then((values) => {
+      updateUserByAdmin(
+        { user_id: selectedUser.key, data: values },
+        {
+          onSuccess: () => {
+            message.success("Cập nhật tài khoản thành công");
+            setIsEditModalVisible(false);
+          },
+          onError: () => {
+            message.error("Cập nhật tài khoản thất bại");
+          },
+        }
+      );
+    });
   };
 
   const getRoleTag = (role) => {
@@ -331,6 +382,7 @@ const AdminAccountManagementPage = () => {
               className="edit-btn"
               icon={<EditOutlined />}
               size="small"
+              onClick={() => handleOpenEditModal(record)}
             />
           </Tooltip>
           <Popconfirm
@@ -339,6 +391,7 @@ const AdminAccountManagementPage = () => {
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"
+            onConfirm={() => handleDeleteUser(record.key)}
           >
             <Tooltip title="Xóa">
               <ActionButton
@@ -443,6 +496,51 @@ const AdminAccountManagementPage = () => {
             </Descriptions.Item>
           </Descriptions>
         )}
+      </Modal>
+      {/* Modal chỉnh sửa */}
+      <Modal
+        title="Chỉnh sửa thông tin tài khoản"
+        open={isEditModalVisible}
+        onCancel={() => setIsEditModalVisible(false)}
+        onOk={handleSaveEdit}
+        okText="Lưu thay đổi"
+        cancelText="Hủy"
+      >
+        <Form layout="vertical" form={editForm}>
+          <Form.Item
+            name="full_name"
+            label="Họ và tên"
+            rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: "Vui lòng nhập email" },
+              { type: "email", message: "Email không hợp lệ" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item name="phone_number" label="Số điện thoại">
+            <Input />
+          </Form.Item>
+          <Form.Item name="gender" label="Giới tính">
+            <Select>
+              <Option value="male">Nam</Option>
+              <Option value="female">Nữ</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="role" label="Vai trò">
+            <Select>
+              <Option value="candidate">Ứng viên</Option>
+              <Option value="employer">Nhà tuyển dụng</Option>
+              <Option value="admin">Quản trị viên</Option>
+            </Select>
+          </Form.Item>
+        </Form>
       </Modal>
     </PageContainer>
   );

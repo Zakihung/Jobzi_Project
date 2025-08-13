@@ -7,9 +7,11 @@ import {
   Tag,
   Input,
   Card,
-  Avatar,
-  Tooltip,
-  Badge,
+  Modal,
+  Form,
+  Input as AntInput,
+  Select,
+  App,
 } from "antd";
 import styled from "styled-components";
 import {
@@ -17,14 +19,17 @@ import {
   DeleteOutlined,
   SearchOutlined,
   PlusOutlined,
-  AppstoreOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
 import useGetIndustryGroups from "../../features/postjob/hooks/Industry_Group/useGetIndustryGroups";
+import useCreateIndustryGroup from "../../features/postjob/hooks/Industry_Group/useCreateIndustryGroup";
+import useUpdateIndustryGroup from "../../features/postjob/hooks/Industry_Group/useUpdateIndustryGroup";
+import useDeleteIndustryGroup from "../../features/postjob/hooks/Industry_Group/useDeleteIndustryGroup";
 import dayjs from "dayjs";
+import { useState } from "react";
 
 const { Title } = Typography;
 const { Search } = Input;
+const { Option } = Select;
 
 const PageContainer = styled.div`
   background: #f8f9fa;
@@ -78,17 +83,6 @@ const HeaderActions = styled.div`
   }
 `;
 
-const FilterSection = styled(Card)`
-  margin-bottom: 24px;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  .ant-card-body {
-    padding: 20px;
-  }
-`;
-
 const StyledTable = styled(Table)`
   .ant-table {
     background: #ffffff;
@@ -132,18 +126,6 @@ const IndustryName = styled.div`
   margin-bottom: 4px;
 `;
 
-const IndustryDescription = styled.div`
-  color: #8c8c8c;
-  font-size: 13px;
-  line-height: 1.4;
-  max-width: 400px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-`;
-
 const ActionButton = styled(Button)`
   &.edit-btn {
     color: #1890ff;
@@ -184,38 +166,87 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
-const StatsCard = styled.div`
-  display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-`;
-
-const StatItem = styled(Card)`
-  flex: 1;
-  border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  .ant-card-body {
-    padding: 20px;
-    text-align: center;
-  }
-`;
-
-const StatNumber = styled.div`
-  font-size: 28px;
-  font-weight: 700;
-  color: #1890ff;
-  margin-bottom: 4px;
-`;
-
-const StatLabel = styled.div`
-  color: #8c8c8c;
-  font-size: 14px;
-`;
-
 const AdminIndustryManagementPage = () => {
+  const { message } = App.useApp();
   const { data: industryGroups = [], isLoading } = useGetIndustryGroups();
+  const { mutate: createIndustryGroup, isLoading: isCreating } =
+    useCreateIndustryGroup();
+  const { mutate: updateIndustryGroup, isLoading: isUpdating } =
+    useUpdateIndustryGroup();
+  const { mutate: deleteIndustryGroup, isLoading: isDeleting } =
+    useDeleteIndustryGroup();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [editingIndustry, setEditingIndustry] = useState(null);
+
+  const handleAdd = () => {
+    setEditingIndustry(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (record) => {
+    setEditingIndustry(record);
+    form.setFieldsValue({
+      name: record.name,
+      status: record.status,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    deleteIndustryGroup(id, {
+      onSuccess: () => {
+        message.success("Xóa nhóm ngành nghề thành công");
+      },
+      onError: (error) => {
+        message.error(error.message || "Xóa nhóm ngành nghề thất bại");
+      },
+    });
+  };
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        if (editingIndustry) {
+          updateIndustryGroup(
+            { id: editingIndustry.key, data: values },
+            {
+              onSuccess: () => {
+                message.success("Cập nhật nhóm ngành nghề thành công");
+                setIsModalOpen(false);
+                form.resetFields();
+              },
+              onError: (error) => {
+                message.error(
+                  error.message || "Cập nhật nhóm ngành nghề thất bại"
+                );
+              },
+            }
+          );
+        } else {
+          createIndustryGroup(values, {
+            onSuccess: () => {
+              message.success("Thêm nhóm ngành nghề thành công");
+              setIsModalOpen(false);
+              form.resetFields();
+            },
+            onError: (error) => {
+              message.error(error.message || "Thêm nhóm ngành nghề thất bại");
+            },
+          });
+        }
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
 
   const tableData = industryGroups.map((industry, index) => ({
     key: industry._id,
@@ -254,7 +285,6 @@ const AdminIndustryManagementPage = () => {
         const statusMap = {
           open: { color: "green", text: "Đang mở" },
           closed: { color: "red", text: "Đã đóng" },
-          under_review: { color: "orange", text: "Chờ duyệt" },
         };
 
         const tag = statusMap[status] || { color: "default", text: status };
@@ -272,29 +302,27 @@ const AdminIndustryManagementPage = () => {
       title: "Hành động",
       key: "action",
       width: 180,
-      render: () => (
+      render: (_, record) => (
         <Space size={8}>
-          <Tooltip title="Chỉnh sửa">
-            <ActionButton
-              className="edit-btn"
-              icon={<EditOutlined />}
-              size="small"
-            />
-          </Tooltip>
+          <ActionButton
+            className="edit-btn"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => handleEdit(record)}
+          ></ActionButton>
           <Popconfirm
             title="Xác nhận xóa"
             description="Bạn có chắc muốn xóa nhóm ngành nghề này?"
             okText="Xóa"
             cancelText="Hủy"
             okType="danger"
+            onConfirm={() => handleDelete(record.key)}
           >
-            <Tooltip title="Xóa">
-              <ActionButton
-                className="delete-btn"
-                icon={<DeleteOutlined />}
-                size="small"
-              />
-            </Tooltip>
+            <ActionButton
+              className="delete-btn"
+              icon={<DeleteOutlined />}
+              size="small"
+            ></ActionButton>
           </Popconfirm>
         </Space>
       ),
@@ -311,46 +339,21 @@ const AdminIndustryManagementPage = () => {
               Quản lý danh mục các nhóm ngành nghề trong hệ thống
             </PageSubtitle>
           </HeaderLeft>
-          {/* <HeaderActions>
-            <PrimaryButton type="primary" icon={<PlusOutlined />}>
+          <HeaderActions>
+            <PrimaryButton
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+            >
               Thêm ngành nghề
             </PrimaryButton>
-          </HeaderActions> */}
+          </HeaderActions>
         </PageHeader>
-
-        {/* <StatsCard>
-          <StatItem>
-            <StatNumber>{data.length}</StatNumber>
-            <StatLabel>Tổng ngành nghề</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.filter((item) => item.status === "active").length}
-            </StatNumber>
-            <StatLabel>Đang hoạt động</StatLabel>
-          </StatItem>
-          <StatItem>
-            <StatNumber>
-              {data.reduce((sum, item) => sum + (item.job_count || 0), 0)}
-            </StatNumber>
-            <StatLabel>Tổng việc làm</StatLabel>
-          </StatItem>
-        </StatsCard> */}
-
-        {/* <FilterSection>
-          <Search
-            placeholder="Tìm kiếm ngành nghề..."
-            allowClear
-            style={{ width: 400 }}
-            prefix={<SearchOutlined />}
-            size="large"
-          />
-        </FilterSection> */}
 
         <StyledTable
           columns={columns}
           dataSource={tableData}
-          loading={isLoading}
+          loading={isLoading || isCreating || isUpdating || isDeleting}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
@@ -360,6 +363,45 @@ const AdminIndustryManagementPage = () => {
           }}
           scroll={{ x: 1000 }}
         />
+
+        <Modal
+          title={
+            editingIndustry
+              ? "Chỉnh sửa nhóm ngành nghề"
+              : "Thêm nhóm ngành nghề"
+          }
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText={editingIndustry ? "Cập nhật" : "Thêm"}
+          cancelText="Hủy"
+          confirmLoading={isCreating || isUpdating}
+        >
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="name"
+              label="Tên nhóm ngành nghề"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập tên nhóm ngành nghề",
+                },
+              ]}
+            >
+              <AntInput placeholder="Nhập tên nhóm ngành nghề" />
+            </Form.Item>
+            <Form.Item
+              name="status"
+              label="Trạng thái"
+              rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            >
+              <Select placeholder="Chọn trạng thái">
+                <Option value="open">Đang mở</Option>
+                <Option value="closed">Đã đóng</Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
       </ContentWrapper>
     </PageContainer>
   );
