@@ -29,6 +29,10 @@ const StyledCard = styled(Card)`
   background: #ffffff;
   padding: 16px;
   margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
 `;
 
 const StyledTitle = styled(Title)`
@@ -38,11 +42,11 @@ const StyledTitle = styled(Title)`
   margin-bottom: 16px !important;
 
   @media (max-width: 768px) {
-    font-size: 20px !important;
+    font-size: 14px !important;
   }
 
   @media (max-width: 576px) {
-    font-size: 18px !important;
+    font-size: 13px !important;
   }
 `;
 
@@ -53,16 +57,20 @@ const StyledSubTitle = styled(Title)`
   margin-bottom: 12px !important;
 
   @media (max-width: 768px) {
-    font-size: 16px !important;
+    font-size: 13px !important;
   }
 
   @media (max-width: 576px) {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
 `;
 
 const LocationItem = styled.div`
   margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    margin-bottom: 12px;
+  }
 `;
 
 const NumberInputGroup = styled(Space.Compact)`
@@ -81,6 +89,15 @@ const NumberInputGroup = styled(Space.Compact)`
     }
     &:last-child {
       border-radius: 8px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-input {
+      font-size: 12px;
+    }
+    .ant-btn {
+      padding: 4px;
     }
   }
 `;
@@ -117,6 +134,14 @@ const LocationTrigger = styled.div`
 
   &.open .arrow-icon {
     transform: rotate(180deg);
+  }
+
+  @media (max-width: 576px) {
+    height: 36px;
+    font-size: 12px;
+    .location-text {
+      font-size: 14px;
+    }
   }
 `;
 
@@ -200,7 +225,7 @@ const GeneralInfoSection = ({
   const prevIsLocationValidRef = useRef(null);
   const [popoverVisible, setPopoverVisible] = useState(
     locations.map(() => false)
-  ); // State để quản lý Popover cho từng location
+  );
 
   useEffect(() => {
     if (salary_type === "negotiable") {
@@ -338,7 +363,7 @@ const GeneralInfoSection = ({
           size="large"
           placeholder="Đang tải dữ liệu..."
           disabled
-          style={{ width: "100%", marginBottom: 16 }}
+          style={{ width: "100%", marginBottom: 12 }}
         />
       </StyledCard>
     );
@@ -348,7 +373,7 @@ const GeneralInfoSection = ({
     <StyledCard ref={sectionRefs.generalInfo}>
       <StyledTitle level={3}>Thông tin chung</StyledTitle>
       <Row gutter={[12, 12]}>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Số lượng tuyển</StyledSubTitle>
           <Controller
             name="number"
@@ -370,7 +395,7 @@ const GeneralInfoSection = ({
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
-                      field.onChange(value ? parseInt(value) : 1);
+                      field.onChange(value ? parseInt(value) : 0);
                     }
                   }}
                   disabled={disabled}
@@ -385,7 +410,7 @@ const GeneralInfoSection = ({
           />
           {errors.number && <Text type="danger">{errors.number.message}</Text>}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Hình thức làm việc</StyledSubTitle>
           <Controller
             name="work_type"
@@ -396,7 +421,7 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Chọn hình thức làm việc"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               >
                 {Object.keys(workTypeData).map((type) => (
@@ -411,7 +436,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.work_type.message}</Text>
           )}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Giới tính</StyledSubTitle>
           <Controller
             name="gender"
@@ -422,7 +447,7 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Chọn giới tính"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               >
                 {Object.keys(genderData).map((gender) => (
@@ -435,20 +460,18 @@ const GeneralInfoSection = ({
           />
           {errors.gender && <Text type="danger">{errors.gender.message}</Text>}
         </Col>
-      </Row>
-      <Row gutter={[12, 12]}>
-        <Col span={8}>
-          <StyledSubTitle>Cấp bậc</StyledSubTitle>
+        <Col xs={24} sm={12} md={8}>
+          <StyledSubTitle>Vai trò tổ chức</StyledSubTitle>
           <Controller
             name="role_organization"
             control={control}
-            rules={{ required: "Vui lòng chọn cấp bậc" }}
+            rules={{ required: "Vui lòng chọn vai trò tổ chức" }}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Chọn cấp bậc"
+                placeholder="Chọn vai trò tổ chức"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               >
                 {Object.keys(roleOrganizationData).map((role) => (
@@ -463,7 +486,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.role_organization.message}</Text>
           )}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Kinh nghiệm</StyledSubTitle>
           <Controller
             name="experience_level"
@@ -474,7 +497,7 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Chọn cấp độ kinh nghiệm"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               >
                 {Object.keys(experienceLevelData).map((level) => (
@@ -489,7 +512,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.experience_level.message}</Text>
           )}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Số năm kinh nghiệm</StyledSubTitle>
           <Controller
             name="min_years_experience"
@@ -528,9 +551,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.min_years_experience.message}</Text>
           )}
         </Col>
-      </Row>
-      <Row gutter={[12, 12]}>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Loại lương</StyledSubTitle>
           <Controller
             name="salary_type"
@@ -541,7 +562,7 @@ const GeneralInfoSection = ({
                 {...field}
                 placeholder="Chọn loại lương"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               >
                 {Object.keys(salaryTypeData).map((type) => (
@@ -556,7 +577,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.salary_type.message}</Text>
           )}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Lương tối thiểu</StyledSubTitle>
           <Controller
             name="min_salary_range"
@@ -577,7 +598,7 @@ const GeneralInfoSection = ({
                   placeholder="Lương tối thiểu (đ/tháng)"
                   size="large"
                   disabled={disabled || salary_type !== "range"}
-                  style={{ width: "100%", marginBottom: 16 }}
+                  style={{ width: "100%", marginBottom: 12 }}
                   value={displayValue}
                   onChange={(e) => {
                     const raw = e.target.value.replace(/,/g, "");
@@ -593,7 +614,7 @@ const GeneralInfoSection = ({
             <Text type="danger">{errors.min_salary_range.message}</Text>
           )}
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={12} md={8}>
           <StyledSubTitle>Lương tối đa</StyledSubTitle>
           <Controller
             name="max_salary_range"
@@ -620,7 +641,7 @@ const GeneralInfoSection = ({
                   placeholder="Lương tối đa (đ/tháng)"
                   size="large"
                   disabled={disabled || salary_type !== "range"}
-                  style={{ width: "100%", marginBottom: 16 }}
+                  style={{ width: "100%", marginBottom: 12 }}
                   value={displayValue}
                   onChange={(e) => {
                     const raw = e.target.value.replace(/,/g, "");
@@ -641,22 +662,22 @@ const GeneralInfoSection = ({
       {locations.map((location, index) => (
         <LocationItem key={index}>
           <Row gutter={[12, 12]} align="middle">
-            <Col span={8}>
+            <Col xs={24} sm={12} md={8}>
               <Popover
                 content={locationContent(index)}
                 trigger="click"
                 placement="bottomLeft"
                 arrow={false}
                 getPopupContainer={() => document.body}
-                open={popoverVisible[index]} // Sử dụng state để quản lý trạng thái mở
+                open={popoverVisible[index]}
                 onOpenChange={(visible) => {
                   setPopoverVisible((prev) => {
                     const newVisible = [...prev];
-                    newVisible[index] = visible; // Cập nhật trạng thái Popover
+                    newVisible[index] = visible;
                     return newVisible;
                   });
                 }}
-                disabled={disabled} // Thêm disabled cho Popover
+                disabled={disabled}
               >
                 <LocationTrigger
                   style={
@@ -670,7 +691,7 @@ const GeneralInfoSection = ({
                 </LocationTrigger>
               </Popover>
             </Col>
-            <Col span={index === 0 ? 16 : 14}>
+            <Col xs={24} sm={index === 0 ? 12 : 10} md={index === 0 ? 16 : 14}>
               <Input
                 placeholder="Nhập địa điểm làm việc cụ thể"
                 value={location.address || ""}
@@ -679,12 +700,12 @@ const GeneralInfoSection = ({
                   handleLocationChange(index, "address", e.target.value)
                 }
                 size="large"
-                style={{ width: "100%" }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={disabled}
               />
             </Col>
             {index > 0 && (
-              <Col span={2}>
+              <Col xs={24} sm={2} md={2}>
                 <Button
                   icon={<DeleteOutlined />}
                   onClick={() => removeLocation(index)}

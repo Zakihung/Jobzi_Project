@@ -10,8 +10,10 @@ const StickyMenu = styled.div`
   position: sticky;
   top: 76px;
   z-index: 100;
+
   @media (max-width: 768px) {
     position: static;
+    width: 100%;
   }
 `;
 
@@ -24,7 +26,7 @@ const StyledCard = styled(Card)`
   margin-bottom: 16px;
 
   @media (max-width: 576px) {
-    padding: 16px;
+    padding: 12px;
   }
 `;
 
@@ -46,7 +48,12 @@ const SaveButton = styled(Button)`
   &:hover {
     background-color: #34d399 !important;
     border-color: #34d399 !important;
-    color: white;
+    color: white CBD2.0 white;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 12px;
+    padding: 4px 8px;
   }
 `;
 
@@ -83,11 +90,11 @@ const SidebarProgress = ({
               ) : (
                 <IncompleteIcon />
               )}{" "}
-              {item}
+              <Text style={{ fontSize: "14px" }}>{item}</Text>
             </List.Item>
           )}
         />
-        <Divider style={{ margin: "0 0 10px" }} />
+        <Divider style={{ margin: "8px 0" }} />
         {isPostJobPage ? (
           <Button type="primary" block onClick={onSubmit}>
             Đăng tuyển dụng
@@ -99,7 +106,7 @@ const SidebarProgress = ({
         )}
         {isEditing && !isPostJobPage && (
           <>
-            <Divider style={{ margin: "10px 0" }} />
+            <Divider style={{ margin: "8px 0" }} />
             <SaveButton type="primary" block onClick={onSubmit}>
               Lưu
             </SaveButton>
@@ -107,7 +114,7 @@ const SidebarProgress = ({
         )}
         {!isPostJobPage && (
           <>
-            <Divider style={{ margin: "10px 0" }} />
+            <Divider style={{ margin: "8px 0" }} />
             <Button block onClick={() => navigate("/employer/jobs")}>
               Về trang Danh sách việc làm
             </Button>
@@ -115,7 +122,7 @@ const SidebarProgress = ({
         )}
         {isPostJobPage && (
           <>
-            <Divider style={{ margin: "10px 0" }} />
+            <Divider style={{ margin: "8px 0" }} />
             <Button block onClick={() => navigate("/employer")}>
               Trở về trang chủ
             </Button>

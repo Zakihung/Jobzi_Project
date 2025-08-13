@@ -18,6 +18,10 @@ const StyledCard = styled(Card)`
   background: #ffffff;
   padding: 16px 16px 0;
   margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    padding: 12px 12px 0;
+  }
 `;
 
 const StyledTitle = styled(Title)`
@@ -27,11 +31,11 @@ const StyledTitle = styled(Title)`
   margin-bottom: 16px !important;
 
   @media (max-width: 768px) {
-    font-size: 20px !important;
+    font-size: 14px !important;
   }
 
   @media (max-width: 576px) {
-    font-size: 18px !important;
+    font-size: 13px !important;
   }
 `;
 
@@ -42,11 +46,11 @@ const StyledSubTitle = styled(Title)`
   margin-bottom: 12px !important;
 
   @media (max-width: 768px) {
-    font-size: 16px !important;
+    font-size: 13px !important;
   }
 
   @media (max-width: 576px) {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
 `;
 
@@ -141,12 +145,12 @@ const IndustrySection = ({
     <StyledCard ref={sectionRefs.industry}>
       <StyledTitle level={3}>Ngành nghề và vị trí</StyledTitle>
       <Row gutter={[12, 12]}>
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <StyledSubTitle>Nhóm ngành nghề</StyledSubTitle>
           <Select
             placeholder="Chọn nhóm ngành nghề"
             size="large"
-            style={{ width: "100%", marginBottom: 16 }}
+            style={{ width: "100%", marginBottom: 12 }}
             value={selectedIndustryGroup}
             onChange={(value) => {
               setSelectedIndustryGroup(value);
@@ -172,15 +176,14 @@ const IndustrySection = ({
             ))}
           </Select>
         </Col>
-        <Col span={12}></Col>
       </Row>
       <Row gutter={[12, 12]}>
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <StyledSubTitle>Ngành nghề</StyledSubTitle>
           <Select
             placeholder="Chọn ngành nghề"
             size="large"
-            style={{ width: "100%", marginBottom: 16 }}
+            style={{ width: "100%", marginBottom: 12 }}
             value={selectedIndustry}
             onChange={(value) => {
               setSelectedIndustry(value);
@@ -215,10 +218,9 @@ const IndustrySection = ({
               ))}
           </Select>
         </Col>
-        <Col span={12}></Col>
       </Row>
       <Row>
-        <Col span={12} style={{ paddingRight: "6px" }}>
+        <Col xs={24} sm={12}>
           <StyledSubTitle>Vị trí tuyển</StyledSubTitle>
           <Controller
             name="position"
@@ -229,7 +231,7 @@ const IndustrySection = ({
                 {...field}
                 placeholder="Chọn vị trí cần tuyển"
                 size="large"
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 12 }}
                 disabled={
                   disabled ||
                   !selectedIndustry ||
@@ -266,7 +268,6 @@ const IndustrySection = ({
             <Text type="danger">{errors.position.message}</Text>
           )}
         </Col>
-        <Col span={12}></Col>
       </Row>
     </StyledCard>
   );

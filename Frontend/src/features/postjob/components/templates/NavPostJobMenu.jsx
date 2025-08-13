@@ -12,8 +12,9 @@ const StickyMenu = styled.div`
   position: sticky;
   top: 76px;
   z-index: 100;
+
   @media (max-width: 768px) {
-    position: static;
+    display: none; /* Ẩn trên màn hình nhỏ */
   }
 `;
 
@@ -24,6 +25,10 @@ const StyledCard = styled(Card)`
   background: #ffffff;
   padding: 5px;
   margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    padding: 4px;
+  }
 `;
 
 const StyledMenu = styled(Menu)`
@@ -35,6 +40,11 @@ const StyledMenu = styled(Menu)`
     color: #666;
     border-radius: 12px;
     transition: all 0.3s ease;
+    padding: 8px 12px; /* Tối ưu khoảng cách */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
   }
 
   .ant-menu-item:not(.ant-menu-item-selected):hover {
@@ -56,9 +66,17 @@ const StyledMenu = styled(Menu)`
     color: #ffffff;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     .ant-menu-item {
-      font-size: 14px;
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-menu-item {
+      font-size: 12px;
+      padding: 5px 8px;
     }
   }
 `;

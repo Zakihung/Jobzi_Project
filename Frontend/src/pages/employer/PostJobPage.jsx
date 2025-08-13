@@ -27,7 +27,7 @@ const PostJobPage = () => {
     benefits: useRef(null),
     cvInfo: useRef(null),
   };
-  const formRef = useRef(null); // Thêm ref cho form
+  const formRef = useRef(null);
 
   const allSections = [
     "Tiêu đề tin tuyển dụng",
@@ -82,7 +82,9 @@ const PostJobPage = () => {
           justify={"center"}
         >
           <Col
-            span={21}
+            xs={24}
+            sm={22}
+            md={21}
             style={{
               background: "#f8f9fa",
               borderRadius: "24px",
@@ -90,7 +92,7 @@ const PostJobPage = () => {
             }}
           >
             <Row gutter={[16, 16]}>
-              <Col xs={24} md={6} lg={6}>
+              <Col xs={0} md={6} lg={6}>
                 <NavPostJobMenu sectionRefs={sectionRefs} />
               </Col>
               <Col xs={24} md={12} lg={13}>
@@ -103,7 +105,7 @@ const PostJobPage = () => {
                   completedSections={completedSections}
                   setCompletedSections={setCompletedSections}
                   allSections={allSections}
-                  formRef={formRef} // Truyền ref vào PostJobForm
+                  formRef={formRef}
                   isEditing={true}
                   disabled={false}
                 />
@@ -112,7 +114,7 @@ const PostJobPage = () => {
                 <SidebarProgress
                   completedSections={completedSections}
                   allSections={allSections}
-                  onSubmit={handleSubmit} // Gọi handleSubmit
+                  onSubmit={handleSubmit}
                   onEdit={() =>
                     console.log("onEdit không dùng trong PostJobPage")
                   }

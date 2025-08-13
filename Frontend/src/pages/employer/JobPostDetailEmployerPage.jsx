@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Layout, Row, Col, App } from "antd";
+import { Layout, Row, Col, Skeleton } from "antd";
 import styled from "styled-components";
 import NavPostJobMenu from "../../features/postjob/components/templates/NavPostJobMenu";
 import PostJobForm from "../../features/postjob/components/templates/PostJobForm";
@@ -16,6 +16,19 @@ const PostJobContainer = styled(Layout)`
 
 const ContentContainer = styled(Layout.Content)`
   background: #f8f9fa;
+`;
+
+const StyledSkeleton = styled(Skeleton)`
+  padding: 16px;
+  .ant-skeleton-title {
+    border-radius: 8px;
+  }
+  .ant-skeleton-paragraph {
+    margin-top: 12px;
+  }
+  .ant-skeleton-paragraph > li {
+    border-radius: 8px;
+  }
 `;
 
 const JobPostDetailEmployerPage = () => {
@@ -77,7 +90,44 @@ const JobPostDetailEmployerPage = () => {
     setIsEditing(!isEditing);
   };
 
-  if (isLoading) return <div>Đang tải...</div>;
+  if (isLoading) {
+    return (
+      <PostJobContainer>
+        <ContentContainer>
+          <Row
+            gutter={[16, 16]}
+            style={{
+              background: "#ffffff",
+            }}
+            justify={"center"}
+          >
+            <Col
+              xs={24}
+              sm={22}
+              md={21}
+              style={{
+                background: "#f8f9fa",
+                borderRadius: "24px",
+                padding: "16px",
+              }}
+            >
+              <Row gutter={[16, 16]}>
+                <Col xs={0} md={6} lg={6}>
+                  <StyledSkeleton active paragraph={{ rows: 7 }} />
+                </Col>
+                <Col xs={24} md={12} lg={13}>
+                  <StyledSkeleton active paragraph={{ rows: 10 }} />
+                </Col>
+                <Col xs={24} md={6} lg={5}>
+                  <StyledSkeleton active paragraph={{ rows: 5 }} />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </ContentContainer>
+      </PostJobContainer>
+    );
+  }
 
   return (
     <PostJobContainer>
@@ -90,7 +140,9 @@ const JobPostDetailEmployerPage = () => {
           justify={"center"}
         >
           <Col
-            span={21}
+            xs={24}
+            sm={22}
+            md={21}
             style={{
               background: "#f8f9fa",
               borderRadius: "24px",
@@ -98,7 +150,7 @@ const JobPostDetailEmployerPage = () => {
             }}
           >
             <Row gutter={[16, 16]}>
-              <Col xs={24} md={6} lg={6}>
+              <Col xs={0} md={6} lg={6}>
                 <NavPostJobMenu sectionRefs={sectionRefs} />
               </Col>
               <Col xs={24} md={12} lg={13}>
