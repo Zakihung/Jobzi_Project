@@ -196,7 +196,6 @@ const HeroSection = () => {
     "Design",
     "DevOps",
     "AI/ML",
-    "Remote",
   ];
 
   const navigate = useNavigate();
@@ -283,15 +282,15 @@ const HeroSection = () => {
               selectedLocation=""
               setSelectedLocation={() => {}}
             />
-            {/* <QuickTags>
+            <QuickTags>
               <TagsLabel>Từ khóa phổ biến:</TagsLabel>
               <Space wrap style={{ marginTop: 8 }}>
                 {quickTags.map((tag) => (
                   <QuickTag key={tag}>{tag}</QuickTag>
                 ))}
               </Space>
-            </QuickTags> */}
-            {/* <HeroStats>
+            </QuickTags>
+            <HeroStats>
               <StatItem>
                 <StatNumber level={4}>10.000+</StatNumber>
                 <StatLabel>Việc làm</StatLabel>
@@ -304,7 +303,7 @@ const HeroSection = () => {
                 <StatNumber level={4}>100.000+</StatNumber>
                 <StatLabel>Ứng viên</StatLabel>
               </StatItem>
-            </HeroStats> */}
+            </HeroStats>
           </Col>
           <Col xs={24} lg={10}>
             <HeroCarousel />

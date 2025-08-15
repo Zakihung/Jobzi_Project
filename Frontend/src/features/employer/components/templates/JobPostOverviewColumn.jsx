@@ -39,6 +39,17 @@ const JobPostingsCard = styled(Card)`
   }
 `;
 
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 20px 0;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+  margin: 12px 0;
+`;
+
 const CardTitle = styled(Title)`
   color: #1f2937 !important;
   font-size: 20px !important;
@@ -147,17 +158,23 @@ const JobPostOverviewColumn = ({ employerId }) => {
     <Col xs={24} sm={24} md={12} lg={10}>
       <JobPostingsCard>
         <CardTitle level={4}>Việc làm đã tạo</CardTitle>
-        <List
-          dataSource={jobPostings}
-          renderItem={(item) => <JobPostOverviewCard job={item} />}
-        />
-        <ActionButton
-          type="primary"
-          block
-          onClick={() => navigate("/employer/jobs")}
-        >
-          Xem tất cả việc làm đã tạo
-        </ActionButton>
+        {jobPostings && jobPostings.length > 0 ? (
+          <>
+            <List
+              dataSource={jobPostings}
+              renderItem={(item) => <JobPostOverviewCard job={item} />}
+            />
+            <ActionButton
+              type="primary"
+              block
+              onClick={() => navigate("/employer/jobs")}
+            >
+              Xem tất cả việc làm đã tạo
+            </ActionButton>
+          </>
+        ) : (
+          <EmptyMessage>Bạn chưa đăng tin tuyển nào!</EmptyMessage>
+        )}
         <ActionButton
           type="primary"
           block
