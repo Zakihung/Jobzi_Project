@@ -64,10 +64,6 @@ const resumeAnalysisSchema = new mongoose.Schema(
           description: { type: String, default: "" },
         },
       ],
-      hobbies: {
-        type: [String],
-        default: [],
-      },
       personal_info: {
         name: { type: [String], default: [] },
         email: { type: [String], default: [] },
@@ -83,11 +79,6 @@ const resumeAnalysisSchema = new mongoose.Schema(
           description: { type: String, default: "" },
           role: { type: String, default: "" },
           duration: { type: String, default: "" },
-        },
-      ],
-      references: [
-        {
-          name: { type: String, default: "" },
         },
       ],
       skills: [

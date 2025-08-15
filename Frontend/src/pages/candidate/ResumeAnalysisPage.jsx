@@ -193,20 +193,20 @@ const ResumeAnalysisPage = () => {
           <Descriptions.Item label="Số điện thoại">
             {analysisData.extracted_fields.personal_info.phone.join(", ")}
           </Descriptions.Item>
-          <Descriptions.Item label="Ngày sinh">
+          {/* <Descriptions.Item label="Ngày sinh">
             {analysisData.extracted_fields.personal_info.birth_date.join(", ")}
-          </Descriptions.Item>
-          <Descriptions.Item label="Giới tính">
+          </Descriptions.Item> */}
+          {/* <Descriptions.Item label="Giới tính">
             {analysisData.extracted_fields.personal_info.gender.length > 0
               ? analysisData.extracted_fields.personal_info.gender.join(", ")
               : "Không xác định"}
-          </Descriptions.Item>
+          </Descriptions.Item> */}
           <Descriptions.Item label="Email">
             {analysisData.extracted_fields.personal_info.email.join(", ")}
           </Descriptions.Item>
-          <Descriptions.Item label="Địa chỉ">
+          {/* <Descriptions.Item label="Địa chỉ">
             {analysisData.extracted_fields.personal_info.address.join(", ")}
-          </Descriptions.Item>
+          </Descriptions.Item> */}
         </Descriptions>
       </Card>
 
@@ -316,27 +316,6 @@ const ResumeAnalysisPage = () => {
         </Row>
       </Card>
 
-      {/* Sở thích */}
-      <Title level={5} className={styles.cardTitle}>
-        <HeartOutlined /> Sở thích
-      </Title>
-      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
-        <Row gutter={[24, 24]}>
-          <Col span={24}>
-            <Card className={styles.hobbiesCard}>
-              <List
-                dataSource={analysisData.extracted_fields.hobbies}
-                renderItem={(hobby) => (
-                  <List.Item>
-                    <Text>{hobby}</Text>
-                  </List.Item>
-                )}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </Card>
-
       {/* Dự án */}
       <Title level={5} className={styles.cardTitle}>
         <StarOutlined /> Dự án
@@ -414,21 +393,6 @@ const ResumeAnalysisPage = () => {
           )}
         />
       </Card>
-
-      {/* Người giới thiệu */}
-      <Title level={5} className={styles.cardTitle}>
-        <UserOutlined /> Người giới thiệu
-      </Title>
-      <Card className={styles.infoCard} style={{ marginBottom: 24 }}>
-        <List
-          dataSource={analysisData.extracted_fields.references}
-          renderItem={(item) => (
-            <List.Item>
-              <Text>{item.name}</Text>
-            </List.Item>
-          )}
-        />
-      </Card>
     </div>
   );
 
@@ -445,7 +409,7 @@ const ResumeAnalysisPage = () => {
               <TrophyOutlined className={styles.scoreIcon} />
               <div>
                 <Title level={5} className={styles.scoreTitle}>
-                  Mức độ phù hợp
+                  Mức độ phù hợp kỹ năng
                 </Title>
                 <Text className={styles.scoreStatus}>
                   {getScoreStatus(analysisData.match_score)}
@@ -460,6 +424,39 @@ const ResumeAnalysisPage = () => {
                 <span className={styles.scoreText}>{percent}%</span>
               )}
             />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+        <Col xs={24} md={12}>
+          <Card className={styles.matchCard}>
+            <Title level={5} className={styles.cardTitle}>
+              <CheckCircleOutlined className={styles.successIcon} />
+              Kỹ năng phù hợp
+            </Title>
+            <Space wrap>
+              {analysisData.jd_matching.matched_skills.map((skill) => (
+                <Tag key={skill} color="green">
+                  {skill}
+                </Tag>
+              ))}
+            </Space>
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card className={styles.mismatchCard}>
+            <Title level={5} className={styles.cardTitle}>
+              <CloseCircleOutlined className={styles.errorIcon} />
+              Kỹ năng còn thiếu
+            </Title>
+            <Space wrap>
+              {analysisData.jd_matching.missing_skills.map((skill) => (
+                <Tag key={skill} color="red">
+                  {skill}
+                </Tag>
+              ))}
+            </Space>
           </Card>
         </Col>
       </Row>
@@ -508,39 +505,6 @@ const ResumeAnalysisPage = () => {
                 khác...
               </Text>
             )}
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-        <Col xs={24} md={12}>
-          <Card className={styles.matchCard}>
-            <Title level={5} className={styles.cardTitle}>
-              <CheckCircleOutlined className={styles.successIcon} />
-              Kỹ năng phù hợp
-            </Title>
-            <Space wrap>
-              {analysisData.jd_matching.matched_skills.map((skill) => (
-                <Tag key={skill} color="green">
-                  {skill}
-                </Tag>
-              ))}
-            </Space>
-          </Card>
-        </Col>
-        <Col xs={24} md={12}>
-          <Card className={styles.mismatchCard}>
-            <Title level={5} className={styles.cardTitle}>
-              <CloseCircleOutlined className={styles.errorIcon} />
-              Kỹ năng còn thiếu
-            </Title>
-            <Space wrap>
-              {analysisData.jd_matching.missing_skills.map((skill) => (
-                <Tag key={skill} color="red">
-                  {skill}
-                </Tag>
-              ))}
-            </Space>
           </Card>
         </Col>
       </Row>
