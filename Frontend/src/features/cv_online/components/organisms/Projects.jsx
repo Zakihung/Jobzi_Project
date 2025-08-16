@@ -195,9 +195,9 @@ const Projects = ({
               form.resetFields();
               scrollTo();
             },
-            onError: (error) => {
-              message.error(error.message || "Cập nhật thất bại.");
-            },
+            // onError: (error) => {
+            //   message.error(error.message || "Cập nhật thất bại.");
+            // },
           }
         );
       } else {
@@ -211,9 +211,9 @@ const Projects = ({
               form.resetFields();
               scrollTo();
             },
-            onError: (error) => {
-              message.error(error.message || "Thêm thất bại.");
-            },
+            // onError: (error) => {
+            //   message.error(error.message || "Thêm thất bại.");
+            // },
           }
         );
       }

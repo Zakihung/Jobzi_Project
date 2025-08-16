@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Alert, Card, Spin, Skeleton } from "antd";
 import styled from "styled-components";
 import { AuthContext } from "../../../../contexts/auth.context";
@@ -56,7 +56,28 @@ const ContentColumn = ({
     error,
   } = useGetOnlineResume(candidateId);
 
-  const resume = resumeData?.data;
+  const resume = useMemo(() => {
+    return resumeData?.data
+      ? {
+          ...resumeData.data,
+          jobExpectations: resumeData.data.jobExpectations || [],
+          education: resumeData.data.education || [],
+          highlights: resumeData.data.highlights || [],
+          workExperience: resumeData.data.workExperience || [],
+          projects: resumeData.data.projects || [],
+          skills: resumeData.data.skills || [],
+          personalInfo: resumeData.data.personalInfo || {},
+        }
+      : {
+          personalInfo: {},
+          jobExpectations: [],
+          education: [],
+          highlights: [],
+          workExperience: [],
+          projects: [],
+          skills: [],
+        };
+  }, [resumeData]);
 
   const [jobStatus, setJobStatus] = useState("");
 

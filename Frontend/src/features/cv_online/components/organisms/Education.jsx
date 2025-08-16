@@ -174,8 +174,11 @@ const Education = ({
 
   const handleOk = () => {
     form.validateFields().then((values) => {
-      if (values.endYear <= values.startYear) {
-        message.error("Năm kết thúc phải lớn hơn năm bắt đầu.");
+      const start = new Date(values.startYear, values.startMonth - 1);
+      const end = new Date(values.endYear, values.endMonth - 1);
+
+      if (end <= start) {
+        message.error("Thời gian kết thúc phải lớn hơn thời gian bắt đầu.");
         return;
       }
       const item = {
@@ -199,9 +202,9 @@ const Education = ({
               form.resetFields();
               scrollTo();
             },
-            onError: (error) => {
-              message.error(error.message || "Cập nhật thất bại.");
-            },
+            // onError: (error) => {
+            //   message.error(error.message || "Cập nhật thất bại.");
+            // },
           }
         );
       } else {
@@ -215,9 +218,9 @@ const Education = ({
               form.resetFields();
               scrollTo();
             },
-            onError: (error) => {
-              message.error(error.message || "Thêm thất bại.");
-            },
+            // onError: (error) => {
+            //   message.error(error.message || "Thêm thất bại.");
+            // },
           }
         );
       }
