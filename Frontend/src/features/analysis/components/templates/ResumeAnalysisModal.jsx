@@ -109,6 +109,7 @@ const ResumeAnalysisModal = ({
       }
       width={600}
       centered
+      closable={false}
     >
       {isRedirecting ? (
         <LoadingContainer>

@@ -1,41 +1,32 @@
-def compute_match_score(cv_skills, jd_skills):
-    """Tính điểm khớp giữa kỹ năng CV và JD."""
+from nlp.comparator import normalize_and_flatten_skills
+
+
+def compute_match_score(cv_skills, jd_skills, cosine_similarity):
+    """Tính điểm khớp giữa kỹ năng CV và JD theo tỷ lệ phần trăm."""
     try:
-        # Làm phẳng danh sách kỹ năng nếu có danh sách lồng nhau
-        cv_skills_flat = []
-        jd_skills_flat = []
+        cv_skills_flat = normalize_and_flatten_skills(cv_skills)
+        jd_skills_flat = normalize_and_flatten_skills(jd_skills)
+        cv_skills_set = set(cv_skills_flat)
+        jd_skills_set = set(jd_skills_flat)
 
-        for skill in cv_skills:
-            if isinstance(skill, list):
-                cv_skills_flat.extend(skill)
-            else:
-                cv_skills_flat.append(skill)
+        matched = list(cv_skills_set.intersection(jd_skills_set))
 
-        for skill in jd_skills:
-            if isinstance(skill, list):
-                jd_skills_flat.extend(skill)
-            else:
-                jd_skills_flat.append(skill)
+        # Thêm match theo substring để giống comparator.py
+        for cv_skill in cv_skills_flat:
+            for jd_skill in jd_skills_flat:
+                if cv_skill in jd_skill or jd_skill in cv_skill:
+                    if cv_skill not in matched and jd_skill not in matched:
+                        matched.append(jd_skill)
 
-        # Chuẩn hóa: chuyển về chữ thường và loại bỏ khoảng trắng thừa
-        cv_skills_flat = [str(skill).strip().lower() for skill in cv_skills_flat]
-        jd_skills_flat = [str(skill).strip().lower() for skill in jd_skills_flat]
+        total_jd_skills = len(jd_skills_set)
+        print(f"Matched skills: {matched}")
+        print(f"Total JD skills: {total_jd_skills}")
 
-        # Tính tập hợp giao nhau
-        matched = set(cv_skills_flat).intersection(set(jd_skills_flat))
-        total_jd_skills = len(set(jd_skills_flat))
+        if total_jd_skills == 0:
+            return 0
 
-        if not matched or total_jd_skills == 0:
-            match_score = 0
-        else:
-            # Tính điểm: 30 điểm khởi đầu + điểm phân bổ theo từng kỹ năng khớp
-            base_score = 30
-            per_skill_score = 70 / total_jd_skills
-            match_score = base_score + per_skill_score * len(matched)
-            match_score = min(match_score, 100)  # Giới hạn tối đa 100
-            match_score = int(round(match_score, 0))
-
-        return match_score
+        match_score = (len(matched) / total_jd_skills) * 80 + cosine_similarity * 20
+        return int(round(match_score, 0))
     except Exception as e:
         print(f"Lỗi khi tính điểm khớp: {e}")
         return 0

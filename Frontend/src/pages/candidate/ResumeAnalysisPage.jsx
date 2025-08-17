@@ -409,7 +409,7 @@ const ResumeAnalysisPage = () => {
               <TrophyOutlined className={styles.scoreIcon} />
               <div>
                 <Title level={5} className={styles.scoreTitle}>
-                  Mức độ phù hợp kỹ năng
+                  Mức độ phù hợp
                 </Title>
                 <Text className={styles.scoreStatus}>
                   {getScoreStatus(analysisData.match_score)}
@@ -461,7 +461,7 @@ const ResumeAnalysisPage = () => {
         </Col>
       </Row>
 
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+      {/* <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} md={12}>
           <Card className={styles.matchCard}>
             <Title level={5} className={styles.cardTitle}>
@@ -507,7 +507,7 @@ const ResumeAnalysisPage = () => {
             )}
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 

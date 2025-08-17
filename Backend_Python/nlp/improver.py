@@ -15,7 +15,7 @@ def suggest_improvements(extracted_fields, jd_matching):
             f"Ví dụ, hãy bắt đầu với việc trau dồi kỹ năng '{missing_skills[0]}'."
         )
         suggestions.append({
-            "section": "skills",
+            "section": "Kỹ năng",
             "suggestion": skill_suggestion
         })
 
@@ -28,7 +28,7 @@ def suggest_improvements(extracted_fields, jd_matching):
             "Hãy thể hiện rõ những kỹ năng này qua mô tả công việc, dự án hoặc thành tích cụ thể trong CV."
         )
         suggestions.append({
-            "section": "skills",
+            "section": "Kỹ năng",
             "suggestion": keyword_suggestion
         })
 
@@ -36,7 +36,7 @@ def suggest_improvements(extracted_fields, jd_matching):
     projects = extracted_fields.get("projects", [])
     if not projects:
         suggestions.append({
-            "section": "projects",
+            "section": "Dự án",
             "suggestion": (
                 "Cân nhắc bổ sung các dự án bạn từng thực hiện trong công việc, học tập hoặc hoạt động ngoại khóa. "
                 f"Các dự án liên quan đến kỹ năng như {', '.join(missing_skills[:2]) if missing_skills else 'yêu cầu công việc'} sẽ giúp CV nổi bật hơn."
@@ -44,7 +44,7 @@ def suggest_improvements(extracted_fields, jd_matching):
         })
     elif len(projects) < 2:
         suggestions.append({
-            "section": "projects",
+            "section": "Dự án",
             "suggestion": (
                 "Thêm ít nhất một dự án khác vào CV để thể hiện khả năng thực hành. "
                 "Nên mô tả rõ mục tiêu, vai trò của bạn và kết quả đạt được trong từng dự án."
@@ -55,7 +55,7 @@ def suggest_improvements(extracted_fields, jd_matching):
     work_experience = extracted_fields.get("work_experience", [])
     if not work_experience:
         suggestions.append({
-            "section": "work_experience",
+            "section": "Kinh nghiệm làm việc",
             "suggestion": (
                 "Bổ sung kinh nghiệm làm việc, thực tập hoặc tham gia hoạt động liên quan đến lĩnh vực bạn ứng tuyển. "
                 "Nếu chưa có, hãy nêu các công việc tình nguyện, cộng tác hoặc dự án có liên quan."
@@ -63,7 +63,7 @@ def suggest_improvements(extracted_fields, jd_matching):
         })
     elif len(work_experience) < 2:
         suggestions.append({
-            "section": "work_experience",
+            "section": "Kinh nghiệm làm việc",
             "suggestion": (
                 "Hãy trình bày chi tiết hơn về kinh nghiệm làm việc của bạn, nhấn mạnh các nhiệm vụ đã thực hiện, kết quả đạt được "
                 f"và các kỹ năng như {', '.join(missing_skills[:2]) if missing_skills else 'liên quan đến công việc'} đã áp dụng."
@@ -74,7 +74,7 @@ def suggest_improvements(extracted_fields, jd_matching):
     certifications = extracted_fields.get("certifications", [])
     if not certifications and missing_skills:
         suggestions.append({
-            "section": "certifications",
+            "section": "Chứng chỉ",
             "suggestion": (
                 f"Xem xét lấy chứng chỉ liên quan đến các kỹ năng như {', '.join(missing_skills[:2]) if missing_skills else 'kỹ năng chuyên môn cần thiết'}. "
                 "Bạn có thể tìm các khóa học từ các tổ chức đào tạo hoặc trung tâm giáo dục uy tín trong lĩnh vực của mình."
@@ -84,7 +84,7 @@ def suggest_improvements(extracted_fields, jd_matching):
     # Gợi ý về cách trình bày CV
     if extracted_fields.get("formatting_needs_improvement", False):
         suggestions.append({
-            "section": "formatting",
+            "section": "Trình bày",
             "suggestion": (
                 "Hãy đảm bảo CV trình bày rõ ràng, dễ đọc và có cấu trúc hợp lý. Sử dụng các tiêu đề nổi bật, trình bày nhất quán, "
                 "kiểm tra lỗi chính tả và đảm bảo thông tin quan trọng được nhấn mạnh."
@@ -94,7 +94,7 @@ def suggest_improvements(extracted_fields, jd_matching):
     # Gợi ý chung nếu không có đề xuất cụ thể
     if not suggestions:
         suggestions.append({
-            "section": "general",
+            "section": "Nhận xét chung",
             "suggestion": (
                 "Hãy chắc chắn rằng CV của bạn thể hiện rõ những điểm mạnh, kỹ năng và kinh nghiệm phù hợp với vị trí ứng tuyển. "
                 "Nên tùy chỉnh CV để phù hợp với từng mô tả công việc cụ thể."

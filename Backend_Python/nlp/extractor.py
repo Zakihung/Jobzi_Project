@@ -41,13 +41,16 @@ def preprocess_text(text):
         section_headers = {
             "mục tiêu nghề nghiệp", "kinh nghiệm làm việc", "thông tin cá nhân",
             "học vấn", "kỹ năng", "danh hiệu và giải thưởng", "chứng chỉ",
-            "hoạt động", "sở thích", "người giới thiệu", "dự án"
+            "hoạt động", "dự án"
         }
 
         # Regex cho các trường đặc biệt
         email_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
         phone_regex = r"(0|\+84)\s*[0-9]{9,10}|\(\d{3,4}\)\s*[0-9]{7,8}"
         name_regex = r"^(?:[A-ZÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲÝỸỶỴ][a-zàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳýỹỷỵ]*\s){1,3}[A-ZÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲÝỸỶỴ][a-zàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳýỹỷỵ]*$"
+        birth_date_line_regex = r"^ngay\s*sinh\s*:"
+        address_line_regex = r"^dia\s*chi\s*:"
+        gender_line_regex = r"^gioi\s*tinh\s*:"
 
         for line in lines:
             normalized_line = text_normalize(line.lower())
@@ -89,6 +92,17 @@ def preprocess_text(text):
                 merged_lines.append(found_header.title())
                 if after_header:
                     buffer = after_header
+                continue
+
+            # 🚫 Bỏ watermark hoặc dòng thừa
+            if "topcv.vn" in normalized_line:
+                continue
+
+            # Giữ nguyên các dòng thông tin cá nhân quan trọng
+            if (re.match(birth_date_line_regex, normalized_line, re.IGNORECASE) or
+                    re.match(gender_line_regex, normalized_line, re.IGNORECASE) or
+                    re.match(address_line_regex, normalized_line, re.IGNORECASE)):
+                merged_lines.append(line)
                 continue
 
             # Tách số điện thoại nếu có
@@ -139,6 +153,7 @@ def preprocess_text(text):
                 continue
             final_lines.append(line)
 
+        logger.info(f"Kết quả tiền xử lý văn bản (NLP): {len(final_lines)} dòng")  # Log kết quả NLP
         return final_lines
     except Exception as e:
         logger.error(f"Lỗi trong preprocess_text: {str(e)}")
@@ -172,64 +187,101 @@ class CVDataset(Dataset):
             'labels': torch.tensor(label, dtype=torch.long)
         }
 
-def train_phobert_model(df, model_path, tokenizer_path, max_length=64, epochs=3):
-    """Huấn luyện mô hình PhoBERT."""
+def train_phobert_model(df, model_path, tokenizer_path, max_length=128, epochs=20):
+    """Huấn luyện mô hình PhoBERT với tham số tối ưu và lưu checkpoint tốt nhất."""
     try:
         logger.info("Bắt đầu huấn luyện mô hình PhoBERT")
-        label_set = list(set(df['label']))
+
+        # Chuẩn bị nhãn
+        label_set = sorted(list(set(df['label'])))  # sắp xếp để ổn định mapping
         label_to_id = {label: idx for idx, label in enumerate(label_set)}
 
         texts = df['text'].tolist()
         labels = [label_to_id[label] for label in df['label']]
 
+        # Chia train/validation
         train_texts, val_texts, train_labels, val_labels = train_test_split(
-            texts, labels, test_size=0.2, random_state=42
+            texts, labels, test_size=0.2, random_state=42, stratify=labels
         )
 
+        # Tokenizer & model PhoBERT
         tokenizer = AutoTokenizer.from_pretrained("vinai/phobert-base")
         model = AutoModelForSequenceClassification.from_pretrained(
             "vinai/phobert-base",
             num_labels=len(label_set)
         )
 
+        # Dataset
         train_dataset = CVDataset(train_texts, train_labels, tokenizer, max_length)
         val_dataset = CVDataset(val_texts, val_labels, tokenizer, max_length)
 
         from transformers import TrainingArguments, Trainer
+
+        # Tính warmup_steps (10% tổng steps)
+        total_steps = (len(train_dataset) // 8) * epochs   # batch_size=8
+        warmup_steps = int(total_steps * 0.1)
+
+        # Metric để chọn mô hình tốt nhất
+        from sklearn.metrics import accuracy_score, f1_score
+
+        def compute_metrics(eval_pred):
+            logits, labels = eval_pred
+            preds = logits.argmax(-1)
+            acc = accuracy_score(labels, preds)
+            f1 = f1_score(labels, preds, average="macro")
+            return {"accuracy": acc, "f1": f1}
+
+        # Training arguments tối ưu
         training_args = TrainingArguments(
             output_dir='./results',
             num_train_epochs=epochs,
-            per_device_train_batch_size=16,
+            per_device_train_batch_size=8,
             per_device_eval_batch_size=16,
-            warmup_steps=200,
+            learning_rate=2e-5,
+            warmup_steps=warmup_steps,
             weight_decay=0.01,
             logging_dir='./logs',
-            logging_steps=50,
-            eval_strategy="epoch",
+            logging_steps=100,
+            evaluation_strategy="epoch",
             save_strategy="epoch",
-            load_best_model_at_end=True,
-            fp16=True if torch.cuda.is_available() else False
+            save_total_limit=3,                      # chỉ giữ 3 checkpoint gần nhất
+            load_best_model_at_end=True,             # tự động lấy mô hình tốt nhất
+            metric_for_best_model="eval_loss",       # có thể đổi thành "eval_f1"
+            greater_is_better=False,                 # vì eval_loss càng thấp càng tốt
+            gradient_accumulation_steps=2,           # batch hiệu dụng lớn hơn
+            max_grad_norm=1.0,                       # gradient clipping
+            fp16=False                               # True nếu GPU hỗ trợ
         )
 
+        # Trainer
         trainer = Trainer(
             model=model,
             args=training_args,
             train_dataset=train_dataset,
-            eval_dataset=val_dataset
+            eval_dataset=val_dataset,
+            compute_metrics=compute_metrics
         )
 
+        # Huấn luyện
         trainer.train()
 
+        # Đánh giá mô hình tốt nhất
+        eval_results = trainer.evaluate()
+        logger.info(f"Kết quả đánh giá PhoBERT: {eval_results}")
+
+        # Lưu model & tokenizer (best checkpoint)
         os.makedirs(model_path, exist_ok=True)
-        model.save_pretrained(model_path)
+        trainer.model.save_pretrained(model_path)
         tokenizer.save_pretrained(tokenizer_path)
         logger.info("Lưu mô hình và tokenizer PhoBERT thành công")
 
-        with open(os.path.join(model_path, 'labels.txt'), 'w') as f:
+        # Lưu file nhãn
+        with open(os.path.join(model_path, 'labels.txt'), 'w', encoding='utf-8') as f:
             for label in label_set:
                 f.write(label + '\n')
 
-        return model, tokenizer, label_set
+        return trainer.model, tokenizer, label_set
+
     except Exception as e:
         logger.error(f"Lỗi khi huấn luyện mô hình PhoBERT: {str(e)}")
         raise
@@ -302,7 +354,9 @@ def extract_fields_from_text(text):
                 with torch.no_grad():
                     outputs = model(**encoding)
                     predicted_label_id = torch.argmax(outputs.logits, dim=1).item()
-                    predictions.append(label_set[predicted_label_id])
+                    pred_label = label_set[predicted_label_id]
+                    predictions.append(pred_label)
+                    logger.debug(f"Kết quả phân loại dòng (ML): '{line[:50]}...' -> {pred_label}")  # Log kết quả phân loại ML
             except Exception as e:
                 logger.error(f"Lỗi khi phân loại dòng '{line}': {str(e)}")
                 predictions.append("other")  # Gán nhãn mặc định nếu lỗi
@@ -313,12 +367,15 @@ def extract_fields_from_text(text):
         }
         education, skills, projects, experience, hobbies, career_objective, certificates, awards, activities, references = [], [], [], [], [], [], [], [], [], []
 
+        birth_date_line_regex = r"^ngay\s*sinh\s*:"
+        address_line_regex = r"^dia\s*chi\s*:"
+        gender_line_regex = r"^gioi\s*tinh\s*:"
         email_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
         phone_regex = r"(0|\+84)\s*[0-9]{9,10}|\(\d{3,4}\)\s*[0-9]{7,8}"
         name_regex = r"^(?:[A-ZÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲÝỸỶỴ][a-zàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳýỹỷỵ]*\s){1,3}[A-ZÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲÝỸỶỴ][a-zàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳýỹỷỵ]*$"
         address_regex = r"(?:hà nội|sài gòn|đà nẵng|cần thơ|đống đa|an giang|quận \d+|tp\.?|thành phố|phường|ktx|xuân khánh|ninh kiều|cầu giấy|hai bà trưng|ba đình)[\w\s,]*"
         birth_date_regex = r"\d{2}/\d{2}/\d{4}"
-        gender_regex = r"^(nam|nữ)$"
+        gender_regex = r"Nam|Nữ"
         duration_regex = r"(\d{4}\s*-\s*\d{4}|\d{4}\s*-\s*(?:nay|hiện tại)|\d{2}/\d{4}\s*-\s*\d{2}/\d{4}|\d{2}/\d{4}\s*-\s*(?:nay|hiện tại))"
         company_regex = r"(?:công ty|company)\s*(?:tnhh|cp|cổ phần)\s*[\w\s]+"
         year_regex = r"\d{4}"
@@ -333,17 +390,36 @@ def extract_fields_from_text(text):
             normalized_line = normalize_text(line)
             logger.debug(f"Xử lý dòng: {line}, Dự đoán: {pred}")
 
-            # Kiểm tra tiêu đề để xác định danh mục
+            if re.match(birth_date_line_regex, normalized_line, re.IGNORECASE):
+                date_match = re.search(r":\s*(\d{1,2}/\d{1,2}/\d{4})", line)
+                if date_match:
+                    personal_info["birth_date"].append(date_match.group(1))
+                    logger.debug(f"Khớp ngày sinh: {line}")
+                continue
+
+            if re.match(address_line_regex, normalized_line, re.IGNORECASE):
+                address_value = line.split(":", 1)[-1].strip()
+                if address_value:
+                    personal_info["address"].append(address_value)
+                    logger.debug(f"Khớp địa chỉ: {line}")
+                continue
+
+            if re.match(gender_line_regex, normalized_line, re.IGNORECASE):
+                gender_value = line.split(":", 1)[-1].strip()
+                if gender_value:
+                    personal_info["gender"].append(gender_value)
+                    logger.debug(f"Khớp giới tính: {line}")
+                continue
+
+            # Danh sách các tiêu đề và ánh xạ với danh mục
             section_headers = {
+                "mục tiêu nghề nghiệp": "career_objective",
                 "học vấn": "education",
                 "kinh nghiệm làm việc": "experience",
-                "mục tiêu nghề nghiệp": "career_objective",
                 "kỹ năng": "skills",
-                "hoạt động": "activities",
-                "chứng chỉ": "certificates",
-                "sở thích": "hobbies",
                 "danh hiệu và giải thưởng": "awards",
-                "người giới thiệu": "references",
+                "chứng chỉ": "certificates",
+                "hoạt động": "activities",
                 "dự án": "projects"
             }
             if normalized_line in section_headers:
@@ -442,10 +518,23 @@ def extract_fields_from_text(text):
                     "duration": duration.group(0) if duration else "",
                     "year": year.group(0) if year else ""
                 })
+
             elif final_pred in ("skills_technology", "skills_soft", "skills_language", "skills_industry"):
-                skill_tokens = [token.strip() for token in re.split(r',|\n|:', line) if token.strip()]
+                # Tách kỹ năng linh hoạt hơn
+                skill_tokens = [
+                    token.strip()
+                    for token in re.split(
+                        r',|;|:|-|/|\n|\s{2,}|(?<=[a-z])\s+(?=[A-Z])|(?<=[A-Z])\s+(?=[A-Z][a-z])',
+                        line
+                    )
+                    if token.strip()
+                ]
                 for token in skill_tokens:
                     normalized_token = normalize_text(token)
+                    # Bỏ qua nếu kỹ năng quá dài (>= 6 từ) -> khả năng là mô tả
+                    if len(token.split()) > 5:
+                        continue
+
                     is_skill = False
                     skill_category = None
                     if final_pred == "skills_industry":
@@ -458,12 +547,15 @@ def extract_fields_from_text(text):
                         if any(keyword in normalized_token for keyword in KEYWORD_CATEGORIES[final_pred]):
                             is_skill = True
                             skill_category = final_pred
+
                     if is_skill:
-                        skills.append({
-                            "name": token,
-                            "category": skill_category
-                        })
-                        logger.debug(f"Khớp kỹ năng: {token}, Danh mục: {skill_category}")
+                        # Kiểm tra trùng trước khi thêm
+                        if not any(s["name"].lower() == token.lower() for s in skills):
+                            skills.append({
+                                "name": token,
+                                "category": skill_category
+                            })
+                            logger.debug(f"Khớp kỹ năng: {token}, Danh mục: {skill_category}")
             elif final_pred == "projects":
                 projects.append({
                     "name": line,
@@ -525,11 +617,9 @@ def extract_fields_from_text(text):
                 "skills": skills,
                 "projects": projects,
                 "experience": experience,
-                "hobbies": hobbies,
                 "certificates": certificates,
                 "awards": awards,
                 "activities": activities,
-                "references": references
             }
         }
         logger.info(f"Thông tin cá nhân đã trích xuất: {personal_info['name']}")

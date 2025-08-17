@@ -150,7 +150,7 @@ const processResumeAnalysisService = async (
     // Step 3: Phân tích mức độ phù hợp, điểm mạnh/yếu, đề xuất
     const analyzeRes = await axios.post(
       `${pythonApiUrl}/cv/analyze/${resume_file_id}/${job_post_id}`,
-      { text: raw_text }
+      { text: raw_text, extracted_fields }
     );
 
     if (analyzeRes.data.status !== "success" || !analyzeRes.data) {

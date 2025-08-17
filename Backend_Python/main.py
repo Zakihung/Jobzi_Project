@@ -59,20 +59,19 @@ def analyze(cv_id, job_id):
             return jsonify({"status": "failed", "error_message": "Định dạng job_id không hợp lệ"}), 400
 
         text = request.json.get("text", "")
+        extracted_fields = request.json.get("extracted_fields", None)
         if not text:
             return jsonify({"status": "failed", "error_message": "Thiếu văn bản CV trong yêu cầu"}), 400
+        if not extracted_fields:
+            extracted = extract_fields_from_text(text)
+            if not extracted or extracted.get("status") != "success":
+                return jsonify({"status": "failed", "error_message": "Không thể trích xuất thông tin từ CV"}), 500
+            extracted_fields = extracted.get("extracted", {})
 
         # Truy xuất JD text, kỹ năng, kinh nghiệm và học vấn từ database
         jd_text, jd_skills, min_years_experience, education_level = get_jd_text_and_skills(job_id)
         if not jd_text:
             return jsonify({"status": "failed", "error_message": "Không tìm thấy hoặc bài đăng công việc đã bị xóa"}), 404
-
-        # Trích xuất thông tin từ CV
-        extracted = extract_fields_from_text(text)
-        if not extracted or extracted.get("status") != "success":
-            return jsonify({"status": "failed", "error_message": "Không thể trích xuất thông tin từ CV"}), 500
-
-        extracted_fields = extracted.get("extracted", {})
 
         # Lấy danh sách kỹ năng từ CV
         cv_skill_names = []
@@ -120,7 +119,7 @@ def analyze(cv_id, job_id):
         )
 
         # Tính điểm khớp
-        score = compute_match_score(cv_skill_names, jd_skills)
+        score = compute_match_score(cv_skill_names, jd_skills, jd_matching.get("cosine_similarity", 0.0))
 
         # Gợi ý cải thiện
         suggestions = suggest_improvements(extracted_fields, jd_matching)
