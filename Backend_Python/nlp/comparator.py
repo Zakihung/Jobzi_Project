@@ -283,10 +283,10 @@ def compare_cv_with_jd(cv_text, jd_text, cv_skills=None, jd_skills=None, cv_expe
                 label = SECTION_LABELS.get(section, section.replace('_', ' ').title())
                 weaknesses.append({
                     "description": f"Thiếu mục {label}, có thể ảnh hưởng đến đánh giá toàn diện của nhà tuyển dụng.",
-                    "related_to": label
+                    "related_to": f"{label}"
                 })
                 job_mismatch.append({
-                    "criteria": label,
+                    "criteria": f"{label}",
                     "description": f"Thiếu mục {label} trong CV."
                 })
 
