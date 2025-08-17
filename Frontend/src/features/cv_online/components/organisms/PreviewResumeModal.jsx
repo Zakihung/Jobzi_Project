@@ -19,7 +19,7 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -162,22 +162,22 @@ const PreviewResumeModal = ({
   const componentRef = useRef();
 
   // Hàm xử lý xuất PDF
-  const handleExportPDF = () => {
-    const element = componentRef.current;
-    const opt = {
-      margin: [15, 15, 15, 15], // Margin 15mm cho PDF
-      filename: `Hồ sơ - ${resume?.personalInfo?.full_name || "Ứng viên"}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true }, // Bật useCORS để xử lý ảnh cross-origin
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: {
-        mode: ["css", "legacy"],
-        before: [".section-title"],
-        avoid: [".experience-card", ".info-item", ".ant-divider", ".ant-space"],
-      },
-    };
-    html2pdf().from(element).set(opt).save();
-  };
+  // const handleExportPDF = () => {
+  //   const element = componentRef.current;
+  //   const opt = {
+  //     margin: [15, 15, 15, 15], // Margin 15mm cho PDF
+  //     filename: `Hồ sơ - ${resume?.personalInfo?.full_name || "Ứng viên"}.pdf`,
+  //     image: { type: "jpeg", quality: 0.98 },
+  //     html2canvas: { scale: 3, useCORS: true }, // Bật useCORS để xử lý ảnh cross-origin
+  //     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  //     pagebreak: {
+  //       mode: ["css", "legacy"],
+  //       before: [".section-title"],
+  //       avoid: [".experience-card", ".info-item", ".ant-divider", ".ant-space"],
+  //     },
+  //   };
+  //   html2pdf().from(element).set(opt).save();
+  // };
 
   const renderPersonalInfo = () => {
     if (!resume?.personalInfo) return;
@@ -458,7 +458,7 @@ const PreviewResumeModal = ({
           </>
         )}
       </ModalContent>
-      {!isLoadingResumeData && !isErrorResumeData && (
+      {/* {!isLoadingResumeData && !isErrorResumeData && (
         <ActionButtons>
           <Button
             type="primary"
@@ -468,7 +468,7 @@ const PreviewResumeModal = ({
             Xuất PDF
           </Button>
         </ActionButtons>
-      )}
+      )} */}
     </StyledModal>
   );
 };
