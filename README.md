@@ -2,6 +2,8 @@
 
 Jobzi is a modern recruitment web application built on the MERN stack, integrating Machine Learning (Python) to analyze candidate resumes. The system connects employers and candidates through an intuitive, responsive platform while leveraging AI to enhance recruitment efficiency.
 
+<img width="2461" height="1196" alt="image" src="https://github.com/user-attachments/assets/015aaffa-a912-469d-9f5d-59c0ff02e5b7" />
+
 🚀 Features
 
 👩‍💼 For Candidates
