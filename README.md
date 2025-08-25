@@ -65,7 +65,7 @@ git clone https://github.com/Zakihung/Jobzi_Project.git
 
 cd Jobzi_Project
 
-3. Setup backend (Node.js)
+2. Setup backend (Node.js)
 
 cd Backend
 
@@ -73,7 +73,7 @@ npm install
 
 npm run dev
 
-5. Setup ML backend (Python)
+3. Setup ML backend (Python)
 
 cd ../Backend_Python
 
@@ -87,7 +87,7 @@ pip install -r requirements.txt
 
 python main.py
 
-7. Setup frontend
+4. Setup frontend
 
 cd ../Frontend
 
